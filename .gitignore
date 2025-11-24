@@ -1,0 +1,19 @@
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Venv
+venv/
+env/
+
+# Node (se un giorno metti)
+node_modules/
+
+# IDE
+.vscode/
+.idea/

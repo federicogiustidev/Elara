@@ -1,0 +1,484 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Aurya — Il tuo Net Worth, ottimizzato con matematica</title>
+  <meta name="description" content="Aurya unisce portafogli e beni fisici per calcolare il tuo Net Worth in tempo reale e lo ottimizza con modelli quantitativi. Unisciti alla waiting list.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎲</text></svg>">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Aurya — Il tuo Net Worth, ottimizzato con matematica">
+  <meta property="og:description" content="Aggrega conti, stima i tuoi beni fisici e ottimizza il portafoglio con modelli quantitativi.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://aurya.example/og-image.png">
+  <meta property="og:url" content="https://aurya.example">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg: #0b0d10;
+      --card: #11141a;
+      --muted: #9aa4b2;
+      --text: #e8eef7;
+      --brand: #6ee7ff;       /* ciano */
+      --brand-2:#7c5cff;      /* violet */
+      --accent:#22d3ee;
+      --ring: rgba(124,92,255,.35);
+      --ok:#34d399; --warn:#f59e0b;
+      --danger:#ef4444;
+      --radius: 14px;
+      --shadow: 0 8px 30px rgba(0,0,0,.45);
+    }
+    @media (prefers-color-scheme: light){
+      :root{ --bg:#f7f8fa; --card:#ffffff; --text:#0b0d10; --muted:#5b6b7b; --ring:rgba(124,92,255,.2) }
+      .hero::before{ opacity:.6 }
+    }
+    *{box-sizing:border-box} html,body{margin:0;height:100%}
+    body{
+      font-family:Inter,system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background: radial-gradient(1200px 600px at 70% -10%, rgba(124,92,255,.20), transparent 60%),
+                  radial-gradient(800px 400px at -10% 10%, rgba(34,211,238,.20), transparent 60%),
+                  var(--bg);
+      color:var(--text);
+      line-height:1.45;
+    }
+    a{color:var(--text); text-decoration: none}
+    .container{width:100%; max-width:1120px; margin:0 auto; padding:0 20px}
+
+    /* Header */
+    header{position:sticky; top:0; backdrop-filter:saturate(140%) blur(8px); background: color-mix(in oklab, var(--bg) 75%, transparent); z-index:40; border-bottom:1px solid rgba(255,255,255,.06)}
+    .nav{display:flex; align-items:center; justify-content:space-between; padding:14px 0}
+    .brand{display:flex; align-items:center; gap:12px; font-weight:800; letter-spacing:.4px}
+    .logo{width:36px; height:36px; border-radius:10px; background:
+      conic-gradient(from 200deg, var(--brand), var(--brand-2));
+      display:grid; place-items:center; color:#0b0d10; font-weight:900; box-shadow:var(--shadow)}
+    .nav a.mini{opacity:.8; transition:opacity .2s}
+    .nav a.mini:hover{opacity:1}
+    .cta{display:inline-grid; place-items:center; padding:10px 16px; border-radius:12px; font-weight:700; background:
+      linear-gradient(100deg, var(--brand-2), var(--accent));
+      box-shadow: 0 10px 24px rgba(124,92,255,.35); color:#0b0d10}
+    .cta:hover{transform: translateY(-1px); transition:transform .15s}
+
+    /* Hero */
+    .hero{position:relative; overflow:hidden; border-bottom:1px solid rgba(255,255,255,.06)}
+    .hero::before{
+      content:"";
+      position:absolute; inset:-20% -10% auto -10%;
+      height:60%;
+      background: radial-gradient(600px 260px at 60% 30%, rgba(126,58,242,.20), transparent 60%),
+                  radial-gradient(500px 220px at 20% 10%, rgba(34,211,238,.18), transparent 60%);
+      pointer-events:none; opacity:.35;
+    }
+    .hero-inner{display:grid; grid-template-columns:1.2fr 1fr; gap:40px; align-items:center; padding:64px 0 44px}
+    @media (max-width: 920px){ .hero-inner{grid-template-columns:1fr; padding:40px 0} }
+    .kicker{display:inline-flex; align-items:center; gap:10px; padding:6px 10px; border-radius:999px; background:rgba(124,92,255,.10); border:1px solid rgba(124,92,255,.25); color:#cbd5e1; font-weight:600; font-size:12.5px}
+    .title{font-size: clamp(34px, 5.4vw, 58px); font-weight:900; letter-spacing:-.02em; margin:14px 0}
+    .title strong{background: linear-gradient(100deg, var(--brand), var(--brand-2)); background-clip:text; -webkit-background-clip: text; color:transparent}
+    .lead{font-size: clamp(16px, 2.4vw, 19px); color:var(--muted); max-width: 56ch}
+    .points{display:grid; gap:10px; margin:20px 0 28px}
+    .point{display:flex; align-items:flex-start; gap:10px; color:#c8d2df}
+    .point .b{width:22px; height:22px; border-radius:6px; background:linear-gradient(120deg, var(--brand), var(--brand-2)); display:grid; place-items:center; font-weight:900; color:#0b0d10}
+    .hero-card{
+      background:linear-gradient(180deg, color-mix(in oklab, var(--card) 78%, transparent), color-mix(in oklab, var(--card) 92%, transparent));
+      border:1px solid rgba(255,255,255,.08); padding:18px; border-radius:16px; box-shadow:var(--shadow)
+    }
+    .meter{
+      margin:14px 0 10px; height:10px; background: #0c1117; border-radius:999px; overflow:hidden; border:1px solid rgba(255,255,255,.06)
+    }
+    .meter > span{display:block; height:100%; width:72%; background:linear-gradient(90deg, var(--brand-2), var(--accent))}
+    .mini-stat{display:flex; justify-content:space-between; font-size:12.5px; color:#9fb0c3}
+
+    /* Sections */
+    section{padding:64px 0}
+    .eyebrow{font-size:12px; text-transform:uppercase; letter-spacing:.14em; color:#98a6b8; font-weight:700}
+    h2{font-size: clamp(26px, 4.2vw, 40px); margin:8px 0 14px}
+    .grid{display:grid; gap:16px}
+    .grid-3{grid-template-columns: repeat(3,1fr)}
+    .grid-2{grid-template-columns: 1.2fr 1fr}
+    @media (max-width: 960px){ .grid-3,.grid-2{grid-template-columns:1fr} }
+
+    .card{
+      background: linear-gradient(180deg, color-mix(in oklab, var(--card) 86%, transparent), color-mix(in oklab, var(--card) 94%, transparent));
+      border:1px solid rgba(255,255,255,.08);
+      border-radius: var(--radius);
+      padding:18px;
+      box-shadow: var(--shadow);
+    }
+    .card h3{margin:6px 0 6px; font-size:20px}
+    .muted{color:var(--muted)}
+    .chip{display:inline-flex; gap:6px; align-items:center; padding:6px 10px; border-radius:999px; background:#0d121a; border:1px solid rgba(255,255,255,.08); font-size:12.5px}
+    .check{width:18px; height:18px; border-radius:6px; background:linear-gradient(120deg, var(--brand), var(--brand-2)); display:inline-grid; place-items:center; color:#0b0d10; font-weight:900}
+
+    /* Form */
+    .signup{display:grid; gap:10px; grid-template-columns:1.6fr .9fr}
+    @media (max-width: 720px){ .signup{grid-template-columns:1fr} }
+    input, button{
+      font: inherit; border-radius:12px; padding:14px 16px; border:1px solid rgba(255,255,255,.12); background:#0e131a; color:var(--text);
+      outline:none;
+    }
+    input:focus{border-color:var(--accent); box-shadow:0 0 0 6px var(--ring)}
+    button{cursor:pointer; border:none; font-weight:800; letter-spacing:.2px; background:linear-gradient(100deg, var(--brand-2), var(--accent)); color:#0b0d10}
+    button:hover{transform: translateY(-1px)}
+    .note{font-size:12px; color:#9fb0c3}
+
+    /* Marquee / logos */
+    .strip{display:flex; overflow:auto; gap:24px; padding:10px 0 4px}
+    .logo-badge{min-width:120px; height:46px; border-radius:12px; background:#0e131a; border:1px dashed rgba(255,255,255,.10); display:grid; place-items:center; color:#a9b6c7; font-weight:700}
+
+    /* Steps */
+    .step{display:flex; gap:14px}
+    .bullet{width:34px; height:34px; border-radius:10px; background:linear-gradient(120deg, var(--brand), var(--brand-2)); display:grid; place-items:center; color:#0b0d10; font-weight:900}
+
+    /* FAQ */
+    .faq details{border:1px solid rgba(255,255,255,.1); border-radius:14px; padding:16px; background:#0d1219}
+    .faq summary{cursor:pointer; font-weight:700; list-style:none}
+    .faq summary::-webkit-details-marker{display:none}
+    .faq details + details{margin-top:10px}
+    .faq p{color:#b8c3d3}
+
+    /* Footer */
+    footer{padding:34px 0 60px; border-top:1px solid rgba(255,255,255,.06); color:#9fb0c3}
+    .foot-grid{display:grid; grid-template-columns:1.2fr 1fr 1fr; gap:18px}
+    @media (max-width: 960px){ .foot-grid{grid-template-columns:1fr} }
+
+    /* Animations */
+    .reveal{opacity:0; transform: translateY(10px); transition: opacity .6s ease, transform .6s ease}
+    .reveal.visible{opacity:1; transform:none}
+    @media (prefers-reduced-motion: reduce){
+      .reveal{opacity:1; transform:none}
+      button:hover{transform:none}
+    }
+  </style>
+
+  <!-- JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"Organization",
+    "name":"Aurya",
+    "url":"https://aurya.example",
+    "logo":"https://aurya.example/logo.png",
+    "sameAs": [],
+    "description":"App che aggrega conti, stima beni fisici e ottimizza il portafoglio con modelli quantitativi."
+  }
+  </script>
+</head>
+
+<body>
+  <header>
+    <div class="container nav">
+      <div class="brand">
+        <div class="logo">
+          <img src="logo.jpg" alt="Aurya logo" style="width:100%; height:100%; object-fit:contain; border-radius:10px;">
+        </div>
+        <a href="#top" class="mini">Aurya</a>
+      </div>
+      <nav style="display:flex; gap:18px; align-items:center">
+        <a class="mini" href="#prodotto">Prodotto</a>
+        <a class="mini" href="#come-funziona">Come funziona</a>
+        <a class="mini" href="#sicurezza">Sicurezza</a>
+        <a class="mini" href="#faq">FAQ</a>
+        <a class="cta" href="#waiting-list">Join waiting list</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="container hero-inner">
+        <div>
+          <span class="kicker">Nuovo • Private Beta</span>
+          <h1 class="title">Il tuo <strong>Net Worth</strong>, unito e <strong>ottimizzato</strong>.</h1>
+          <p class="lead">
+            Aurya aggrega i tuoi conti e investimenti, stima il valore dei tuoi beni fisici
+            e usa modelli quantitativi (Markowitz, CVaR, Black-Litterman) per suggerirti come
+            riequilibrare secondo il tuo profilo rischio, preferenze settoriali e vincoli.
+          </p>
+
+          <div class="points">
+            <div class="point"><div class="b">✓</div><div>Aggregazione multi-conto & stima beni fisici</div></div>
+            <div class="point"><div class="b">✓</div><div>Ottimizzazione automatica con vincoli personalizzati</div></div>
+            <div class="point"><div class="b">✓</div><div>Privacy e sicurezza bancarie, dati sempre tuoi</div></div>
+          </div>
+
+          <a class="cta" href="#waiting-list">Entra nella waiting list</a>
+          <p class="note">Niente spam. Accessi scaglionati in base alla priorità.</p>
+        </div>
+
+        <div class="hero-card" aria-label="Anteprima interfaccia">
+          <div style="display:grid; gap:12px">
+            <div class="chip"><span class="check">✓</span>Net Worth stimato</div>
+            <div class="meter"><span style="width:76%"></span></div>
+            <div class="mini-stat">
+              <span>Copertura asset</span><span>76%</span>
+            </div>
+          </div>
+
+          <div class="grid grid-3" style="margin-top:12px">
+            <div class="card">
+              <strong>Conti & Broker</strong>
+              <p class="muted">Collega banche e broker (es. Fineco, Revolut, TR, ecc.)</p>
+            </div>
+            <div class="card">
+              <strong>Beni fisici</strong>
+              <p class="muted">Inserisci beni (tech, auto, libri, ecc.) con stime assistite.</p>
+            </div>
+            <div class="card">
+              <strong>Ottimizzazione</strong>
+              <p class="muted">Portafoglio target con rischio/rendimento coerente al profilo.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TRUST -->
+    <section aria-labelledby="trust">
+      <div class="container reveal">
+        <div class="eyebrow" id="trust">Integrazioni (beta, placeholder)</div>
+        <div class="strip" role="list" aria-label="Integrazioni">
+          <div class="logo-badge">PSD2/OpenBanking</div>
+          <div class="logo-badge">TrueLayer</div>
+          <div class="logo-badge">Tink</div>
+          <div class="logo-badge">Salt Edge</div>
+          <div class="logo-badge">Plaid EU</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRODOTTO -->
+    <section id="prodotto" aria-labelledby="prodotto-h">
+      <div class="container grid grid-3">
+        <div class="card reveal">
+          <h3>1) Aggrega</h3>
+          <p class="muted">Collega conti e broker via Open Banking. Import automatico di saldi, posizioni e movimenti.</p>
+          <ul class="muted">
+            <li>Supporto multi-istituto</li>
+            <li>Riconciliazione smart</li>
+            <li>Tagging transazioni</li>
+          </ul>
+        </div>
+
+        <div class="card reveal">
+          <h3>2) Stima</h3>
+          <p class="muted">Aggiungi beni fisici. Stime basate su mercato, usura e comparabili.</p>
+          <ul class="muted">
+            <li>Template guidati per categorie</li>
+            <li>Storico delle valutazioni</li>
+            <li>Deprezzamento/ rivalutazione</li>
+          </ul>
+        </div>
+
+        <div class="card reveal">
+          <h3>3) Ottimizza</h3>
+          <p class="muted">Scegli obiettivi (rendimento atteso, volatilità, vincoli ESG/settoriali) e ottieni un portafoglio target.</p>
+          <ul class="muted">
+            <li>Markowitz / CVaR / Black-Litterman</li>
+            <li>Backtest e scenari what-if</li>
+            <li>Ribilanciamenti suggeriti</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- COME FUNZIONA -->
+    <section id="come-funziona" aria-labelledby="how-h">
+      <div class="container grid grid-2">
+        <div class="reveal">
+          <span class="eyebrow">Come funziona</span>
+          <h2 id="how-h">Dati, preferenze e modelli. In tre passi.</h2>
+          <div class="step">
+            <div class="bullet">1</div>
+            <div>
+              <strong>Profilazione</strong>
+              <p class="muted">Valutiamo propensione al rischio, orizzonte, preferenze settoriali e vincoli.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="bullet">2</div>
+            <div>
+              <strong>Unificazione</strong>
+              <p class="muted">Un’unica vista su conti, investimenti e patrimonio fisico. Net Worth sempre aggiornato.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="bullet">3</div>
+            <div>
+              <strong>Ottimizzazione</strong>
+              <p class="muted">Calcolo del portafoglio target e suggerimenti di ribilanciamento con spiegazioni chiare.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card reveal">
+          <h3>Anteprima ribilanciamento</h3>
+          <p class="muted">Esempio: riduci concentrazione tech al 35% e inserisci bond 4–5% YTM per abbassare la volatilità.</p>
+          <div class="meter"><span style="width:62%"></span></div>
+          <div class="mini-stat"><span>Volatilità stimata</span><span>-18%</span></div>
+          <div class="mini-stat"><span>Drawdown atteso</span><span>-12% → -9%</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SICUREZZA -->
+    <section id="sicurezza" aria-labelledby="sec-h">
+      <div class="container grid grid-3">
+        <div class="card reveal">
+          <h3>Open Banking</h3>
+          <p class="muted">Connessioni PSD2 tramite provider certificati. SSO sicuro e permessi granulari.</p>
+        </div>
+        <div class="card reveal">
+          <h3>Privacy first</h3>
+          <p class="muted">Cifratura in transito e a riposo. Minimo necessario, dati sempre revocabili.</p>
+        </div>
+        <div class="card reveal">
+          <h3>Trasparenza</h3>
+          <p class="muted">Spieghiamo i modelli, i rischi e le assunzioni. Report esportabili.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- WAITING LIST -->
+    <section id="waiting-list" aria-labelledby="wl-h">
+      <div class="container reveal">
+        <span class="eyebrow">Accesso anticipato</span>
+        <h2 id="wl-h">Unisciti alla waiting list</h2>
+        <form id="wl-form" class="signup card" action="https://formspree.io/f/your-id-here" method="POST" novalidate>
+          <input type="email" id="email" name="email" placeholder="la-tua@email.com" aria-label="Email" required />
+          <button type="submit" aria-label="Iscriviti alla waiting list">Iscrivimi</button>
+          <input type="hidden" name="source" value="Aurya-landing">
+          <input type="hidden" name="plan" value="private-beta">
+        </form>
+        <p class="note" id="wl-note">Inserendo la tua email accetti <a href="#privacy">Privacy</a> & <a href="#termini">Termini</a>.</p>
+        <div id="wl-msg" role="status" aria-live="polite" class="note"></div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="faq" aria-labelledby="faq-h">
+      <div class="container reveal">
+        <span class="eyebrow">Domande frequenti</span>
+        <h2 id="faq-h">FAQ</h2>
+        <details>
+          <summary>È un consulente finanziario?</summary>
+          <p>No. Aurya è uno strumento informativo/educativo. Le decisioni restano dell’utente; potremmo integrare partner regolati per l’esecuzione.</p>
+        </details>
+        <details>
+          <summary>Come collegate i conti?</summary>
+          <p>Tramite provider PSD2/Open Banking (es. TrueLayer/Tink). Autorizzi l’accesso in sola lettura e puoi revocarlo quando vuoi.</p>
+        </details>
+        <details>
+          <summary>Come valutate i beni fisici?</summary>
+          <p>Template per categoria, curve di deprezzamento e comparabili di mercato. L’utente può sovrascrivere le stime.</p>
+        </details>
+        <details>
+          <summary>Quali modelli di ottimizzazione usate?</summary>
+          <p>Portafogli media-varianza (Markowitz), ottimizzazione CVaR e Black-Litterman, con vincoli personalizzabili (settori, ESG, liquidità).</p>
+        </details>
+      </div>
+    </section>
+
+  </main>
+
+  <footer id="privacy">
+    <div class="container foot-grid">
+      <div>
+        <div class="brand" style="margin-bottom:10px">
+          <div class="logo" style="width:38px; height:38px; border-radius:12px; overflow:hidden;">
+            <img src="logo.jpg" alt="Logo Aurya" style="width:100%; height:100%; object-fit:contain;">
+          </div>
+          <strong>Aurya</strong>
+        </div>
+        <p>© <span id="year"></span> Aurya. Tutti i diritti riservati.</p>
+      </div>
+      <div>
+        <strong>Legal</strong>
+        <ul style="list-style:none; padding:0; margin:8px 0 0">
+          <li><a href="#privacy">Privacy</a></li>
+          <li id="termini"><a href="#termini">Termini</a></li>
+          <li><a href="#faq">FAQ</a></li>
+        </ul>
+      </div>
+      <div>
+        <strong>Contatti</strong>
+        <ul style="list-style:none; padding:0; margin:8px 0 0">
+          <li><a href="mailto:hello@aurya.example">hello@aurya.example</a></li>
+          <li><a href="#waiting-list">Waiting list</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Smooth scroll
+    document.querySelectorAll('a[href^="#"]').forEach(a=>{
+      a.addEventListener('click', e=>{
+        const id = a.getAttribute('href').slice(1);
+        const el = document.getElementById(id);
+        if(el){ e.preventDefault(); el.scrollIntoView({behavior:'smooth', block:'start'}); }
+      })
+    });
+
+    // Reveal on scroll
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{
+        if(e.isIntersecting){ e.target.classList.add('visible'); io.unobserve(e.target); }
+      })
+    },{ threshold:.12 });
+    document.querySelectorAll('.reveal').forEach(el=> io.observe(el));
+
+    // Year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Waiting list validation + graceful submit
+    const form = document.getElementById('wl-form');
+    const email = document.getElementById('email');
+    const note = document.getElementById('wl-note');
+    const msg = document.getElementById('wl-msg');
+
+    const validEmail = v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+
+    form.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      msg.textContent = "";
+      const v = email.value.trim();
+
+      if(!validEmail(v)){
+        email.focus();
+        email.setAttribute('aria-invalid','true');
+        msg.style.color = 'var(--danger)';
+        msg.textContent = "Inserisci un'email valida.";
+        return;
+      }
+      email.removeAttribute('aria-invalid');
+
+      // POST to Formspree (replace action URL)
+      try{
+        const res = await fetch(form.action, {
+          method:'POST',
+          headers:{'Accept':'application/json'},
+          body: new FormData(form)
+        });
+        if(res.ok){
+          form.reset();
+          msg.style.color = 'var(--ok)';
+          msg.textContent = "Perfetto! Ti abbiamo aggiunto alla waiting list. Ti avviseremo al lancio.";
+          note.style.display='none';
+        }else{
+          msg.style.color = 'var(--warn)';
+          msg.textContent = "Quasi fatto. Problema temporaneo con il server — riprova tra poco.";
+        }
+      }catch(err){
+        msg.style.color = 'var(--warn)';
+        msg.textContent = "Connessione assente. Riprova quando sei online.";
+      }
+    });
+  </script>
+</body>
+</html>
