@@ -152,6 +152,81 @@
       .reveal{opacity:1; transform:none}
       button:hover{transform:none}
     }
+
+    .lang-wrapper { position: relative; }
+
+    .lang-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.2);
+      padding: 8px 14px;
+      border-radius: 14px;
+      cursor: pointer;
+      color: var(--text);
+      font-size: 14px;
+      transition: background 0.2s;
+    }
+
+    .lang-btn img {
+      width: 20px;
+      height: auto;
+      border-radius: 4px;
+    }
+
+    .lang-btn:hover {
+      background: rgba(255,255,255,0.14);
+    }
+
+    .lang-dropdown {
+      display: none;
+      position: absolute;
+      top: 46px;
+      right: 0;
+      background: #11141a;
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 14px;
+      width: 180px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+      padding: 6px;
+      z-index: 200;
+    }
+
+    .lang-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .lang-option img {
+      width: 20px;
+      border-radius: 4px;
+    }
+
+    .lang-option:hover {
+      background: rgba(255,255,255,0.08);
+    }
+
+    .lang-open #lang-dropdown {
+      display: block;
+    }
+
+    .lang-open #lang-arrow {
+      transform: rotate(180deg);
+      transition: transform 0.2s;
+    }
+
+    #lang-arrow {
+      transition: transform 0.2s;
+    }
+
+
   </style>
 
   <!-- JSON-LD -->
@@ -178,11 +253,34 @@
         <a href="#top" class="mini">Aurya</a>
       </div>
       <nav style="display:flex; gap:18px; align-items:center">
-        <a class="mini" href="#prodotto">Prodotto</a>
-        <a class="mini" href="#come-funziona">Come funziona</a>
-        <a class="mini" href="#sicurezza">Sicurezza</a>
-        <a class="mini" href="#faq">FAQ</a>
-        <a class="cta" href="#waiting-list">Join waiting list</a>
+        <a class="mini" href="#prodotto" data-i18n="nav_product">Prodotto</a>
+        <a class="mini" href="#come-funziona" data-i18n="nav_how">Come funziona</a>
+        <a class="mini" href="#sicurezza" data-i18n="nav_security">Sicurezza</a>
+        <a class="mini" href="#faq" data-i18n="nav_faq">FAQ</a>
+
+        <!-- Language switcher -->
+        <div class="lang-wrapper">
+          <button class="lang-btn" id="lang-btn">
+            <img id="lang-flag" src="https://flagcdn.com/w40/it.png" alt="Italy">
+            <span id="lang-label">Italy</span>
+            <svg id="lang-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none">
+              <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </button>
+
+          <div class="lang-dropdown" id="lang-dropdown">
+            <div class="lang-option" data-lang="it">
+              <img src="https://flagcdn.com/w40/it.png" alt="Italy">
+              Italy
+            </div>
+            <div class="lang-option" data-lang="en">
+              <img src="https://flagcdn.com/w40/gb.png" alt="United Kingdom">
+              United Kingdom
+            </div>
+          </div>
+        </div>
+
+        <a class="cta" href="#waiting-list" data-i18n="nav_waiting">Entra nella waiting list</a>
       </nav>
     </div>
   </header>
@@ -193,45 +291,56 @@
     <section class="hero">
       <div class="container hero-inner">
         <div>
-          <span class="kicker">Nuovo • Private Beta</span>
-          <h1 class="title">Il tuo <strong>Net Worth</strong>, unito e <strong>ottimizzato</strong>.</h1>
-          <p class="lead">
+          <span class="kicker" data-i18n="hero_kicker">Nuovo • Private Beta</span>
+          <h1 class="title" data-i18n="hero_title">
+            Il tuo <strong>Net Worth</strong>, unito e <strong>ottimizzato</strong>.
+          </h1>
+          <p class="lead" data-i18n="hero_lead">
             Aurya aggrega i tuoi conti e investimenti, stima il valore dei tuoi beni fisici
             e usa modelli quantitativi (Markowitz, CVaR, Black-Litterman) per suggerirti come
             riequilibrare secondo il tuo profilo rischio, preferenze settoriali e vincoli.
           </p>
 
           <div class="points">
-            <div class="point"><div class="b">✓</div><div>Aggregazione multi-conto & stima beni fisici</div></div>
-            <div class="point"><div class="b">✓</div><div>Ottimizzazione automatica con vincoli personalizzati</div></div>
-            <div class="point"><div class="b">✓</div><div>Privacy e sicurezza bancarie, dati sempre tuoi</div></div>
+            <div class="point">
+              <div class="b">✓</div>
+              <div data-i18n="hero_point1">Aggregazione multi-conto &amp; stima beni fisici</div>
+            </div>
+            <div class="point">
+              <div class="b">✓</div>
+              <div data-i18n="hero_point2">Ottimizzazione automatica con vincoli personalizzati</div>
+            </div>
+            <div class="point">
+              <div class="b">✓</div>
+              <div data-i18n="hero_point3">Privacy e sicurezza bancarie, dati sempre tuoi</div>
+            </div>
           </div>
 
-          <a class="cta" href="#waiting-list">Entra nella waiting list</a>
-          <p class="note">Niente spam. Accessi scaglionati in base alla priorità.</p>
+          <a class="cta" href="#waiting-list" data-i18n="hero_cta">Entra nella waiting list</a>
+          <p class="note" data-i18n="hero_note">Niente spam. Accessi scaglionati in base alla priorità.</p>
         </div>
 
         <div class="hero-card" aria-label="Anteprima interfaccia">
           <div style="display:grid; gap:12px">
-            <div class="chip"><span class="check">✓</span>Net Worth stimato</div>
+            <div class="chip"><span class="check">✓</span><span data-i18n="hero_chip_networth">Net Worth stimato</span></div>
             <div class="meter"><span style="width:76%"></span></div>
             <div class="mini-stat">
-              <span>Copertura asset</span><span>76%</span>
+              <span data-i18n="hero_meter_label">Copertura asset</span><span>76%</span>
             </div>
           </div>
 
           <div class="grid grid-3" style="margin-top:12px">
             <div class="card">
-              <strong>Conti & Broker</strong>
-              <p class="muted">Collega banche e broker (es. Fineco, Revolut, TR, ecc.)</p>
+              <strong data-i18n="hero_card1_title">Conti &amp; Broker</strong>
+              <p class="muted" data-i18n="hero_card1_body">Collega banche e broker (es. Fineco, Revolut, TR, ecc.)</p>
             </div>
             <div class="card">
-              <strong>Beni fisici</strong>
-              <p class="muted">Inserisci beni (tech, auto, libri, ecc.) con stime assistite.</p>
+              <strong data-i18n="hero_card2_title">Beni fisici</strong>
+              <p class="muted" data-i18n="hero_card2_body">Inserisci beni (tech, auto, libri, ecc.) con stime assistite.</p>
             </div>
             <div class="card">
-              <strong>Ottimizzazione</strong>
-              <p class="muted">Portafoglio target con rischio/rendimento coerente al profilo.</p>
+              <strong data-i18n="hero_card3_title">Ottimizzazione</strong>
+              <p class="muted" data-i18n="hero_card3_body">Portafoglio target con rischio/rendimento coerente al profilo.</p>
             </div>
           </div>
         </div>
@@ -241,7 +350,7 @@
     <!-- TRUST -->
     <section aria-labelledby="trust">
       <div class="container reveal">
-        <div class="eyebrow" id="trust">Integrazioni (beta, placeholder)</div>
+        <div class="eyebrow" id="trust" data-i18n="trust_eyebrow">Integrazioni (beta, placeholder)</div>
         <div class="strip" role="list" aria-label="Integrazioni">
           <div class="logo-badge">PSD2/OpenBanking</div>
           <div class="logo-badge">TrueLayer</div>
@@ -256,32 +365,32 @@
     <section id="prodotto" aria-labelledby="prodotto-h">
       <div class="container grid grid-3">
         <div class="card reveal">
-          <h3>1) Aggrega</h3>
-          <p class="muted">Collega conti e broker via Open Banking. Import automatico di saldi, posizioni e movimenti.</p>
+          <h3 data-i18n="product_card1_title">1) Aggrega</h3>
+          <p class="muted" data-i18n="product_card1_body">Collega conti e broker via Open Banking. Import automatico di saldi, posizioni e movimenti.</p>
           <ul class="muted">
-            <li>Supporto multi-istituto</li>
-            <li>Riconciliazione smart</li>
-            <li>Tagging transazioni</li>
+            <li data-i18n="product_card1_li1">Supporto multi-istituto</li>
+            <li data-i18n="product_card1_li2">Riconciliazione smart</li>
+            <li data-i18n="product_card1_li3">Tagging transazioni</li>
           </ul>
         </div>
 
         <div class="card reveal">
-          <h3>2) Stima</h3>
-          <p class="muted">Aggiungi beni fisici. Stime basate su mercato, usura e comparabili.</p>
+          <h3 data-i18n="product_card2_title">2) Stima</h3>
+          <p class="muted" data-i18n="product_card2_body">Aggiungi beni fisici. Stime basate su mercato, usura e comparabili.</p>
           <ul class="muted">
-            <li>Template guidati per categorie</li>
-            <li>Storico delle valutazioni</li>
-            <li>Deprezzamento/ rivalutazione</li>
+            <li data-i18n="product_card2_li1">Template guidati per categorie</li>
+            <li data-i18n="product_card2_li2">Storico delle valutazioni</li>
+            <li data-i18n="product_card2_li3">Deprezzamento/ rivalutazione</li>
           </ul>
         </div>
 
         <div class="card reveal">
-          <h3>3) Ottimizza</h3>
-          <p class="muted">Scegli obiettivi (rendimento atteso, volatilità, vincoli ESG/settoriali) e ottieni un portafoglio target.</p>
+          <h3 data-i18n="product_card3_title">3) Ottimizza</h3>
+          <p class="muted" data-i18n="product_card3_body">Scegli obiettivi (rendimento atteso, volatilità, vincoli ESG/settoriali) e ottieni un portafoglio target.</p>
           <ul class="muted">
-            <li>Markowitz / CVaR / Black-Litterman</li>
-            <li>Backtest e scenari what-if</li>
-            <li>Ribilanciamenti suggeriti</li>
+            <li data-i18n="product_card3_li1">Markowitz / CVaR / Black-Litterman</li>
+            <li data-i18n="product_card3_li2">Backtest e scenari what-if</li>
+            <li data-i18n="product_card3_li3">Ribilanciamenti suggeriti</li>
           </ul>
         </div>
       </div>
@@ -291,37 +400,37 @@
     <section id="come-funziona" aria-labelledby="how-h">
       <div class="container grid grid-2">
         <div class="reveal">
-          <span class="eyebrow">Come funziona</span>
-          <h2 id="how-h">Dati, preferenze e modelli. In tre passi.</h2>
+          <span class="eyebrow" data-i18n="how_eyebrow">Come funziona</span>
+          <h2 id="how-h" data-i18n="how_title">Dati, preferenze e modelli. In tre passi.</h2>
           <div class="step">
             <div class="bullet">1</div>
             <div>
-              <strong>Profilazione</strong>
-              <p class="muted">Valutiamo propensione al rischio, orizzonte, preferenze settoriali e vincoli.</p>
+              <strong data-i18n="step1_title">Profilazione</strong>
+              <p class="muted" data-i18n="step1_body">Valutiamo propensione al rischio, orizzonte, preferenze settoriali e vincoli.</p>
             </div>
           </div>
           <div class="step">
             <div class="bullet">2</div>
             <div>
-              <strong>Unificazione</strong>
-              <p class="muted">Un’unica vista su conti, investimenti e patrimonio fisico. Net Worth sempre aggiornato.</p>
+              <strong data-i18n="step2_title">Unificazione</strong>
+              <p class="muted" data-i18n="step2_body">Un’unica vista su conti, investimenti e patrimonio fisico. Net Worth sempre aggiornato.</p>
             </div>
           </div>
           <div class="step">
             <div class="bullet">3</div>
             <div>
-              <strong>Ottimizzazione</strong>
-              <p class="muted">Calcolo del portafoglio target e suggerimenti di ribilanciamento con spiegazioni chiare.</p>
+              <strong data-i18n="step3_title">Ottimizzazione</strong>
+              <p class="muted" data-i18n="step3_body">Calcolo del portafoglio target e suggerimenti di ribilanciamento con spiegazioni chiare.</p>
             </div>
           </div>
         </div>
 
         <div class="card reveal">
-          <h3>Anteprima ribilanciamento</h3>
-          <p class="muted">Esempio: riduci concentrazione tech al 35% e inserisci bond 4–5% YTM per abbassare la volatilità.</p>
+          <h3 data-i18n="rebalance_title">Anteprima ribilanciamento</h3>
+          <p class="muted" data-i18n="rebalance_body">Esempio: riduci concentrazione tech al 35% e inserisci bond 4–5% YTM per abbassare la volatilità.</p>
           <div class="meter"><span style="width:62%"></span></div>
-          <div class="mini-stat"><span>Volatilità stimata</span><span>-18%</span></div>
-          <div class="mini-stat"><span>Drawdown atteso</span><span>-12% → -9%</span></div>
+          <div class="mini-stat"><span data-i18n="rebalance_vol_label">Volatilità stimata</span><span>-18%</span></div>
+          <div class="mini-stat"><span data-i18n="rebalance_dd_label">Drawdown atteso</span><span>-12% → -9%</span></div>
         </div>
       </div>
     </section>
@@ -330,16 +439,16 @@
     <section id="sicurezza" aria-labelledby="sec-h">
       <div class="container grid grid-3">
         <div class="card reveal">
-          <h3>Open Banking</h3>
-          <p class="muted">Connessioni PSD2 tramite provider certificati. SSO sicuro e permessi granulari.</p>
+          <h3 data-i18n="security_card1_title">Open Banking</h3>
+          <p class="muted" data-i18n="security_card1_body">Connessioni PSD2 tramite provider certificati. SSO sicuro e permessi granulari.</p>
         </div>
         <div class="card reveal">
-          <h3>Privacy first</h3>
-          <p class="muted">Cifratura in transito e a riposo. Minimo necessario, dati sempre revocabili.</p>
+          <h3 data-i18n="security_card2_title">Privacy first</h3>
+          <p class="muted" data-i18n="security_card2_body">Cifratura in transito e a riposo. Minimo necessario, dati sempre revocabili.</p>
         </div>
         <div class="card reveal">
-          <h3>Trasparenza</h3>
-          <p class="muted">Spieghiamo i modelli, i rischi e le assunzioni. Report esportabili.</p>
+          <h3 data-i18n="security_card3_title">Trasparenza</h3>
+          <p class="muted" data-i18n="security_card3_body">Spieghiamo i modelli, i rischi e le assunzioni. Report esportabili.</p>
         </div>
       </div>
     </section>
@@ -347,15 +456,24 @@
     <!-- WAITING LIST -->
     <section id="waiting-list" aria-labelledby="wl-h">
       <div class="container reveal">
-        <span class="eyebrow">Accesso anticipato</span>
-        <h2 id="wl-h">Unisciti alla waiting list</h2>
+        <span class="eyebrow" id="wl-h" data-i18n="wl_eyebrow">Accesso anticipato</span>
+        <h2 data-i18n="wl_title">Unisciti alla waiting list</h2>
         <form id="wl-form" class="signup card" action="https://formspree.io/f/your-id-here" method="POST" novalidate>
-          <input type="email" id="email" name="email" placeholder="la-tua@email.com" aria-label="Email" required />
-          <button type="submit" aria-label="Iscriviti alla waiting list">Iscrivimi</button>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="la-tua@email.com"
+            aria-label="Email"
+            required
+          />
+          <button type="submit" aria-label="Iscriviti alla waiting list" data-i18n="wl_btn">Iscrivimi</button>
           <input type="hidden" name="source" value="Aurya-landing">
           <input type="hidden" name="plan" value="private-beta">
         </form>
-        <p class="note" id="wl-note">Inserendo la tua email accetti <a href="#privacy">Privacy</a> & <a href="#termini">Termini</a>.</p>
+        <p class="note" id="wl-note" data-i18n="wl_note">
+          Inserendo la tua email accetti <a href="#privacy">Privacy</a> &amp; <a href="#termini">Termini</a>.
+        </p>
         <div id="wl-msg" role="status" aria-live="polite" class="note"></div>
       </div>
     </section>
@@ -363,23 +481,23 @@
     <!-- FAQ -->
     <section id="faq" class="faq" aria-labelledby="faq-h">
       <div class="container reveal">
-        <span class="eyebrow">Domande frequenti</span>
-        <h2 id="faq-h">FAQ</h2>
+        <span class="eyebrow" data-i18n="faq_eyebrow">Domande frequenti</span>
+        <h2 id="faq-h" data-i18n="faq_title">FAQ</h2>
         <details>
-          <summary>È un consulente finanziario?</summary>
-          <p>No. Aurya è uno strumento informativo/educativo. Le decisioni restano dell’utente; potremmo integrare partner regolati per l’esecuzione.</p>
+          <summary data-i18n="faq1_q">È un consulente finanziario?</summary>
+          <p data-i18n="faq1_a">No. Aurya è uno strumento informativo/educativo. Le decisioni restano dell’utente; potremmo integrare partner regolati per l’esecuzione.</p>
         </details>
         <details>
-          <summary>Come collegate i conti?</summary>
-          <p>Tramite provider PSD2/Open Banking (es. TrueLayer/Tink). Autorizzi l’accesso in sola lettura e puoi revocarlo quando vuoi.</p>
+          <summary data-i18n="faq2_q">Come collegate i conti?</summary>
+          <p data-i18n="faq2_a">Tramite provider PSD2/Open Banking (es. TrueLayer/Tink). Autorizzi l’accesso in sola lettura e puoi revocarlo quando vuoi.</p>
         </details>
         <details>
-          <summary>Come valutate i beni fisici?</summary>
-          <p>Template per categoria, curve di deprezzamento e comparabili di mercato. L’utente può sovrascrivere le stime.</p>
+          <summary data-i18n="faq3_q">Come valutate i beni fisici?</summary>
+          <p data-i18n="faq3_a">Template per categoria, curve di deprezzamento e comparabili di mercato. L’utente può sovrascrivere le stime.</p>
         </details>
         <details>
-          <summary>Quali modelli di ottimizzazione usate?</summary>
-          <p>Portafogli media-varianza (Markowitz), ottimizzazione CVaR e Black-Litterman, con vincoli personalizzabili (settori, ESG, liquidità).</p>
+          <summary data-i18n="faq4_q">Quali modelli di ottimizzazione usate?</summary>
+          <p data-i18n="faq4_a">Portafogli media-varianza (Markowitz), ottimizzazione CVaR e Black-Litterman, con vincoli personalizzabili (settori, ESG, liquidità).</p>
         </details>
       </div>
     </section>
@@ -395,27 +513,261 @@
           </div>
           <strong>Aurya</strong>
         </div>
-        <p>© <span id="year"></span> Aurya. Tutti i diritti riservati.</p>
+        <p>© <span id="year"></span> Aurya. <span data-i18n="footer_rights">Tutti i diritti riservati.</span></p>
       </div>
       <div>
-        <strong>Legal</strong>
+        <strong data-i18n="footer_legal_title">Legal</strong>
         <ul style="list-style:none; padding:0; margin:8px 0 0">
-          <li><a href="#privacy">Privacy</a></li>
-          <li id="termini"><a href="#termini">Termini</a></li>
-          <li><a href="#faq">FAQ</a></li>
+          <li><a href="#privacy" data-i18n="footer_privacy">Privacy</a></li>
+          <li id="termini"><a href="#termini" data-i18n="footer_terms">Termini</a></li>
+          <li><a href="#faq" data-i18n="footer_faq">FAQ</a></li>
         </ul>
       </div>
       <div>
-        <strong>Contatti</strong>
+        <strong data-i18n="footer_contact_title">Contatti</strong>
         <ul style="list-style:none; padding:0; margin:8px 0 0">
           <li><a href="mailto:hello@aurya.example">hello@aurya.example</a></li>
-          <li><a href="#waiting-list">Waiting list</a></li>
+          <li><a href="#waiting-list" data-i18n="footer_waiting">Waiting list</a></li>
         </ul>
       </div>
     </div>
   </footer>
 
   <script>
+    // TRANSLATIONS
+    const translations = {
+      it: {
+        nav_product: "Prodotto",
+        nav_how: "Come funziona",
+        nav_security: "Sicurezza",
+        nav_faq: "FAQ",
+        nav_waiting: "Entra nella waiting list",
+
+        hero_kicker: "Nuovo • Private Beta",
+        hero_title: "Il tuo <strong>Net Worth</strong>, unito e <strong>ottimizzato</strong>.",
+        hero_lead: "Aurya aggrega i tuoi conti e investimenti, stima il valore dei tuoi beni fisici e usa modelli quantitativi (Markowitz, CVaR, Black-Litterman) per suggerirti come riequilibrare secondo il tuo profilo rischio, preferenze settoriali e vincoli.",
+        hero_point1: "Aggregazione multi-conto &amp; stima beni fisici",
+        hero_point2: "Ottimizzazione automatica con vincoli personalizzati",
+        hero_point3: "Privacy e sicurezza bancarie, dati sempre tuoi",
+        hero_cta: "Entra nella waiting list",
+        hero_note: "Niente spam. Accessi scaglionati in base alla priorità.",
+        hero_chip_networth: "Net Worth stimato",
+        hero_meter_label: "Copertura asset",
+        hero_card1_title: "Conti &amp; Broker",
+        hero_card1_body: "Collega banche e broker (es. Fineco, Revolut, TR, ecc.)",
+        hero_card2_title: "Beni fisici",
+        hero_card2_body: "Inserisci beni (tech, auto, libri, ecc.) con stime assistite.",
+        hero_card3_title: "Ottimizzazione",
+        hero_card3_body: "Portafoglio target con rischio/rendimento coerente al profilo.",
+
+        trust_eyebrow: "Integrazioni (beta, placeholder)",
+
+        product_card1_title: "1) Aggrega",
+        product_card1_body: "Collega conti e broker via Open Banking. Import automatico di saldi, posizioni e movimenti.",
+        product_card1_li1: "Supporto multi-istituto",
+        product_card1_li2: "Riconciliazione smart",
+        product_card1_li3: "Tagging transazioni",
+
+        product_card2_title: "2) Stima",
+        product_card2_body: "Aggiungi beni fisici. Stime basate su mercato, usura e comparabili.",
+        product_card2_li1: "Template guidati per categorie",
+        product_card2_li2: "Storico delle valutazioni",
+        product_card2_li3: "Deprezzamento/ rivalutazione",
+
+        product_card3_title: "3) Ottimizza",
+        product_card3_body: "Scegli obiettivi (rendimento atteso, volatilità, vincoli ESG/settoriali) e ottieni un portafoglio target.",
+        product_card3_li1: "Markowitz / CVaR / Black-Litterman",
+        product_card3_li2: "Backtest e scenari what-if",
+        product_card3_li3: "Ribilanciamenti suggeriti",
+
+        how_eyebrow: "Come funziona",
+        how_title: "Dati, preferenze e modelli. In tre passi.",
+        step1_title: "Profilazione",
+        step1_body: "Valutiamo propensione al rischio, orizzonte, preferenze settoriali e vincoli.",
+        step2_title: "Unificazione",
+        step2_body: "Un’unica vista su conti, investimenti e patrimonio fisico. Net Worth sempre aggiornato.",
+        step3_title: "Ottimizzazione",
+        step3_body: "Calcolo del portafoglio target e suggerimenti di ribilanciamento con spiegazioni chiare.",
+
+        rebalance_title: "Anteprima ribilanciamento",
+        rebalance_body: "Esempio: riduci concentrazione tech al 35% e inserisci bond 4–5% YTM per abbassare la volatilità.",
+        rebalance_vol_label: "Volatilità stimata",
+        rebalance_dd_label: "Drawdown atteso",
+
+        security_card1_title: "Open Banking",
+        security_card1_body: "Connessioni PSD2 tramite provider certificati. SSO sicuro e permessi granulari.",
+        security_card2_title: "Privacy first",
+        security_card2_body: "Cifratura in transito e a riposo. Minimo necessario, dati sempre revocabili.",
+        security_card3_title: "Trasparenza",
+        security_card3_body: "Spieghiamo i modelli, i rischi e le assunzioni. Report esportabili.",
+
+        wl_eyebrow: "Accesso anticipato",
+        wl_title: "Unisciti alla waiting list",
+        wl_note: 'Inserendo la tua email accetti <a href="#privacy">Privacy</a> &amp; <a href="#termini">Termini</a>.',
+        wl_btn: "Iscrivimi",
+        email_placeholder: "la-tua@email.com",
+        email_aria: "Email",
+        wl_btn_aria: "Iscriviti alla waiting list",
+
+        faq_eyebrow: "Domande frequenti",
+        faq_title: "FAQ",
+        faq1_q: "È un consulente finanziario?",
+        faq1_a: "No. Aurya è uno strumento informativo/educativo. Le decisioni restano dell’utente; potremmo integrare partner regolati per l’esecuzione.",
+        faq2_q: "Come collegate i conti?",
+        faq2_a: "Tramite provider PSD2/Open Banking (es. TrueLayer/Tink). Autorizzi l’accesso in sola lettura e puoi revocarlo quando vuoi.",
+        faq3_q: "Come valutate i beni fisici?",
+        faq3_a: "Template per categoria, curve di deprezzamento e comparabili di mercato. L’utente può sovrascrivere le stime.",
+        faq4_q: "Quali modelli di ottimizzazione usate?",
+        faq4_a: "Portafogli media-varianza (Markowitz), ottimizzazione CVaR e Black-Litterman, con vincoli personalizzabili (settori, ESG, liquidità).",
+
+        footer_legal_title: "Legal",
+        footer_contact_title: "Contatti",
+        footer_privacy: "Privacy",
+        footer_terms: "Termini",
+        footer_faq: "FAQ",
+        footer_waiting: "Waiting list",
+        footer_rights: "Tutti i diritti riservati.",
+
+        lang_label: "IT"
+      },
+
+      en: {
+        nav_product: "Product",
+        nav_how: "How it works",
+        nav_security: "Security",
+        nav_faq: "FAQ",
+        nav_waiting: "Join the waiting list",
+
+        hero_kicker: "New • Private Beta",
+        hero_title: "Your <strong>Net Worth</strong>, unified and <strong>optimized</strong>.",
+        hero_lead: "Aurya aggregates your accounts and investments, estimates the value of your physical assets and uses quantitative models (Markowitz, CVaR, Black-Litterman) to suggest how to rebalance according to your risk profile, sector preferences and constraints.",
+        hero_point1: "Multi-account aggregation &amp; physical assets estimation",
+        hero_point2: "Automatic optimization with custom constraints",
+        hero_point3: "Bank-grade privacy and security, your data stays yours",
+        hero_cta: "Join the waiting list",
+        hero_note: "No spam. Access is granted in waves based on priority.",
+        hero_chip_networth: "Estimated Net Worth",
+        hero_meter_label: "Asset coverage",
+        hero_card1_title: "Accounts &amp; Brokers",
+        hero_card1_body: "Connect banks and brokers (e.g. Fineco, Revolut, TR, etc.)",
+        hero_card2_title: "Physical assets",
+        hero_card2_body: "Add assets (tech, car, books, etc.) with assisted estimates.",
+        hero_card3_title: "Optimization",
+        hero_card3_body: "Target portfolio with risk/return aligned to your profile.",
+
+        trust_eyebrow: "Integrations (beta, placeholder)",
+
+        product_card1_title: "1) Aggregate",
+        product_card1_body: "Connect accounts and brokers via Open Banking. Automatic import of balances, positions and transactions.",
+        product_card1_li1: "Multi-institution support",
+        product_card1_li2: "Smart reconciliation",
+        product_card1_li3: "Transaction tagging",
+
+        product_card2_title: "2) Estimate",
+        product_card2_body: "Add physical assets. Estimates based on market, wear and comparables.",
+        product_card2_li1: "Guided templates by category",
+        product_card2_li2: "Valuation history",
+        product_card2_li3: "Depreciation / revaluation",
+
+        product_card3_title: "3) Optimize",
+        product_card3_body: "Choose objectives (expected return, volatility, ESG/sector constraints) and get a target portfolio.",
+        product_card3_li1: "Markowitz / CVaR / Black-Litterman",
+        product_card3_li2: "Backtests and what-if scenarios",
+        product_card3_li3: "Suggested rebalancing actions",
+
+        how_eyebrow: "How it works",
+        how_title: "Data, preferences and models. In three steps.",
+        step1_title: "Profiling",
+        step1_body: "We assess risk appetite, horizon, sector preferences and constraints.",
+        step2_title: "Unification",
+        step2_body: "A single view over accounts, investments and physical wealth. Net Worth always up to date.",
+        step3_title: "Optimization",
+        step3_body: "Target portfolio computation and rebalancing suggestions with clear explanations.",
+
+        rebalance_title: "Rebalancing preview",
+        rebalance_body: "Example: reduce tech concentration to 35% and add 4–5% YTM bonds to lower volatility.",
+        rebalance_vol_label: "Estimated volatility",
+        rebalance_dd_label: "Expected drawdown",
+
+        security_card1_title: "Open Banking",
+        security_card1_body: "PSD2 connections via certified providers. Secure SSO and granular permissions.",
+        security_card2_title: "Privacy first",
+        security_card2_body: "Encryption in transit and at rest. Minimal data, always revocable.",
+        security_card3_title: "Transparency",
+        security_card3_body: "We explain models, risks and assumptions. Exportable reports.",
+
+        wl_eyebrow: "Early access",
+        wl_title: "Join the waiting list",
+        wl_note: 'By entering your email you accept our <a href="#privacy">Privacy</a> &amp; <a href="#termini">Terms</a>.',
+        wl_btn: "Sign me up",
+        email_placeholder: "your@email.com",
+        email_aria: "Email",
+        wl_btn_aria: "Join the waiting list",
+
+        faq_eyebrow: "Frequently asked questions",
+        faq_title: "FAQ",
+        faq1_q: "Is it a financial advisor?",
+        faq1_a: "No. Aurya is an informational/educational tool. Decisions always remain with the user; we may integrate regulated partners for execution.",
+        faq2_q: "How do you connect accounts?",
+        faq2_a: "Through PSD2/Open Banking providers (e.g. TrueLayer/Tink). You authorize read-only access and can revoke it at any time.",
+        faq3_q: "How do you value physical assets?",
+        faq3_a: "Category templates, depreciation curves and market comparables. The user can override estimates.",
+        faq4_q: "Which optimization models do you use?",
+        faq4_a: "Mean-variance portfolios (Markowitz), CVaR optimization and Black-Litterman, with customizable constraints (sectors, ESG, liquidity).",
+
+        footer_legal_title: "Legal",
+        footer_contact_title: "Contacts",
+        footer_privacy: "Privacy",
+        footer_terms: "Terms",
+        footer_faq: "FAQ",
+        footer_waiting: "Waiting list",
+        footer_rights: "All rights reserved.",
+
+        lang_label: "EN"
+      }
+    };
+
+    let currentLang = "it";
+
+    function switchLanguage() {
+      currentLang = currentLang === "it" ? "en" : "it";
+      const dict = translations[currentLang];
+
+      // generic elements with data-i18n
+      document.querySelectorAll("[data-i18n]").forEach(el => {
+        const key = el.getAttribute("data-i18n");
+        if (dict[key]) {
+          el.innerHTML = dict[key];
+        }
+      });
+
+      // email placeholder + aria
+      const email = document.getElementById("email");
+      if (email && dict.email_placeholder) {
+        email.placeholder = dict.email_placeholder;
+        email.setAttribute("aria-label", dict.email_aria || "");
+      }
+
+      // waiting list button aria
+      const wlBtn = document.querySelector("#wl-form button[type='submit']");
+      if (wlBtn && dict.wl_btn_aria) {
+        wlBtn.setAttribute("aria-label", dict.wl_btn_aria);
+      }
+
+      // flag + label
+      const flag = document.getElementById("lang-flag");
+      const label = document.getElementById("lang-label");
+      if (flag) {
+        flag.src = currentLang === "it"
+          ? "https://flagcdn.com/w20/it.png"
+          : "https://flagcdn.com/w20/gb.png";
+        flag.alt = currentLang === "it" ? "Italiano" : "English";
+      }
+      if (label) {
+        label.textContent = dict.lang_label || currentLang.toUpperCase();
+      }
+    }
+
     // Smooth scroll
     document.querySelectorAll('a[href^="#"]').forEach(a=>{
       a.addEventListener('click', e=>{
@@ -438,7 +790,7 @@
 
     // Waiting list validation + graceful submit
     const form = document.getElementById('wl-form');
-    const email = document.getElementById('email');
+    const emailInput = document.getElementById('email');
     const note = document.getElementById('wl-note');
     const msg = document.getElementById('wl-msg');
 
@@ -447,16 +799,16 @@
     form.addEventListener('submit', async (e)=>{
       e.preventDefault();
       msg.textContent = "";
-      const v = email.value.trim();
+      const v = emailInput.value.trim();
 
       if(!validEmail(v)){
-        email.focus();
-        email.setAttribute('aria-invalid','true');
+        emailInput.focus();
+        emailInput.setAttribute('aria-invalid','true');
         msg.style.color = 'var(--danger)';
-        msg.textContent = "Inserisci un'email valida.";
+        msg.textContent = currentLang === "it" ? "Inserisci un'email valida." : "Please enter a valid email.";
         return;
       }
-      email.removeAttribute('aria-invalid');
+      emailInput.removeAttribute('aria-invalid');
 
       // POST to Formspree (replace action URL)
       try{
@@ -468,17 +820,81 @@
         if(res.ok){
           form.reset();
           msg.style.color = 'var(--ok)';
-          msg.textContent = "Perfetto! Ti abbiamo aggiunto alla waiting list. Ti avviseremo al lancio.";
+          msg.textContent = currentLang === "it"
+            ? "Perfetto! Ti abbiamo aggiunto alla waiting list. Ti avviseremo al lancio."
+            : "Great! We’ve added you to the waiting list. We’ll notify you at launch.";
           note.style.display='none';
         }else{
           msg.style.color = 'var(--warn)';
-          msg.textContent = "Quasi fatto. Problema temporaneo con il server — riprova tra poco.";
+          msg.textContent = currentLang === "it"
+            ? "Quasi fatto. Problema temporaneo con il server — riprova tra poco."
+            : "Almost done. Temporary server issue — please try again soon.";
         }
       }catch(err){
         msg.style.color = 'var(--warn)';
-        msg.textContent = "Connessione assente. Riprova quando sei online.";
+        msg.textContent = currentLang === "it"
+          ? "Connessione assente. Riprova quando sei online."
+          : "No connection. Please try again when you are online.";
       }
     });
+
+    // Language switch click
+    function applyLanguage(lang) {
+    currentLang = lang;
+    const dict = translations[currentLang];
+
+    // Apply translations
+    document.querySelectorAll("[data-i18n]").forEach(el => {
+      const key = el.getAttribute("data-i18n");
+      if (dict[key]) {
+        el.innerHTML = dict[key];
+      }
+    });
+
+    // Email placeholder + aria
+    const email = document.getElementById("email");
+    if (email && dict.email_placeholder) {
+      email.placeholder = dict.email_placeholder;
+      email.setAttribute("aria-label", dict.email_aria || "");
+    }
+
+    // Update flag + label
+    const flag = document.getElementById("lang-flag");
+    const label = document.getElementById("lang-label");
+
+    flag.src = lang === "it"
+      ? "https://flagcdn.com/w40/it.png"
+      : "https://flagcdn.com/w40/gb.png";
+
+    label.textContent = lang === "it" ? "Italy" : "United Kingdom";
+  }
+
+
+
+    // Dropdown button
+    const langBtn = document.getElementById("lang-btn");
+    const langDropdown = document.getElementById("lang-dropdown");
+
+    // Apertura/chiusura dropdown
+    langBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      langBtn.parentElement.classList.toggle("lang-open");
+    });
+
+    // Click fuori → chiudi menu
+    document.addEventListener("click", () => {
+      langBtn.parentElement.classList.remove("lang-open");
+    });
+
+    // Selezione lingua
+    document.querySelectorAll(".lang-option").forEach(option => {
+      option.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const lang = option.getAttribute("data-lang");
+        applyLanguage(lang);
+        langBtn.parentElement.classList.remove("lang-open");
+      });
+    }); 
   </script>
 </body>
 </html>
