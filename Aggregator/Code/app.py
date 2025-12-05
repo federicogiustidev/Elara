@@ -7,6 +7,10 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse
 from dotenv import load_dotenv
+from io import BytesIO
+from PyPDF2 import PdfReader
+import re
+from fastapi import UploadFile, File
 
 # ======================
 #  Config / env
@@ -83,6 +87,199 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+# ======================
+#  Helpers Trade Republic (PDF)
+# ======================
+
+def extract_text_from_pdf(file_bytes: bytes) -> str:
+    reader = PdfReader(BytesIO(file_bytes))
+    pages = []
+    for page in reader.pages:
+        pages.append(page.extract_text() or "")
+    return "\n".join(pages)
+
+
+def parse_tr_cash_statement(pdf_bytes: bytes) -> float:
+    """
+    Estrae il saldo finale del conto corrente Trade Republic
+    dall'estratto conto cassa (PDF).
+
+    Nel tuo file vediamo una tabella tipo:
+    'Conto corrente 2.646,02 € 4.528,82 € 2.458,21 € 4.716,63 €'
+    dove l'ultima cifra è il SALDO FINALE. 
+    """
+    text = extract_text_from_pdf(pdf_bytes)
+
+    # Cerco la riga che contiene "Conto corrente"
+    lines = text.splitlines()
+    for line in lines:
+        if "Conto corrente" in line:
+            # prendo tutti i numeri in formato europeo tipo 4.716,63
+            amounts = re.findall(r"(\d{1,3}(?:\.\d{3})*,\d{2})", line)
+            if amounts:
+                saldo_finale_str = amounts[-1]  # l'ultimo è il saldo finale
+                saldo_finale_str = saldo_finale_str.replace(".", "").replace(",", ".")
+                return float(saldo_finale_str)
+
+    # fallback: se non trovo la riga, provo dalla "PANORAMICA DEL SALDO"
+    # es: 'Citibank 4.716,63 €' 
+    for line in lines:
+        if "Citibank" in line:
+            amounts = re.findall(r"(\d{1,3}(?:\.\d{3})*,\d{2})", line)
+            if amounts:
+                saldo_str = amounts[-1].replace(".", "").replace(",", ".")
+                return float(saldo_str)
+
+    raise ValueError("Impossibile leggere il saldo dal PDF cash account.")
+
+
+def parse_tr_securities_statement(pdf_bytes: bytes) -> float:
+
+    """
+    Estrae il valore totale del portafoglio titoli dall'estratto conto titoli.
+
+    Nel tuo file c'è una riga:
+    'NUMERO DI POSIZIONI: 15 62.348,68 EUR'
+    dove l'ultima cifra è il valore di mercato complessivo. 
+    """
+    text = extract_text_from_pdf(pdf_bytes)
+    lines = text.splitlines()
+
+    for line in lines:
+        if "NUMERO DI POSIZIONI" in line:
+            # prendo l'ultimo numero in formato europeo
+            amounts = re.findall(r"(\d{1,3}(?:\.\d{3})*,\d{2})", line)
+            if amounts:
+                total_str = amounts[-1].replace(".", "").replace(",", ".")
+                return float(total_str)
+
+    raise ValueError("Impossibile leggere il valore totale titoli dal PDF securities.")
+
+
+def parse_tr_securities_statement_with_positions(pdf_bytes: bytes):
+    """
+    Parser robusto per portafogli Trade Republic.
+    Gestisce posizioni su più righe:
+    - Nome su 1-2 righe
+    - ISIN su riga separata
+    - Quantità in una riga dedicata
+    """
+    text = extract_text_from_pdf(pdf_bytes)
+    lines = [l.strip() for l in text.splitlines() if l.strip()]
+
+    # 1️⃣ Trova il totale titoli
+    total_value = 0.0
+    total_regex = re.compile(r"(\d{1,3}(?:\.\d{3})*,\d{2})\s*EUR")
+    for line in lines:
+        if "NUMERO DI POSIZIONI" in line:
+            m = total_regex.search(line)
+            if m:
+                total_value = float(m.group(1).replace(".", "").replace(",", "."))
+                break
+
+    # 2️⃣ Ricostruzione posizioni
+    positions = []
+    current = {"name": "", "isin": None, "qty": None}
+
+    for line in lines:
+        if "IVA" in line or "P. IVA" in line:
+          continue
+        # ISIN?
+        isin_match = re.search(r"\b([A-Z]{2}[A-Z0-9]{9}\d)\b", line)
+        if isin_match:
+            # se c'era una posizione in costruzione → salvala
+            if current["isin"]:
+                positions.append({
+                    "name": current["name"].strip(),
+                    "isin": current["isin"],
+                    "quantity": current["qty"] or 0.0,
+                    "market_value": 0.0
+                })
+                current = {"name": "", "isin": None, "qty": None}
+
+            current["isin"] = isin_match.group(0)
+            continue
+
+        # Quantità (numeri tipo 2202.87 o 14)
+        qty_match = re.search(r"(\d+(?:[\.,]\d+)?)$", line)
+        if qty_match and current["isin"]:
+            q = qty_match.group(1).replace(",", ".")
+            try:
+                current["qty"] = float(q)
+                continue
+            except:
+                pass
+
+        # Nome titolo (qualsiasi riga non ISIN e non quantità)
+        if current["isin"]:
+            current["name"] += " " + line
+
+    # aggiungi l’ultima posizione
+    if current["isin"]:
+        positions.append({
+            "name": current["name"].strip(),
+            "isin": current["isin"],
+            "quantity": current["qty"] or 0.0,
+            "market_value": 0.0
+        })
+
+    return total_value, positions
+
+@app.post("/api/brokers/traderepublic")
+async def upload_traderepublic(
+    cash_statement: UploadFile = File(...),
+    securities_statement: UploadFile = File(...)
+):
+    try:
+        cash_bytes = await cash_statement.read()
+        sec_bytes = await securities_statement.read()
+
+        cash_eur = parse_tr_cash_statement(cash_bytes)
+        securities_eur, positions = parse_tr_securities_statement_with_positions(sec_bytes)
+
+        total_tr = cash_eur + securities_eur
+
+        # 🔵 Salviamo tutto in memoria
+        STATE["trade_republic"] = {
+            "cash_eur": cash_eur,
+            "securities_eur": securities_eur,
+            "total_eur": total_tr,
+            "positions": positions
+        }
+
+        return HTMLResponse(
+            f"""
+            <h2>Importazione Trade Republic completata!</h2>
+            <p>Cash: {cash_eur} EUR</p>
+            <p>Titoli: {securities_eur} EUR</p>
+            <p><a href='/dashboard'>Vai alla dashboard</a></p>
+            """
+        )
+
+    except Exception as e:
+        return HTMLResponse(f"<pre>{e}</pre>", status_code=500)
+
+
+
+@app.get("/import_broker")
+def import_broker_page():
+    html = """
+    <h2>Importa Broker (Trade Republic)</h2>
+    <form action="/api/brokers/traderepublic" method="post" enctype="multipart/form-data">
+      <p>Seleziona PDF cash account:</p>
+      <input type="file" name="cash_statement" required />
+      <br><br>
+      <p>Seleziona PDF securities account:</p>
+      <input type="file" name="securities_statement" required />
+      <br><br>
+      <button type="submit">Importa</button>
+    </form>
+    <p><a href="/">← Torna alla home</a></p>
+    """
+    return HTMLResponse(html)
+
 
 
 # ======================
@@ -525,6 +722,10 @@ def index():
               <button class="btn-ghost" onclick="location.href='/dashboard'">
                 Apri dashboard sandbox
               </button>
+
+              <button class="btn-ghost" onclick="location.href='/import_broker'">
+                Importa broker (PDF/CSV)
+              </button>
             </div>
 
             <p class="hero-footnote">
@@ -631,6 +832,10 @@ def index():
     </html>
     """
     return HTMLResponse(html)
+
+
+
+    
 
 
 # ======================
@@ -791,12 +996,18 @@ def api_networth():
             # ---- TRANSAZIONI ----
             txs = []
             try:
+                connection_id = acc.get("connection_id")   # PRENDIAMO connection_id DALL'ACCOUNT
                 tx_resp = se_get(
                     "/transactions",
-                    {"account_id": account_id, "customer_id": customer_id},
+                    {
+                        "account_id": account_id,
+                        "customer_id": customer_id,
+                        "connection_id": connection_id
+                    }
                 )
                 txs = tx_resp.get("data", [])
-            except:
+            except Exception as e:
+                print("Errore transazioni:", e)
                 txs = []
 
             results.append({
@@ -816,10 +1027,16 @@ def api_networth():
                 ]
             })
 
+        tr = STATE.get("trade_republic")
+
+        if tr: 
+            total += tr["total_eur"]     
+
         return JSONResponse({
             "customer_id": customer_id,
             "total_balance": total,
-            "accounts": results
+            "accounts": results,
+            "trade_republic": tr
         })
 
     except Exception as e:
@@ -1107,6 +1324,48 @@ def dashboard():
           text-overflow: ellipsis;
         }
 
+        
+        /* ==========================
+        TRADE REPUBLIC POSITIONS TABLE
+        ========================== */
+        .tr-table {
+          margin-top: 8px;
+          border: 1px solid rgba(148,163,184,0.25);
+          border-radius: 12px;
+          background: rgba(15,23,42,0.95);
+          padding: 8px;
+        }
+
+        .tr-table-header {
+          display: grid;
+          grid-template-columns: 110px 1fr 60px 90px; /* ISIN | Nome | Qtà | Valore */
+          padding: 6px 8px;
+          color: #9ca3af;
+          border-bottom: 1px solid rgba(148,163,184,0.25);
+          font-size: 12px;
+        }
+
+        .tr-table-row {
+          display: grid;
+          grid-template-columns: 110px 1fr 60px 90px;
+          padding: 6px 8px;
+          font-size: 12px;
+          border-bottom: 1px solid rgba(148,163,184,0.12);
+        }
+
+        .tr-table-row:last-child {
+          border-bottom: none;
+        }
+
+        /* celle: testo su una riga con "..." se troppo lungo */
+        .tr-table-header span,
+        .tr-table-row span {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+
         .pill-small {
           font-size: 10px;
           padding: 2px 6px;
@@ -1281,6 +1540,97 @@ def dashboard():
                 accGrid.appendChild(div);
               });
             }
+
+            // ---- TRADE REPUBLIC CARD ----
+            if (data.trade_republic) {
+                const tr = data.trade_republic;
+
+                const accGrid = document.getElementById('accounts-grid');
+
+                const div = document.createElement('div');
+                div.className = 'account-card';
+
+                div.innerHTML = `
+                    <div class="account-top">
+                        <div>
+                            <div class="account-name">Trade Republic</div>
+                            <div class="account-provider">Broker</div>
+                        </div>
+                        <div class="account-balance">${fmtCurrency(tr.total_eur)}</div>
+                    </div>
+                    <div class="muted">
+                        Cash: ${fmtCurrency(tr.cash_eur)}<br>
+                        Titoli: ${fmtCurrency(tr.securities_eur)}
+                    </div>
+                `;
+
+                accGrid.appendChild(div);
+            }
+
+            // ---- TRADE REPUBLIC POSITIONS (inside card) ----
+            if (data.trade_republic && data.trade_republic.positions) {
+                const tr = data.trade_republic;
+
+                // recuperiamo l’ULTIMA card (che è quella di Trade Republic)
+                const cards = document.querySelectorAll('.account-card');
+                const trCard = cards[cards.length - 1];
+
+                // contenitore posizioni
+                const positionsContainer = document.createElement('div');
+                positionsContainer.style.marginTop = "10px";
+
+                // toggle
+                const toggleBtn = document.createElement('div');
+                toggleBtn.textContent = "▼ Mostra posizioni";
+                toggleBtn.style.fontSize = "12px";
+                toggleBtn.style.cursor = "pointer";
+                toggleBtn.style.color = "#9ca3af";
+                toggleBtn.style.marginBottom = "6px";
+
+                const tableWrapper = document.createElement('div');
+                tableWrapper.className = "tr-table";
+                tableWrapper.style.display = "none";
+
+                // header
+                const header = document.createElement("div");
+                header.className = "tr-table-header";
+                header.innerHTML = `
+                    <span>ISIN</span>
+                    <span>Nome</span>
+                    <span>Qtà</span>
+                `;
+                tableWrapper.appendChild(header);
+
+                // rows
+                tr.positions.forEach(p => {
+                    const row = document.createElement("div");
+                    row.className = "tr-table-row";
+
+                    row.innerHTML = `
+                        <span>${p.isin}</span>
+                        <span>${p.name}</span>
+                        <span>${p.quantity}</span>
+                    `;
+
+                    tableWrapper.appendChild(row);
+                });
+
+                toggleBtn.onclick = () => {
+                    if (tableWrapper.style.display === "none") {
+                        tableWrapper.style.display = "block";
+                        toggleBtn.textContent = "▲ Nascondi posizioni";
+                    } else {
+                        tableWrapper.style.display = "none";
+                        toggleBtn.textContent = "▼ Mostra posizioni";
+                    }
+                };
+
+                positionsContainer.appendChild(toggleBtn);
+                positionsContainer.appendChild(tableWrapper);
+                trCard.appendChild(positionsContainer); // <---- QUESTO È IL PUNTO CHIAVE
+            }
+
+
 
             // ---- Transactions ----
             const allTx = [];
