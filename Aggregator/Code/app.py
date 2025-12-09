@@ -78,7 +78,7 @@ def se_get(path: str, params: Optional[Dict[str, Any]] = None) -> Dict[str, Any]
 # FastAPI
 # ======================
 
-app = FastAPI(title="Aurya – Salt Edge MVP")
+app = FastAPI(title="Elara – Salt Edge MVP")
 
 app.add_middleware(
     CORSMiddleware,
@@ -88,6 +88,23 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+def se_delete(path: str, params: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    url = BASE_URL + path
+    print(f"SE DELETE {url} params={params}")
+    resp = requests.delete(
+        url,
+        headers=COMMON_HEADERS,
+        params=params or {},
+        timeout=30,
+    )
+    print("SE STATUS:", resp.status_code)
+    print("SE BODY:", resp.text[:500])
+    # se vuoi, puoi non fare raise_for_status sul 404
+    resp.raise_for_status()
+    if resp.text:
+        return resp.json()
+    return {}
 
 # ======================
 #  Helpers Trade Republic (PDF)
@@ -102,29 +119,16 @@ def extract_text_from_pdf(file_bytes: bytes) -> str:
 
 
 def parse_tr_cash_statement(pdf_bytes: bytes) -> float:
-    """
-    Estrae il saldo finale del conto corrente Trade Republic
-    dall'estratto conto cassa (PDF).
-
-    Nel tuo file vediamo una tabella tipo:
-    'Conto corrente 2.646,02 € 4.528,82 € 2.458,21 € 4.716,63 €'
-    dove l'ultima cifra è il SALDO FINALE. 
-    """
     text = extract_text_from_pdf(pdf_bytes)
-
-    # Cerco la riga che contiene "Conto corrente"
     lines = text.splitlines()
     for line in lines:
         if "Conto corrente" in line:
-            # prendo tutti i numeri in formato europeo tipo 4.716,63
             amounts = re.findall(r"(\d{1,3}(?:\.\d{3})*,\d{2})", line)
             if amounts:
-                saldo_finale_str = amounts[-1]  # l'ultimo è il saldo finale
+                saldo_finale_str = amounts[-1]
                 saldo_finale_str = saldo_finale_str.replace(".", "").replace(",", ".")
                 return float(saldo_finale_str)
 
-    # fallback: se non trovo la riga, provo dalla "PANORAMICA DEL SALDO"
-    # es: 'Citibank 4.716,63 €' 
     for line in lines:
         if "Citibank" in line:
             amounts = re.findall(r"(\d{1,3}(?:\.\d{3})*,\d{2})", line)
@@ -136,20 +140,11 @@ def parse_tr_cash_statement(pdf_bytes: bytes) -> float:
 
 
 def parse_tr_securities_statement(pdf_bytes: bytes) -> float:
-
-    """
-    Estrae il valore totale del portafoglio titoli dall'estratto conto titoli.
-
-    Nel tuo file c'è una riga:
-    'NUMERO DI POSIZIONI: 15 62.348,68 EUR'
-    dove l'ultima cifra è il valore di mercato complessivo. 
-    """
     text = extract_text_from_pdf(pdf_bytes)
     lines = text.splitlines()
 
     for line in lines:
         if "NUMERO DI POSIZIONI" in line:
-            # prendo l'ultimo numero in formato europeo
             amounts = re.findall(r"(\d{1,3}(?:\.\d{3})*,\d{2})", line)
             if amounts:
                 total_str = amounts[-1].replace(".", "").replace(",", ".")
@@ -159,17 +154,9 @@ def parse_tr_securities_statement(pdf_bytes: bytes) -> float:
 
 
 def parse_tr_securities_statement_with_positions(pdf_bytes: bytes):
-    """
-    Parser robusto per portafogli Trade Republic.
-    Gestisce posizioni su più righe:
-    - Nome su 1-2 righe
-    - ISIN su riga separata
-    - Quantità in una riga dedicata
-    """
     text = extract_text_from_pdf(pdf_bytes)
     lines = [l.strip() for l in text.splitlines() if l.strip()]
 
-    # 1️⃣ Trova il totale titoli
     total_value = 0.0
     total_regex = re.compile(r"(\d{1,3}(?:\.\d{3})*,\d{2})\s*EUR")
     for line in lines:
@@ -179,17 +166,14 @@ def parse_tr_securities_statement_with_positions(pdf_bytes: bytes):
                 total_value = float(m.group(1).replace(".", "").replace(",", "."))
                 break
 
-    # 2️⃣ Ricostruzione posizioni
     positions = []
     current = {"name": "", "isin": None, "qty": None}
 
     for line in lines:
         if "IVA" in line or "P. IVA" in line:
           continue
-        # ISIN?
         isin_match = re.search(r"\b([A-Z]{2}[A-Z0-9]{9}\d)\b", line)
         if isin_match:
-            # se c'era una posizione in costruzione → salvala
             if current["isin"]:
                 positions.append({
                     "name": current["name"].strip(),
@@ -202,7 +186,6 @@ def parse_tr_securities_statement_with_positions(pdf_bytes: bytes):
             current["isin"] = isin_match.group(0)
             continue
 
-        # Quantità (numeri tipo 2202.87 o 14)
         qty_match = re.search(r"(\d+(?:[\.,]\d+)?)$", line)
         if qty_match and current["isin"]:
             q = qty_match.group(1).replace(",", ".")
@@ -212,11 +195,9 @@ def parse_tr_securities_statement_with_positions(pdf_bytes: bytes):
             except:
                 pass
 
-        # Nome titolo (qualsiasi riga non ISIN e non quantità)
         if current["isin"]:
             current["name"] += " " + line
 
-    # aggiungi l’ultima posizione
     if current["isin"]:
         positions.append({
             "name": current["name"].strip(),
@@ -241,7 +222,6 @@ async def upload_traderepublic(
 
         total_tr = cash_eur + securities_eur
 
-        # 🔵 Salviamo tutto in memoria
         STATE["trade_republic"] = {
             "cash_eur": cash_eur,
             "securities_eur": securities_eur,
@@ -251,39 +231,324 @@ async def upload_traderepublic(
 
         return HTMLResponse(
             f"""
-            <h2>Importazione Trade Republic completata!</h2>
-            <p>Cash: {cash_eur} EUR</p>
-            <p>Titoli: {securities_eur} EUR</p>
-            <p><a href='/dashboard'>Vai alla dashboard</a></p>
+            <!doctype html>
+            <html lang="it">
+            <head>
+              <meta charset="utf-8" />
+              <title>Importazione completata - Elara</title>
+              <style>
+                body {{
+                  margin: 0;
+                  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+                  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+                  color: #f1f5f9;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  min-height: 100vh;
+                }}
+                .container {{
+                  background: rgba(30, 41, 59, 0.6);
+                  backdrop-filter: blur(20px);
+                  border: 1px solid rgba(148, 163, 184, 0.2);
+                  border-radius: 24px;
+                  padding: 48px;
+                  max-width: 500px;
+                  text-align: center;
+                  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+                }}
+                .icon {{
+                  width: 64px;
+                  height: 64px;
+                  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+                  border-radius: 50%;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  margin: 0 auto 24px;
+                  font-size: 32px;
+                }}
+                h2 {{
+                  margin: 0 0 16px;
+                  font-size: 28px;
+                  font-weight: 600;
+                }}
+                .stats {{
+                  background: rgba(15, 23, 42, 0.5);
+                  border-radius: 16px;
+                  padding: 24px;
+                  margin: 24px 0;
+                  border: 1px solid rgba(148, 163, 184, 0.1);
+                }}
+                .stat-row {{
+                  display: flex;
+                  justify-content: space-between;
+                  margin: 12px 0;
+                  font-size: 15px;
+                }}
+                .stat-label {{
+                  color: #94a3b8;
+                }}
+                .stat-value {{
+                  font-weight: 600;
+                }}
+                a {{
+                  display: inline-block;
+                  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+                  color: white;
+                  text-decoration: none;
+                  padding: 14px 32px;
+                  border-radius: 12px;
+                  font-weight: 500;
+                  margin-top: 24px;
+                  transition: transform 0.2s, box-shadow 0.2s;
+                  box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.4);
+                }}
+                a:hover {{
+                  transform: translateY(-2px);
+                  box-shadow: 0 15px 30px -5px rgba(59, 130, 246, 0.5);
+                }}
+              </style>
+            </head>
+            <body>
+              <div class="container">
+                <div class="icon">✓</div>
+                <h2>Importazione completata</h2>
+                <p style="color: #94a3b8; margin: 0;">Trade Republic è stato collegato con successo</p>
+                <div class="stats">
+                  <div class="stat-row">
+                    <span class="stat-label">Liquidità</span>
+                    <span class="stat-value">{cash_eur:,.2f} €</span>
+                  </div>
+                  <div class="stat-row">
+                    <span class="stat-label">Titoli</span>
+                    <span class="stat-value">{securities_eur:,.2f} €</span>
+                  </div>
+                  <div class="stat-row" style="border-top: 1px solid rgba(148, 163, 184, 0.1); padding-top: 12px; margin-top: 12px;">
+                    <span class="stat-label">Totale</span>
+                    <span class="stat-value" style="color: #3b82f6; font-size: 18px;">{total_tr:,.2f} €</span>
+                  </div>
+                </div>
+                <a href='/dashboard'>Vai alla Dashboard</a>
+              </div>
+            </body>
+            </html>
             """
         )
 
     except Exception as e:
-        return HTMLResponse(f"<pre>{e}</pre>", status_code=500)
+        return HTMLResponse(f"""
+            <!doctype html>
+            <html lang="it">
+            <head>
+              <meta charset="utf-8" />
+              <title>Errore - Elara</title>
+              <style>
+                body {{
+                  margin: 0;
+                  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+                  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+                  color: #f1f5f9;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  min-height: 100vh;
+                  padding: 20px;
+                }}
+                .container {{
+                  background: rgba(30, 41, 59, 0.6);
+                  backdrop-filter: blur(20px);
+                  border: 1px solid rgba(248, 113, 113, 0.3);
+                  border-radius: 24px;
+                  padding: 48px;
+                  max-width: 500px;
+                  text-align: center;
+                }}
+                pre {{
+                  background: rgba(15, 23, 42, 0.8);
+                  padding: 20px;
+                  border-radius: 12px;
+                  text-align: left;
+                  overflow-x: auto;
+                  color: #f87171;
+                  font-size: 13px;
+                }}
+              </style>
+            </head>
+            <body>
+              <div class="container">
+                <h2 style="color: #f87171;">Errore durante l'importazione</h2>
+                <pre>{e}</pre>
+              </div>
+            </body>
+            </html>
+        """, status_code=500)
 
 
 
 @app.get("/import_broker")
 def import_broker_page():
     html = """
-    <h2>Importa Broker (Trade Republic)</h2>
-    <form action="/api/brokers/traderepublic" method="post" enctype="multipart/form-data">
-      <p>Seleziona PDF cash account:</p>
-      <input type="file" name="cash_statement" required />
-      <br><br>
-      <p>Seleziona PDF securities account:</p>
-      <input type="file" name="securities_statement" required />
-      <br><br>
-      <button type="submit">Importa</button>
-    </form>
-    <p><a href="/">← Torna alla home</a></p>
+    <!doctype html>
+    <html lang="it">
+    <head>
+      <meta charset="utf-8" />
+      <title>Importa Broker - Elara</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+          background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+          color: #f1f5f9;
+          min-height: 100vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 20px;
+        }
+        
+        .container {
+          background: rgba(30, 41, 59, 0.6);
+          backdrop-filter: blur(20px);
+          border: 1px solid rgba(148, 163, 184, 0.2);
+          border-radius: 24px;
+          padding: 48px;
+          max-width: 600px;
+          width: 100%;
+          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        
+        h2 {
+          font-size: 28px;
+          font-weight: 600;
+          margin-bottom: 12px;
+          background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+        }
+        
+        .subtitle {
+          color: #94a3b8;
+          margin-bottom: 32px;
+          font-size: 15px;
+        }
+        
+        form {
+          display: flex;
+          flex-direction: column;
+          gap: 24px;
+        }
+        
+        .file-input-group {
+          background: rgba(15, 23, 42, 0.5);
+          border: 2px dashed rgba(148, 163, 184, 0.3);
+          border-radius: 16px;
+          padding: 32px;
+          text-align: center;
+          transition: all 0.3s;
+          cursor: pointer;
+        }
+        
+        .file-input-group:hover {
+          border-color: rgba(59, 130, 246, 0.5);
+          background: rgba(15, 23, 42, 0.7);
+        }
+        
+        .file-input-group label {
+          display: block;
+          color: #cbd5e1;
+          font-weight: 500;
+          margin-bottom: 12px;
+          font-size: 15px;
+        }
+        
+        input[type="file"] {
+          width: 100%;
+          padding: 12px;
+          background: rgba(30, 41, 59, 0.8);
+          border: 1px solid rgba(148, 163, 184, 0.2);
+          border-radius: 12px;
+          color: #f1f5f9;
+          font-size: 14px;
+          cursor: pointer;
+        }
+        
+        input[type="file"]::file-selector-button {
+          background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+          color: white;
+          border: none;
+          padding: 8px 16px;
+          border-radius: 8px;
+          cursor: pointer;
+          font-weight: 500;
+          margin-right: 12px;
+        }
+        
+        button {
+          background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+          color: white;
+          border: none;
+          padding: 16px 32px;
+          border-radius: 12px;
+          font-size: 16px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: transform 0.2s, box-shadow 0.2s;
+          box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.4);
+        }
+        
+        button:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 15px 30px -5px rgba(59, 130, 246, 0.5);
+        }
+        
+        .back-link {
+          display: inline-block;
+          margin-top: 24px;
+          color: #94a3b8;
+          text-decoration: none;
+          font-size: 14px;
+          transition: color 0.2s;
+        }
+        
+        .back-link:hover {
+          color: #cbd5e1;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <h2>Importa Trade Republic</h2>
+        <p class="subtitle">Carica i tuoi estratti conto in formato PDF</p>
+        
+        <form action="/api/brokers/traderepublic" method="post" enctype="multipart/form-data">
+          <div class="file-input-group">
+            <label for="cash">📄 Estratto Conto Cassa</label>
+            <input type="file" id="cash" name="cash_statement" accept=".pdf" required />
+          </div>
+          
+          <div class="file-input-group">
+            <label for="securities">📊 Estratto Conto Titoli</label>
+            <input type="file" id="securities" name="securities_statement" accept=".pdf" required />
+          </div>
+          
+          <button type="submit">Importa Estratti Conto</button>
+        </form>
+        
+        <a href="/" class="back-link">← Torna alla home</a>
+      </div>
+    </body>
+    </html>
     """
     return HTMLResponse(html)
 
 
 
 # ======================
-#  HOME (stile sito Aurya)
+#  HOME
 # ======================
 
 @app.get("/")
@@ -295,498 +560,463 @@ def index():
     <html lang="it">
     <head>
       <meta charset="utf-8" />
-      <title>Aurya – Net Worth unito e ottimizzato</title>
+      <title>Elara – Wealth Intelligence Platform</title>
       <meta name="viewport" content="width=device-width, initial-scale=1" />
       <style>
-        :root {{
-          --bg: #020617;
-          --bg-elevated: #02081f;
-          --card: #020617;
-          --card-soft: #020617;
-          --accent: #4f46e5;
-          --accent-soft: rgba(79,70,229,0.25);
-          --accent-2: #22d3ee;
-          --border-subtle: rgba(148,163,184,0.25);
-          --text-main: #e5e7eb;
-          --text-muted: #9ca3af;
-          --radius-xl: 24px;
-          --radius-lg: 18px;
-          --shadow-soft: 0 18px 45px rgba(15,23,42,0.75);
-        }}
-
         * {{
-          box-sizing: border-box;
           margin: 0;
           padding: 0;
+          box-sizing: border-box;
         }}
 
         body {{
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+          background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+          color: #f1f5f9;
           min-height: 100vh;
-          font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
-                       "Helvetica Neue", Arial, sans-serif;
-          color: var(--text-main);
-          background:
-            radial-gradient(circle at top left, rgba(56,189,248,0.15), transparent 55%),
-            radial-gradient(circle at top right, rgba(129,140,248,0.18), transparent 60%),
-            radial-gradient(circle at bottom, rgba(30,64,175,0.55), #020617 70%);
-          background-attachment: fixed;
+          overflow-x: hidden;
         }}
 
-        .shell {{
-          max-width: 1120px;
+        .bg-animation {{
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          z-index: 0;
+          opacity: 0.4;
+          pointer-events: none;
+        }}
+
+        .bg-gradient {{
+          position: absolute;
+          border-radius: 50%;
+          filter: blur(80px);
+          animation: float 8s ease-in-out infinite;
+        }}
+
+        .gradient-1 {{
+          width: 500px;
+          height: 500px;
+          background: radial-gradient(circle, #3b82f6 0%, transparent 70%);
+          top: -250px;
+          right: -250px;
+        }}
+
+        .gradient-2 {{
+          width: 400px;
+          height: 400px;
+          background: radial-gradient(circle, #8b5cf6 0%, transparent 70%);
+          bottom: -200px;
+          left: -200px;
+          animation-delay: 2s;
+        }}
+
+        @keyframes float {{
+          0%, 100% {{ transform: translateY(0) rotate(0deg); }}
+          50% {{ transform: translateY(-20px) rotate(5deg); }}
+        }}
+
+        .container {{
+          max-width: 1280px;
           margin: 0 auto;
-          padding: 28px 20px 64px;
+          padding: 0 24px;
+          position: relative;
+          z-index: 1;
         }}
 
-        /* NAVBAR */
-
-        .nav {{
+        nav {{
           display: flex;
-          align-items: center;
           justify-content: space-between;
-          margin-bottom: 32px;
+          align-items: center;
+          padding: 24px 0;
+          margin-bottom: 80px;
         }}
 
-        .nav-left {{
+        .logo {{
           display: flex;
           align-items: center;
-          gap: 14px;
+          gap: 12px;
+          font-size: 24px;
+          font-weight: 700;
         }}
 
-        .logo-pill {{
-          width: 32px;
-          height: 32px;
-          border-radius: 999px;
-          background: radial-gradient(circle at 20% 0%, #22d3ee, transparent 55%),
-                      radial-gradient(circle at 80% 100%, #4f46e5, transparent 60%);
+        .logo-icon {{
+          width: 40px;
+          height: 40px;
+          background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+          border-radius: 12px;
           display: flex;
           align-items: center;
           justify-content: center;
-          box-shadow: 0 0 0 1px rgba(148,163,184,0.18), 0 12px 32px rgba(15,23,42,0.8);
-        }}
-
-        .logo-pill span {{
-          font-size: 18px;
-        }}
-
-        .nav-title {{
-          font-weight: 600;
-          letter-spacing: 0.02em;
-        }}
-
-        .nav-badge {{
-          font-size: 11px;
-          padding: 4px 10px;
-          border-radius: 999px;
-          background: rgba(15,23,42,0.9);
-          border: 1px solid rgba(148,163,184,0.35);
-          color: var(--text-muted);
+          font-size: 20px;
+          box-shadow: 0 8px 16px rgba(59, 130, 246, 0.3);
         }}
 
         .nav-links {{
           display: flex;
-          gap: 16px;
+          gap: 24px;
           align-items: center;
-          font-size: 13px;
         }}
 
         .nav-link {{
-          color: var(--text-muted);
+          color: #94a3b8;
           text-decoration: none;
-          padding: 4px 0;
+          font-weight: 500;
+          transition: color 0.2s;
         }}
 
         .nav-link:hover {{
-          color: #e5e7eb;
+          color: #f1f5f9;
         }}
 
-        .nav-cta {{
-          padding: 6px 16px;
-          border-radius: 999px;
-          border: none;
-          background: radial-gradient(circle at 0% 0%, #22d3ee, #4f46e5);
-          color: white;
-          font-size: 13px;
-          font-weight: 500;
-          box-shadow: 0 10px 35px rgba(56,189,248,0.45);
+        .btn {{
+          padding: 12px 24px;
+          border-radius: 12px;
+          font-weight: 600;
+          font-size: 15px;
           cursor: pointer;
+          transition: all 0.3s;
+          border: none;
+          text-decoration: none;
+          display: inline-block;
         }}
 
-        /* HERO */
+        .btn-primary {{
+          background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+          color: white;
+          box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.4);
+        }}
+
+        .btn-primary:hover {{
+          transform: translateY(-2px);
+          box-shadow: 0 15px 30px -5px rgba(59, 130, 246, 0.5);
+        }}
+
+        .btn-secondary {{
+          background: rgba(30, 41, 59, 0.6);
+          backdrop-filter: blur(10px);
+          color: #f1f5f9;
+          border: 1px solid rgba(148, 163, 184, 0.2);
+        }}
+
+        .btn-secondary:hover {{
+          background: rgba(30, 41, 59, 0.8);
+          border-color: rgba(148, 163, 184, 0.4);
+        }}
 
         .hero {{
           display: grid;
-          grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
-          gap: 40px;
+          grid-template-columns: 1fr 1fr;
+          gap: 80px;
           align-items: center;
+          margin-bottom: 120px;
         }}
 
-        .eyebrow {{
+        .badge {{
           display: inline-flex;
           align-items: center;
           gap: 8px;
-          font-size: 12px;
-          padding: 4px 11px;
+          padding: 8px 16px;
+          background: rgba(30, 41, 59, 0.6);
+          backdrop-filter: blur(10px);
+          border: 1px solid rgba(148, 163, 184, 0.2);
           border-radius: 999px;
-          border: 1px solid rgba(148,163,184,0.45);
-          background: rgba(15,23,42,0.85);
-          color: var(--text-muted);
-          margin-bottom: 16px;
+          font-size: 13px;
+          color: #cbd5e1;
+          margin-bottom: 24px;
         }}
 
-        .eyebrow-dot {{
-          width: 6px;
-          height: 6px;
-          border-radius: 999px;
-          background: #22c55e;
-          box-shadow: 0 0 0 5px rgba(34,197,94,0.25);
+        .badge-dot {{
+          width: 8px;
+          height: 8px;
+          background: #10b981;
+          border-radius: 50%;
+          animation: pulse 2s ease-in-out infinite;
         }}
 
-        .hero-title {{
-          font-size: clamp(34px, 4vw, 40px);
-          line-height: 1.05;
-          letter-spacing: -0.03em;
-          margin-bottom: 16px;
+        @keyframes pulse {{
+          0%, 100% {{ opacity: 1; }}
+          50% {{ opacity: 0.5; }}
         }}
 
-        .hero-title strong {{
-          background: linear-gradient(120deg, #22d3ee, #a855f7);
+        h1 {{
+          font-size: 56px;
+          font-weight: 800;
+          line-height: 1.1;
+          margin-bottom: 24px;
+          letter-spacing: -0.02em;
+        }}
+
+        .gradient-text {{
+          background: linear-gradient(135deg, #3b82f6, #8b5cf6);
           -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
           background-clip: text;
-          color: transparent;
         }}
 
-        .hero-sub {{
-          font-size: 14px;
-          line-height: 1.6;
-          color: var(--text-muted);
-          max-width: 520px;
-          margin-bottom: 22px;
+        .hero-description {{
+          font-size: 18px;
+          line-height: 1.7;
+          color: #94a3b8;
+          margin-bottom: 32px;
         }}
 
         .hero-actions {{
           display: flex;
+          gap: 16px;
+          margin-bottom: 32px;
           flex-wrap: wrap;
+        }}
+
+        .hero-meta {{
+          display: flex;
+          flex-direction: column;
           gap: 12px;
-          margin-bottom: 20px;
-        }}
-
-        .btn-primary {{
-          padding: 10px 20px;
-          border-radius: 999px;
-          border: none;
+          color: #64748b;
           font-size: 14px;
-          font-weight: 500;
-          cursor: pointer;
-          color: white;
-          background: radial-gradient(circle at 0% 0%, #22d3ee, #4f46e5);
-          box-shadow: 0 14px 40px rgba(56,189,248,0.55);
         }}
 
-        .btn-ghost {{
-          padding: 9px 18px;
-          border-radius: 999px;
-          border: 1px solid rgba(148,163,184,0.6);
-          background: rgba(15,23,42,0.8);
-          color: var(--text-main);
-          font-size: 13px;
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          cursor: pointer;
-        }}
-
-        .hero-footnote {{
-          font-size: 11px;
-          color: var(--text-muted);
-          margin-top: 8px;
-        }}
-
-        .hero-list {{
-          margin-top: 18px;
-          font-size: 13px;
-          color: var(--text-muted);
-          display: grid;
-          gap: 4px;
-        }}
-
-        .hero-list span {{
+        .hero-meta-item {{
           display: flex;
           align-items: center;
           gap: 8px;
         }}
 
-        .hero-list span i {{
-          width: 16px;
-          height: 16px;
-          border-radius: 999px;
-          background: rgba(34,197,94,0.12);
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 10px;
-          color: #4ade80;
-        }}
-
-        /* RIGHT CARD */
-
-        .hero-right {{
-          display: flex;
-          justify-content: center;
-        }}
-
-        .metric-card {{
-          width: 100%;
-          max-width: 420px;
-          border-radius: var(--radius-xl);
-          padding: 18px 18px 18px;
-          background: radial-gradient(circle at top left, rgba(56,189,248,0.25), transparent 55%),
-                      radial-gradient(circle at bottom right, rgba(129,140,248,0.4), transparent 60%),
-                      rgba(15,23,42,0.95);
-          border: 1px solid rgba(148,163,184,0.25);
-          box-shadow: var(--shadow-soft);
-        }}
-
-        .metric-header {{
+        .check-icon {{
+          width: 20px;
+          height: 20px;
+          background: rgba(59, 130, 246, 0.2);
+          border-radius: 50%;
           display: flex;
           align-items: center;
+          justify-content: center;
+          color: #3b82f6;
+          font-size: 12px;
+        }}
+
+        .dashboard-card {{
+          background: rgba(30, 41, 59, 0.6);
+          backdrop-filter: blur(20px);
+          border: 1px solid rgba(148, 163, 184, 0.2);
+          border-radius: 24px;
+          padding: 32px;
+          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }}
+
+        .card-header {{
+          display: flex;
           justify-content: space-between;
-          margin-bottom: 12px;
-          font-size: 13px;
-        }}
-
-        .metric-header span {{
-          display: inline-flex;
           align-items: center;
-          gap: 8px;
+          margin-bottom: 24px;
         }}
 
-        .metric-dot {{
-          width: 18px;
-          height: 18px;
-          border-radius: 999px;
-          background: radial-gradient(circle at 20% 0%, #22d3ee, #4f46e5);
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 11px;
-        }}
-
-        .metric-badge {{
-          font-size: 11px;
-          padding: 3px 8px;
-          border-radius: 999px;
-          border: 1px solid rgba(148,163,184,0.45);
-          background: rgba(15,23,42,0.85);
-          color: var(--text-muted);
-        }}
-
-        .metric-value {{
-          font-size: 26px;
+        .card-title {{
+          font-size: 14px;
+          color: #94a3b8;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
           font-weight: 600;
-          margin-bottom: 8px;
         }}
 
-        .metric-caption {{
-          font-size: 11px;
-          color: var(--text-muted);
-          margin-bottom: 14px;
-        }}
-
-        .progress-track {{
-          width: 100%;
-          height: 6px;
+        .card-badge {{
+          padding: 4px 12px;
+          background: rgba(15, 23, 42, 0.8);
+          border: 1px solid rgba(148, 163, 184, 0.2);
           border-radius: 999px;
-          background: rgba(15,23,42,0.9);
-          border: 1px solid rgba(30,64,175,0.6);
-          overflow: hidden;
+          font-size: 11px;
+          color: #94a3b8;
+        }}
+
+        .net-worth {{
+          font-size: 48px;
+          font-weight: 700;
           margin-bottom: 8px;
+          background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+        }}
+
+        .card-subtitle {{
+          font-size: 14px;
+          color: #64748b;
+          margin-bottom: 24px;
         }}
 
         .progress-bar {{
-          height: 100%;
-          width: 78%;
-          background: linear-gradient(90deg, #22d3ee, #4f46e5);
-          box-shadow: 0 0 12px rgba(56,189,248,0.8);
-        }}
-
-        .progress-foot {{
-          display: flex;
-          justify-content: space-between;
-          font-size: 11px;
-          color: var(--text-muted);
+          height: 8px;
+          background: rgba(15, 23, 42, 0.8);
+          border-radius: 999px;
+          overflow: hidden;
           margin-bottom: 12px;
         }}
 
-        .metric-grid {{
-          display: grid;
-          grid-template-columns: repeat(3, minmax(0, 1fr));
-          gap: 10px;
-          margin-top: 10px;
-        }}
-
-        .pill-card {{
-          border-radius: var(--radius-lg);
-          padding: 10px 11px;
-          background: rgba(15,23,42,0.92);
-          border: 1px solid rgba(148,163,184,0.25);
-          font-size: 11px;
-        }}
-
-        .pill-title {{
-          font-size: 11px;
-          font-weight: 500;
-          margin-bottom: 4px;
-        }}
-
-        .pill-body {{
-          font-size: 11px;
-          color: var(--text-muted);
-        }}
-
-        .customer-status {{
-          margin-top: 18px;
-          font-size: 11px;
-          color: var(--text-muted);
-        }}
-
-        .customer-status code {{
-          font-size: 11px;
-          padding: 3px 7px;
+        .progress-fill {{
+          height: 100%;
+          background: linear-gradient(90deg, #3b82f6, #8b5cf6);
           border-radius: 999px;
-          background: rgba(15,23,42,0.9);
-          border: 1px solid rgba(148,163,184,0.35);
+          transition: width 0.5s ease;
+          box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
         }}
 
-        @media (max-width: 860px) {{
+        .progress-label {{
+          display: flex;
+          justify-content: space-between;
+          font-size: 12px;
+          color: #64748b;
+          margin-bottom: 24px;
+        }}
+
+        .stats-grid {{
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 12px;
+          margin-bottom: 24px;
+        }}
+
+        .stat-box {{
+          background: rgba(15, 23, 42, 0.6);
+          border: 1px solid rgba(148, 163, 184, 0.1);
+          border-radius: 12px;
+          padding: 16px;
+        }}
+
+        .stat-label {{
+          font-size: 12px;
+          color: #64748b;
+          margin-bottom: 8px;
+        }}
+
+        .stat-value {{
+          font-size: 16px;
+          font-weight: 600;
+          color: #f1f5f9;
+        }}
+
+        .customer-info {{
+          font-size: 12px;
+          color: #64748b;
+          padding: 12px;
+          background: rgba(15, 23, 42, 0.5);
+          border-radius: 8px;
+          border: 1px solid rgba(148, 163, 184, 0.1);
+        }}
+
+        @media (max-width: 968px) {{
           .hero {{
-            grid-template-columns: minmax(0,1fr);
-            gap: 28px;
+            grid-template-columns: 1fr;
+            gap: 48px;
           }}
-          .hero-right {{
-            order: -1;
+
+          h1 {{
+            font-size: 42px;
+          }}
+
+          .stats-grid {{
+            grid-template-columns: 1fr;
+          }}
+
+          .nav-links {{
+            gap: 12px;
           }}
         }}
       </style>
     </head>
     <body>
-      <div class="shell">
-        <header class="nav">
-          <div class="nav-left">
-            <div class="logo-pill">
-              <span>₳</span>
-            </div>
-            <div>
-              <div class="nav-title">Aurya</div>
-              <div style="font-size:11px; color:var(--text-muted);">Private Beta • Sandbox</div>
-            </div>
+      <div class="bg-animation">
+        <div class="bg-gradient gradient-1"></div>
+        <div class="bg-gradient gradient-2"></div>
+      </div>
+
+      <div class="container">
+        <nav>
+          <div class="logo">
+            <div class="logo-icon">E</div>
+            <span>Elara</span>
           </div>
           <div class="nav-links">
-            <a class="nav-link" href="#prodotto">Prodotto</a>
-            <a class="nav-link" href="/dashboard">Dashboard</a>
-            <span class="nav-badge">Sandbox Salt&nbsp;Edge</span>
-            <button class="nav-cta" onclick="location.href='/connect_bank'">
-              Collega una banca fake
-            </button>
+            <a href="#" class="nav-link">Prodotto</a>
+            <a href="/dashboard" class="nav-link">Dashboard</a>
+            <a href="/connect_bank" class="btn btn-primary">Collega Banca</a>
           </div>
-        </header>
+        </nav>
 
-        <main class="hero" id="prodotto">
+        <main class="hero">
           <section>
-            <div class="eyebrow">
-              <span class="eyebrow-dot"></span>
-              <span>Nuovo · Private Beta</span>
+            <div class="badge">
+              <span class="badge-dot"></span>
+              <span>Private Beta • Sandbox</span>
             </div>
 
-            <h1 class="hero-title">
-              Il tuo <strong>Net Worth</strong>,<br/>
-              unito e <strong>ottimizzato</strong>.
+            <h1>
+              Il tuo <span class="gradient-text">Net Worth</span>,<br/>
+              unito e ottimizzato.
             </h1>
 
-            <p class="hero-sub">
-              Aurya aggrega i tuoi conti e investimenti, stima il valore dei beni fisici
-              e usa modelli quantitativi per suggerirti come riequilibrare in modo
-              coerente al tuo profilo di rischio.
+            <p class="hero-description">
+              Elara aggrega i tuoi conti e investimenti, stima il valore dei beni fisici
+              e usa modelli quantitativi per suggerirti come riequilibrare il portafoglio
+              in modo coerente al tuo profilo di rischio.
             </p>
 
-           <div class="hero-actions">
-              <button class="btn-primary" onclick="location.href='/connect'">
-                Crea customer
-              </button>
-
-              <button class="btn-ghost" onclick="location.href='/connect_bank'">
-                <span>Collega banca fake</span>
-                <span style="font-size:12px;">↗</span>
-              </button>
-
-              <button class="btn-ghost" onclick="location.href='/dashboard'">
-                Apri dashboard sandbox
-              </button>
-
-              <button class="btn-ghost" onclick="location.href='/import_broker'">
-                Importa broker (PDF/CSV)
-              </button>
+            <div class="hero-actions">
+              <a href="/connect" class="btn btn-primary">Crea Customer</a>
+              <a href="/connect_bank" class="btn btn-secondary">Collega Banca Fake</a>
+              <a href="/import_broker" class="btn btn-secondary">Importa Broker</a>
             </div>
 
-            <p class="hero-footnote">
-              Customer corrente:
-              <code style="padding:3px 7px;border-radius:999px;border:1px solid rgba(148,163,184,0.35);background:rgba(15,23,42,0.9);">
-                {customer}
-              </code>
-              · se è <em>nessuno</em>, crea un customer e collega una banca fake.
-            </p>
+            <div class="hero-meta">
+              <div class="hero-meta-item">
+                <span class="check-icon">✓</span>
+                <span>Aggregazione multi-conto & stima beni fisici</span>
+              </div>
+              <div class="hero-meta-item">
+                <span class="check-icon">✓</span>
+                <span>Sandbox integrata con Salt Edge (solo dati fake)</span>
+              </div>
+              <div class="hero-meta-item">
+                <span class="check-icon">✓</span>
+                <span>Zero credenziali reali, solo simulazione sicura</span>
+              </div>
+            </div>
 
-            <div class="hero-list">
-              <span><i>✓</i> Aggregazione multi-conto &amp; stima beni fisici</span>
-              <span><i>✓</i> Sandbox integrata con Salt Edge (solo dati fake)</span>
-              <span><i>✓</i> Zero credenziali reali, solo simulazione sicura</span>
+            <div class="customer-info">
+              Customer corrente: <strong>{customer}</strong>
             </div>
           </section>
 
-          <aside class="hero-right">
-            <div class="metric-card">
-              <div class="metric-header">
-                <span>
-                  <span class="metric-dot">₳</span>
-                  <span>Net Worth stimato</span>
-                </span>
-                <span class="metric-badge">Sandbox · Read-only</span>
+          <aside>
+            <div class="dashboard-card">
+              <div class="card-header">
+                <span class="card-title">Net Worth Stimato</span>
+                <span class="card-badge">Sandbox • Read-only</span>
               </div>
 
-              <div class="metric-value" id="hero-total">— EUR</div>
-              <div class="metric-caption">Net worth bancario raccolto via Salt Edge (fake data).</div>
+              <div class="net-worth" id="hero-total">— EUR</div>
+              <p class="card-subtitle" id="hero-status">In attesa dati…</p>
 
-              <div class="progress-track">
-                <div class="progress-bar" id="hero-progress"></div>
+              <div class="progress-bar">
+                <div class="progress-fill" id="hero-progress" style="width: 0%"></div>
               </div>
-              <div class="progress-foot">
+              <div class="progress-label">
                 <span>Copertura asset</span>
                 <span id="hero-coverage">0%</span>
               </div>
 
-              <div class="metric-grid">
-                <div class="pill-card">
-                  <div class="pill-title">Conti &amp; Broker</div>
-                  <div class="pill-body">
-                    Collega banche e broker di prova in pochi clic.
-                  </div>
+              <div class="stats-grid">
+                <div class="stat-box">
+                  <div class="stat-label">Conti & Broker</div>
+                  <div class="stat-value">Sandbox</div>
                 </div>
-                <div class="pill-card">
-                  <div class="pill-title">Beni fisici</div>
-                  <div class="pill-body">
-                    In futuro: tech, auto, libri e altro con stime assistite.
-                  </div>
+                <div class="stat-box">
+                  <div class="stat-label">Beni fisici</div>
+                  <div class="stat-value">Presto</div>
                 </div>
-                <div class="pill-card">
-                  <div class="pill-title">Ottimizzazione</div>
-                  <div class="pill-body">
-                    Simulazioni di portafoglio target e ribilanciamento.
-                  </div>
+                <div class="stat-box">
+                  <div class="stat-label">Ottimizzazione</div>
+                  <div class="stat-value">AI-Powered</div>
                 </div>
-              </div>
-
-              <div class="customer-status">
-                Stato corrente: <code id="hero-status">In attesa dati…</code>
               </div>
             </div>
           </aside>
@@ -794,14 +1024,12 @@ def index():
       </div>
 
       <script>
-        // Aggiorna card destra con i dati reali dell'API /api/networth
         fetch('/api/networth')
           .then(r => r.json())
           .then(data => {{
             if (data.error) {{
               document.getElementById('hero-total').textContent = '— EUR';
               document.getElementById('hero-status').textContent = data.error;
-              document.getElementById('hero-coverage').textContent = '0%';
               return;
             }}
 
@@ -813,19 +1041,15 @@ def index():
 
             document.getElementById('hero-total').textContent = formatter.format(total);
 
-            // Copertura finta: clamp rispetto a 50k per non fare 1000%
             const coverage = Math.max(0, Math.min(100, Math.round((total / 50000) * 100)));
             document.getElementById('hero-coverage').textContent = coverage + '%';
-            document.getElementById('hero-progress').style.width = Math.max(6, coverage) + '%';
+            document.getElementById('hero-progress').style.width = coverage + '%';
 
             const accountsCount = (data.accounts || []).length;
             const status = accountsCount > 0
-              ? `Customer con ${{accountsCount}} conto/i collegati`
-              : 'Customer senza conti collegati';
+              ? `${{accountsCount}} conto/i collegati`
+              : 'Nessun conto collegato';
             document.getElementById('hero-status').textContent = status;
-          }})
-          .catch(err => {{
-            document.getElementById('hero-status').textContent = 'Errore nel caricamento dati';
           }});
       </script>
     </body>
@@ -834,18 +1058,10 @@ def index():
     return HTMLResponse(html)
 
 
-
-    
-
-
-# ======================
-# Crea customer
-# ======================
-
 @app.get("/connect")
 def connect_fake():
     try:
-        identifier = "aurya_fake_user_1"
+        identifier = "elara_fake_user_1"
 
         try:
             resp = se_post("/customers", {"identifier": identifier})
@@ -860,17 +1076,74 @@ def connect_fake():
 
         STATE["customer_id"] = customer_id
 
-        return HTMLResponse(
-            f"<h2>Customer OK</h2><p>ID: {customer_id}</p><a href='/'>Torna alla home</a>"
-        )
+        return HTMLResponse(f"""
+            <!doctype html>
+            <html lang="it">
+            <head>
+              <meta charset="utf-8" />
+              <title>Customer Creato - Elara</title>
+              <style>
+                body {{
+                  margin: 0;
+                  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+                  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+                  color: #f1f5f9;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  min-height: 100vh;
+                }}
+                .container {{
+                  background: rgba(30, 41, 59, 0.6);
+                  backdrop-filter: blur(20px);
+                  border: 1px solid rgba(148, 163, 184, 0.2);
+                  border-radius: 24px;
+                  padding: 48px;
+                  max-width: 500px;
+                  text-align: center;
+                }}
+                h2 {{
+                  font-size: 28px;
+                  margin-bottom: 16px;
+                  color: #f1f5f9;
+                }}
+                p {{
+                  color: #94a3b8;
+                  margin-bottom: 24px;
+                }}
+                code {{
+                  background: rgba(15, 23, 42, 0.8);
+                  padding: 4px 12px;
+                  border-radius: 6px;
+                  font-family: monospace;
+                  color: #3b82f6;
+                }}
+                a {{
+                  display: inline-block;
+                  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+                  color: white;
+                  text-decoration: none;
+                  padding: 14px 32px;
+                  border-radius: 12px;
+                  font-weight: 500;
+                  margin-top: 24px;
+                  box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.4);
+                }}
+              </style>
+            </head>
+            <body>
+              <div class="container">
+                <h2>✓ Customer Creato</h2>
+                <p>ID: <code>{customer_id}</code></p>
+                <a href="/">Torna alla Home</a>
+              </div>
+            </body>
+            </html>
+        """)
 
     except Exception as e:
         return HTMLResponse(f"<pre>{e}</pre>", status_code=500)
 
-
-# ======================
-# CREA SESSIONE WIDGET
-# ======================
 
 @app.get("/connect_bank")
 def connect_bank():
@@ -914,17 +1187,8 @@ def connect_bank():
         return HTMLResponse(f"<pre>{e}</pre>", status_code=500)
 
 
-# ======================
-# CALLBACK
-# ======================
-
 @app.get("/callback")
 def callback(connection_id: str = None, error_class: str = None):
-    """
-    - Prende connection_id dal widget
-    - Se manca lo recupera
-    - Avvia automaticamente la sincronizzazione
-    """
     try:
         customer_id = STATE.get("customer_id")
         final_connection_id = connection_id
@@ -950,26 +1214,73 @@ def callback(connection_id: str = None, error_class: str = None):
                     {"fetch_scopes": ["accounts", "transactions"], "locale": "it"}
                 )
                 attempt_id = attempt["data"]["id"]
-                msg += "<br>Sincronizzazione avviata."
+                msg += " Sincronizzazione avviata."
             except:
-                msg += "<br>Impossibile sincronizzare."
+                msg += " Impossibile sincronizzare."
 
         html = f"""
-        <h2>Connessione completata 🎉</h2>
-        <p>{msg}</p>
-        <p><b>connection_id:</b> {final_connection_id}</p>
-        <p><b>attempt_id:</b> {attempt_id}</p>
-        <a href="/dashboard">Vai alla dashboard</a>
+        <!doctype html>
+        <html lang="it">
+        <head>
+          <meta charset="utf-8" />
+          <title>Connessione Completata - Elara</title>
+          <style>
+            body {{
+              margin: 0;
+              font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+              background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+              color: #f1f5f9;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              min-height: 100vh;
+            }}
+            .container {{
+              background: rgba(30, 41, 59, 0.6);
+              backdrop-filter: blur(20px);
+              border: 1px solid rgba(148, 163, 184, 0.2);
+              border-radius: 24px;
+              padding: 48px;
+              max-width: 500px;
+              text-align: center;
+            }}
+            h2 {{
+              font-size: 28px;
+              margin-bottom: 16px;
+            }}
+            p {{
+              color: #94a3b8;
+              margin: 12px 0;
+            }}
+            a {{
+              display: inline-block;
+              background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+              color: white;
+              text-decoration: none;
+              padding: 14px 32px;
+              border-radius: 12px;
+              font-weight: 500;
+              margin-top: 24px;
+              box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.4);
+            }}
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <h2>🎉 Connessione Completata</h2>
+            <p>{msg}</p>
+            <p><strong>Connection ID:</strong> {final_connection_id}</p>
+            <p><strong>Attempt ID:</strong> {attempt_id}</p>
+            <a href="/dashboard">Vai alla Dashboard</a>
+          </div>
+        </body>
+        </html>
         """
         return HTMLResponse(html)
 
     except Exception as e:
         return HTMLResponse(f"<pre>{e}</pre>", status_code=500)
 
-
-# ======================
-# API NET WORTH
-# ======================
 
 @app.get("/api/networth")
 def api_networth():
@@ -978,7 +1289,6 @@ def api_networth():
         if not customer_id:
             return JSONResponse({"error": "Customer non creato"}, status_code=400)
 
-        # ---- ACCOUNTS ----
         try:
             accounts_resp = se_get("/accounts", {"customer_id": customer_id})
             accounts = accounts_resp.get("data", [])
@@ -993,10 +1303,9 @@ def api_networth():
             balance = float(acc.get("balance") or 0)
             total += balance
 
-            # ---- TRANSAZIONI ----
             txs = []
             try:
-                connection_id = acc.get("connection_id")   # PRENDIAMO connection_id DALL'ACCOUNT
+                connection_id = acc.get("connection_id")
                 tx_resp = se_get(
                     "/transactions",
                     {
@@ -1028,9 +1337,8 @@ def api_networth():
             })
 
         tr = STATE.get("trade_republic")
-
-        if tr: 
-            total += tr["total_eur"]     
+        if tr:
+            total += tr["total_eur"]
 
         return JSONResponse({
             "customer_id": customer_id,
@@ -1043,10 +1351,6 @@ def api_networth():
         return JSONResponse({"error": str(e)}, status_code=500)
 
 
-# ======================
-# DASHBOARD HTML (stile sito)
-# ======================
-
 @app.get("/dashboard")
 def dashboard():
     html = """
@@ -1054,593 +1358,513 @@ def dashboard():
     <html lang="it">
     <head>
       <meta charset="utf-8" />
-      <title>Aurya – Dashboard sandbox</title>
+      <title>Dashboard - Elara</title>
       <meta name="viewport" content="width=device-width, initial-scale=1" />
       <style>
-        :root {
-          --bg: #020617;
-          --panel: rgba(15,23,42,0.96);
-          --panel-soft: rgba(15,23,42,0.9);
-          --border-subtle: rgba(148,163,184,0.28);
-          --accent: #4f46e5;
-          --accent-2: #22d3ee;
-          --text-main: #e5e7eb;
-          --text-muted: #9ca3af;
-          --radius-xl: 24px;
-          --radius-lg: 18px;
-          --shadow-soft: 0 20px 50px rgba(15,23,42,0.85);
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+          background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+          color: #f1f5f9;
           min-height: 100vh;
-          font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
-                       "Helvetica Neue", Arial, sans-serif;
-          color: var(--text-main);
-          background:
-            radial-gradient(circle at top left, rgba(56,189,248,0.18), transparent 60%),
-            radial-gradient(circle at top right, rgba(129,140,248,0.22), transparent 65%),
-            radial-gradient(circle at bottom, rgba(15,23,42,0.95), #020617 70%);
-          background-attachment: fixed;
         }
 
-        .shell {
-          max-width: 1120px;
+        .container {
+          max-width: 1400px;
           margin: 0 auto;
-          padding: 26px 18px 52px;
+          padding: 24px;
         }
 
-        .nav {
+        nav {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          margin-bottom: 22px;
+          margin-bottom: 40px;
+          padding-bottom: 24px;
+          border-bottom: 1px solid rgba(148, 163, 184, 0.1);
         }
 
-        .nav-group {
+        .logo {
           display: flex;
           align-items: center;
-          gap: 10px;
+          gap: 12px;
+          font-size: 24px;
+          font-weight: 700;
         }
 
-        .logo-pill {
-          width: 30px;
-          height: 30px;
-          border-radius: 999px;
-          background: radial-gradient(circle at 20% 0%, #22d3ee, #4f46e5);
+        .logo-icon {
+          width: 40px;
+          height: 40px;
+          background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+          border-radius: 12px;
           display: flex;
           align-items: center;
           justify-content: center;
-          box-shadow: 0 10px 26px rgba(15,23,42,0.9);
+          box-shadow: 0 8px 16px rgba(59, 130, 246, 0.3);
         }
 
-        .logo-pill span { font-size: 17px; }
-
-        .nav-sub {
-          font-size: 11px;
-          color: var(--text-muted);
+        .nav-actions {
+          display: flex;
+          gap: 12px;
         }
 
-        .nav-btn {
-          padding: 6px 14px;
-          border-radius: 999px;
-          border: 1px solid rgba(148,163,184,0.45);
-          background: rgba(15,23,42,0.9);
-          color: var(--text-main);
-          font-size: 12px;
-          cursor: pointer;
-        }
-
-        .nav-btn-primary {
-          padding: 7px 16px;
-          border-radius: 999px;
-          border: none;
-          background: radial-gradient(circle at 0% 0%, #22d3ee, #4f46e5);
-          color: white;
-          font-size: 12px;
+        .btn {
+          padding: 10px 20px;
+          border-radius: 10px;
           font-weight: 500;
-          box-shadow: 0 12px 36px rgba(56,189,248,0.55);
           cursor: pointer;
+          transition: all 0.2s;
+          border: none;
+          text-decoration: none;
+          display: inline-block;
         }
 
-        .layout {
+        .btn-secondary {
+          background: rgba(30, 41, 59, 0.6);
+          backdrop-filter: blur(10px);
+          color: #f1f5f9;
+          border: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .btn-primary {
+          background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+          color: white;
+          box-shadow: 0 8px 20px -5px rgba(59, 130, 246, 0.4);
+        }
+
+        .grid {
           display: grid;
-          grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
-          gap: 22px;
-        }
-
-        @media (max-width: 900px) {
-          .layout {
-            grid-template-columns: minmax(0,1fr);
-          }
+          grid-template-columns: 1fr 1fr;
+          gap: 24px;
+          margin-bottom: 24px;
         }
 
         .card {
-          border-radius: var(--radius-xl);
-          background: var(--panel);
-          border: 1px solid var(--border-subtle);
-          box-shadow: var(--shadow-soft);
-          padding: 18px 18px 18px;
+          background: rgba(30, 41, 59, 0.6);
+          backdrop-filter: blur(20px);
+          border: 1px solid rgba(148, 163, 184, 0.2);
+          border-radius: 20px;
+          padding: 28px;
+          box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.3);
         }
 
         .card-header {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          margin-bottom: 14px;
+          margin-bottom: 20px;
         }
 
         .card-title {
-          font-size: 16px;
-          font-weight: 500;
+          font-size: 18px;
+          font-weight: 600;
         }
 
-        .pill {
-          font-size: 11px;
-          padding: 3px 9px;
+        .badge {
+          padding: 4px 12px;
+          background: rgba(15, 23, 42, 0.8);
+          border: 1px solid rgba(148, 163, 184, 0.2);
           border-radius: 999px;
-          border: 1px solid rgba(148,163,184,0.5);
-          background: rgba(15,23,42,0.9);
-          color: var(--text-muted);
+          font-size: 11px;
+          color: #94a3b8;
         }
 
         .big-value {
-          font-size: 28px;
-          font-weight: 600;
-          margin-bottom: 6px;
+          font-size: 42px;
+          font-weight: 700;
+          margin-bottom: 8px;
+          background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
         }
 
-        .muted {
-          font-size: 12px;
-          color: var(--text-muted);
-        }
-
-        .progress-track {
-          width: 100%;
-          height: 7px;
-          border-radius: 999px;
-          background: rgba(15,23,42,0.9);
-          border: 1px solid rgba(30,64,175,0.7);
-          overflow: hidden;
-          margin: 12px 0 6px;
+        .subtitle {
+          font-size: 14px;
+          color: #64748b;
+          margin-bottom: 24px;
         }
 
         .progress-bar {
-          height: 100%;
-          width: 0%;
-          background: linear-gradient(90deg, #22d3ee, #4f46e5);
-          box-shadow: 0 0 14px rgba(56,189,248,0.9);
-          transition: width 0.4s ease-out;
+          height: 8px;
+          background: rgba(15, 23, 42, 0.8);
+          border-radius: 999px;
+          overflow: hidden;
+          margin-bottom: 12px;
         }
 
-        .progress-foot {
+        .progress-fill {
+          height: 100%;
+          background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+          border-radius: 999px;
+          transition: width 0.5s ease;
+          box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+        }
+
+        .progress-label {
           display: flex;
           justify-content: space-between;
-          font-size: 11px;
-          color: var(--text-muted);
-          margin-bottom: 10px;
+          font-size: 12px;
+          color: #64748b;
+          margin-bottom: 16px;
         }
 
         .chips {
           display: flex;
           flex-wrap: wrap;
-          gap: 6px;
-          margin-top: 6px;
+          gap: 8px;
         }
 
         .chip {
-          font-size: 11px;
-          padding: 4px 8px;
+          padding: 6px 12px;
+          background: rgba(15, 23, 42, 0.6);
+          border: 1px solid rgba(148, 163, 184, 0.2);
           border-radius: 999px;
-          background: rgba(15,23,42,0.9);
-          border: 1px solid rgba(148,163,184,0.4);
-          color: var(--text-muted);
+          font-size: 12px;
+          color: #94a3b8;
         }
 
         .accounts-grid {
           display: grid;
-          grid-template-columns: repeat(2, minmax(0,1fr));
-          gap: 12px;
-          margin-top: 8px;
-        }
-
-        @media (max-width: 680px) {
-          .accounts-grid {
-            grid-template-columns: minmax(0,1fr);
-          }
+          grid-template-columns: repeat(2, 1fr);
+          gap: 16px;
+          margin-top: 20px;
         }
 
         .account-card {
-          border-radius: var(--radius-lg);
-          padding: 10px 11px;
-          background: var(--panel-soft);
-          border: 1px solid rgba(148,163,184,0.23);
-          font-size: 12px;
+          background: rgba(15, 23, 42, 0.5);
+          border: 1px solid rgba(148, 163, 184, 0.15);
+          border-radius: 16px;
+          padding: 20px;
+          transition: all 0.2s;
         }
 
-        .account-top {
+        .account-card:hover {
+          border-color: rgba(59, 130, 246, 0.3);
+          background: rgba(15, 23, 42, 0.7);
+        }
+
+        .account-header {
           display: flex;
           justify-content: space-between;
-          margin-bottom: 4px;
+          margin-bottom: 12px;
         }
 
         .account-name {
-          font-weight: 500;
-          font-size: 13px;
+          font-weight: 600;
+          font-size: 15px;
         }
 
         .account-provider {
-          font-size: 11px;
-          color: var(--text-muted);
+          font-size: 12px;
+          color: #64748b;
         }
 
         .account-balance {
-          font-size: 15px;
-          font-weight: 500;
-        }
-
-        .badge {
-          font-size: 10px;
-          padding: 2px 7px;
-          border-radius: 999px;
-          border: 1px solid rgba(148,163,184,0.5);
-          color: var(--text-muted);
-        }
-
-        .table {
-          margin-top: 12px;
-          border-radius: var(--radius-lg);
-          border: 1px solid rgba(148,163,184,0.4);
-          overflow: hidden;
-          background: var(--panel-soft);
-        }
-
-        .table-header, .table-row {
-          display: grid;
-          grid-template-columns: 90px minmax(0,1.4fr) 80px 80px;
-          gap: 8px;
-          font-size: 11px;
-          padding: 7px 10px;
-        }
-
-        .table-header {
-          background: rgba(15,23,42,0.98);
-          color: var(--text-muted);
-          border-bottom: 1px solid rgba(148,163,184,0.35);
-        }
-
-        .table-row:nth-child(odd) {
-          background: rgba(15,23,42,0.96);
-        }
-
-        .table-row:nth-child(even) {
-          background: rgba(15,23,42,0.9);
-        }
-
-        .table-row span {
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-
-        
-        /* ==========================
-        TRADE REPUBLIC POSITIONS TABLE
-        ========================== */
-        .tr-table {
+          font-size: 24px;
+          font-weight: 700;
+          color: #3b82f6;
           margin-top: 8px;
-          border: 1px solid rgba(148,163,184,0.25);
+        }
+
+        .tx-table {
+          margin-top: 16px;
           border-radius: 12px;
-          background: rgba(15,23,42,0.95);
-          padding: 8px;
+          overflow: hidden;
+          border: 1px solid rgba(148, 163, 184, 0.2);
         }
 
-        .tr-table-header {
+        .tx-header {
           display: grid;
-          grid-template-columns: 110px 1fr 60px 90px; /* ISIN | Nome | Qtà | Valore */
-          padding: 6px 8px;
-          color: #9ca3af;
-          border-bottom: 1px solid rgba(148,163,184,0.25);
+          grid-template-columns: 100px 1fr 120px 100px;
+          gap: 12px;
+          padding: 12px 16px;
+          background: rgba(15, 23, 42, 0.8);
           font-size: 12px;
+          color: #94a3b8;
+          font-weight: 600;
         }
 
-        .tr-table-row {
+        .tx-row {
           display: grid;
-          grid-template-columns: 110px 1fr 60px 90px;
-          padding: 6px 8px;
-          font-size: 12px;
-          border-bottom: 1px solid rgba(148,163,184,0.12);
+          grid-template-columns: 100px 1fr 120px 100px;
+          gap: 12px;
+          padding: 12px 16px;
+          border-top: 1px solid rgba(148, 163, 184, 0.1);
+          font-size: 13px;
+          transition: background 0.2s;
         }
 
-        .tr-table-row:last-child {
-          border-bottom: none;
+        .tx-row:hover {
+          background: rgba(59, 130, 246, 0.05);
         }
 
-        /* celle: testo su una riga con "..." se troppo lungo */
-        .tr-table-header span,
-        .tr-table-row span {
-          white-space: nowrap;
+        .tx-row span {
           overflow: hidden;
           text-overflow: ellipsis;
+          white-space: nowrap;
         }
 
+        .amount-positive {
+          color: #10b981;
+        }
 
-        .pill-small {
-          font-size: 10px;
-          padding: 2px 6px;
-          border-radius: 999px;
-          border: 1px solid rgba(148,163,184,0.4);
-          color: var(--text-muted);
+        .amount-negative {
+          color: #ef4444;
         }
 
         .error-box {
-          margin-top: 10px;
-          padding: 10px 11px;
+          background: rgba(127, 29, 29, 0.3);
+          border: 1px solid rgba(248, 113, 113, 0.5);
           border-radius: 12px;
-          border: 1px solid rgba(248,113,113,0.7);
-          background: rgba(127,29,29,0.45);
+          padding: 16px;
+          margin-top: 16px;
+          font-size: 13px;
+          color: #fca5a5;
+        }
+
+        .tr-positions {
+          margin-top: 16px;
+        }
+
+        .tr-toggle {
+          font-size: 13px;
+          color: #94a3b8;
+          cursor: pointer;
+          padding: 8px 0;
+          user-select: none;
+        }
+
+        .tr-toggle:hover {
+          color: #cbd5e1;
+        }
+
+        .tr-table {
+          margin-top: 12px;
+          border: 1px solid rgba(148, 163, 184, 0.2);
+          border-radius: 12px;
+          overflow: hidden;
+        }
+
+        .tr-row {
+          display: grid;
+          grid-template-columns: 120px 1fr 80px;
+          gap: 12px;
+          padding: 10px 14px;
+          border-bottom: 1px solid rgba(148, 163, 184, 0.1);
           font-size: 12px;
+        }
+
+        .tr-row:last-child {
+          border-bottom: none;
+        }
+
+        .tr-header {
+          background: rgba(15, 23, 42, 0.8);
+          font-weight: 600;
+          color: #94a3b8;
+        }
+
+        @media (max-width: 1024px) {
+          .grid {
+            grid-template-columns: 1fr;
+          }
+          .accounts-grid {
+            grid-template-columns: 1fr;
+          }
         }
       </style>
     </head>
     <body>
-      <div class="shell">
-        <header class="nav">
-          <div class="nav-group">
-            <div class="logo-pill"><span>₳</span></div>
-            <div>
-              <div style="font-size:13px;font-weight:500;">Aurya · Dashboard sandbox</div>
-              <div class="nav-sub">Net worth bancario con dati fake via Salt Edge</div>
-            </div>
+      <div class="container">
+        <nav>
+          <div class="logo">
+            <div class="logo-icon">E</div>
+            <span>Elara</span>
           </div>
-          <div class="nav-group">
-            <button class="nav-btn" onclick="location.href='/'">← Torna alla landing</button>
-            <button class="nav-btn-primary" onclick="location.href='/connect_bank'">
-              Collega/aggiorna banca fake
-            </button>
+          <div class="nav-actions">
+            <a href="/" class="btn btn-secondary">← Home</a>
+            <a href="/connect_bank" class="btn btn-primary">Collega Banca</a>
           </div>
-        </header>
+        </nav>
 
-        <div class="layout">
-          <!-- Pannello sinistro: Net worth + conti -->
-          <section class="card">
+        <div class="grid">
+          <div class="card">
             <div class="card-header">
               <div>
-                <div class="card-title">Net worth bancario (fake)</div>
-                <div class="nav-sub" id="cust-id">Customer: —</div>
+                <div class="card-title">Net Worth Totale</div>
+                <div class="subtitle" id="cust-id">Customer: —</div>
               </div>
-              <span class="pill" id="status-pill">In attesa dati…</span>
+              <span class="badge" id="status-pill">Caricamento…</span>
             </div>
 
             <div class="big-value" id="total">— EUR</div>
-            <p class="muted">Somma dei saldi dei conti collegati tramite Salt Edge Sandbox.</p>
+            <p class="subtitle">Somma dei conti collegati tramite Salt Edge Sandbox</p>
 
-            <div class="progress-track">
-              <div class="progress-bar" id="coverage-bar"></div>
+            <div class="progress-bar">
+              <div class="progress-fill" id="coverage-bar" style="width: 0%"></div>
             </div>
-            <div class="progress-foot">
-              <span>Copertura asset stimata</span>
+            <div class="progress-label">
+              <span>Copertura asset</span>
               <span id="coverage-label">0%</span>
             </div>
 
             <div class="chips">
-              <span class="chip" id="chip-accounts">0 conti collegati</span>
-              <span class="chip">Dati letti in sola lettura</span>
-              <span class="chip">Nessuna credenziale reale</span>
+              <span class="chip" id="chip-accounts">0 conti</span>
+              <span class="chip">Sandbox Mode</span>
+              <span class="chip">Read-only</span>
             </div>
 
-            <h3 style="font-size:13px;margin-top:16px;margin-bottom:6px;">Conti collegati</h3>
-            <p class="muted" style="margin-bottom:6px;">Riepilogo dei conti restituiti dall'API Salt Edge.</p>
-            <div class="accounts-grid" id="accounts-grid">
-              <!-- riempito da JS -->
-            </div>
-
+            <div class="accounts-grid" id="accounts-grid"></div>
             <div id="error-box" class="error-box" style="display:none;"></div>
-          </section>
+          </div>
 
-          <!-- Pannello destro: transazioni -->
-          <section class="card">
+          <div class="card">
             <div class="card-header">
               <div>
-                <div class="card-title">Ultime transazioni</div>
-                <div class="nav-sub" id="tx-count">0 transazioni</div>
+                <div class="card-title">Ultime Transazioni</div>
+                <div class="subtitle" id="tx-count">0 transazioni</div>
               </div>
-              <span class="pill-small">Solo lettura · Demo</span>
+              <span class="badge">Demo Data</span>
             </div>
 
-            <div class="table" id="tx-table-wrapper" style="display:none;">
-              <div class="table-header">
+            <div class="tx-table" id="tx-table" style="display:none;">
+              <div class="tx-header">
                 <span>Data</span>
                 <span>Descrizione</span>
-                <span style="text-align:right;">Importo</span>
+                <span>Importo</span>
                 <span>Conto</span>
               </div>
-              <div id="tx-rows">
-                <!-- righe -->
-              </div>
+              <div id="tx-rows"></div>
             </div>
 
-            <p class="muted" id="tx-empty">
-              Collega una banca fake dalla landing per vedere qualche movimento di test.
-            </p>
-          </section>
+            <p class="subtitle" id="tx-empty">Collega una banca per vedere le transazioni</p>
+          </div>
         </div>
       </div>
 
       <script>
         function fmtCurrency(amount) {
-          try {
-            return new Intl.NumberFormat('it-IT', {
-              style: 'currency',
-              currency: 'EUR'
-            }).format(amount);
-          } catch (e) {
-            return amount.toFixed(2) + ' EUR';
-          }
+          return new Intl.NumberFormat('it-IT', {
+            style: 'currency',
+            currency: 'EUR'
+          }).format(amount);
         }
 
         fetch('/api/networth')
           .then(r => r.json())
           .then(data => {
-            const errorBox = document.getElementById('error-box');
-
             if (data.error) {
-              errorBox.style.display = 'block';
-              errorBox.textContent = data.error;
-              document.getElementById('status-pill').textContent = 'Errore caricamento';
-              document.getElementById('status-pill').style.borderColor = 'rgba(248,113,113,0.8)';
+              document.getElementById('error-box').style.display = 'block';
+              document.getElementById('error-box').textContent = data.error;
+              document.getElementById('status-pill').textContent = 'Errore';
               return;
             }
 
-            const customerId = data.customer_id || '—';
-            document.getElementById('cust-id').textContent = 'Customer: ' + customerId;
+            document.getElementById('cust-id').textContent = 'Customer: ' + (data.customer_id || '—');
 
             const total = data.total_balance || 0;
             document.getElementById('total').textContent = fmtCurrency(total);
 
             const accounts = data.accounts || [];
             const accCount = accounts.length;
-            document.getElementById('chip-accounts').textContent =
-              accCount === 1 ? '1 conto collegato' : accCount + ' conti collegati';
+            document.getElementById('chip-accounts').textContent = accCount + ' conti';
+            document.getElementById('status-pill').textContent = accCount > 0 ? 'Sincronizzato' : 'Nessun conto';
 
-            document.getElementById('status-pill').textContent =
-              accCount > 0 ? 'Sincronizzato' : 'Nessun conto collegato';
-
-            // Copertura rispetto a 50k per avere un numero sensato
             const coverage = Math.max(0, Math.min(100, Math.round((total / 50000) * 100)));
             document.getElementById('coverage-label').textContent = coverage + '%';
-            document.getElementById('coverage-bar').style.width = Math.max(6, coverage) + '%';
+            document.getElementById('coverage-bar').style.width = coverage + '%';
 
-            // ---- Accounts cards ----
             const accGrid = document.getElementById('accounts-grid');
             accGrid.innerHTML = '';
+
             if (accounts.length === 0) {
-              accGrid.innerHTML = '<div class="muted">Nessun conto disponibile.</div>';
+              accGrid.innerHTML = '<div class="subtitle">Nessun conto disponibile</div>';
             } else {
               accounts.forEach(acc => {
                 const div = document.createElement('div');
                 div.className = 'account-card';
-
-                const name = acc.name || 'Conto';
-                const provider = acc.provider || 'Sandbox';
-                const type = acc.type || 'account';
-                const bal = typeof acc.balance === 'number' ? acc.balance : 0;
-
                 div.innerHTML = `
-                  <div class="account-top">
+                  <div class="account-header">
                     <div>
-                      <div class="account-name">${name}</div>
-                      <div class="account-provider">${provider}</div>
+                      <div class="account-name">${acc.name || 'Conto'}</div>
+                      <div class="account-provider">${acc.provider || 'Sandbox'}</div>
                     </div>
-                    <div class="account-balance">${fmtCurrency(bal)}</div>
                   </div>
-                  <div class="muted">Tipo: ${type || 'n/d'}</div>
+                  <div class="account-balance">${fmtCurrency(acc.balance || 0)}</div>
                 `;
                 accGrid.appendChild(div);
               });
             }
 
-            // ---- TRADE REPUBLIC CARD ----
             if (data.trade_republic) {
-                const tr = data.trade_republic;
+              const tr = data.trade_republic;
+              const div = document.createElement('div');
+              div.className = 'account-card';
+              div.innerHTML = `
+                <div class="account-header">
+                  <div>
+                    <div class="account-name">Trade Republic</div>
+                    <div class="account-provider">Broker</div>
+                  </div>
+                </div>
+                <div class="account-balance">${fmtCurrency(tr.total_eur)}</div>
+                <div class="subtitle" style="margin-top:12px;">
+                  Cash: ${fmtCurrency(tr.cash_eur)} • Titoli: ${fmtCurrency(tr.securities_eur)}
+                </div>
+                <div class="tr-positions" id="tr-positions"></div>
+              `;
+              accGrid.appendChild(div);
 
-                const accGrid = document.getElementById('accounts-grid');
+              if (tr.positions && tr.positions.length > 0) {
+                const posContainer = div.querySelector('#tr-positions');
+                const toggle = document.createElement('div');
+                toggle.className = 'tr-toggle';
+                toggle.textContent = '▼ Mostra ' + tr.positions.length + ' posizioni';
 
-                const div = document.createElement('div');
-                div.className = 'account-card';
+                const table = document.createElement('div');
+                table.className = 'tr-table';
+                table.style.display = 'none';
 
-                div.innerHTML = `
-                    <div class="account-top">
-                        <div>
-                            <div class="account-name">Trade Republic</div>
-                            <div class="account-provider">Broker</div>
-                        </div>
-                        <div class="account-balance">${fmtCurrency(tr.total_eur)}</div>
-                    </div>
-                    <div class="muted">
-                        Cash: ${fmtCurrency(tr.cash_eur)}<br>
-                        Titoli: ${fmtCurrency(tr.securities_eur)}
-                    </div>
-                `;
+                const header = document.createElement('div');
+                header.className = 'tr-row tr-header';
+                header.innerHTML = '<span>ISIN</span><span>Nome</span><span>Quantità</span>';
+                table.appendChild(header);
 
-                accGrid.appendChild(div);
-            }
-
-            // ---- TRADE REPUBLIC POSITIONS (inside card) ----
-            if (data.trade_republic && data.trade_republic.positions) {
-                const tr = data.trade_republic;
-
-                // recuperiamo l’ULTIMA card (che è quella di Trade Republic)
-                const cards = document.querySelectorAll('.account-card');
-                const trCard = cards[cards.length - 1];
-
-                // contenitore posizioni
-                const positionsContainer = document.createElement('div');
-                positionsContainer.style.marginTop = "10px";
-
-                // toggle
-                const toggleBtn = document.createElement('div');
-                toggleBtn.textContent = "▼ Mostra posizioni";
-                toggleBtn.style.fontSize = "12px";
-                toggleBtn.style.cursor = "pointer";
-                toggleBtn.style.color = "#9ca3af";
-                toggleBtn.style.marginBottom = "6px";
-
-                const tableWrapper = document.createElement('div');
-                tableWrapper.className = "tr-table";
-                tableWrapper.style.display = "none";
-
-                // header
-                const header = document.createElement("div");
-                header.className = "tr-table-header";
-                header.innerHTML = `
-                    <span>ISIN</span>
-                    <span>Nome</span>
-                    <span>Qtà</span>
-                `;
-                tableWrapper.appendChild(header);
-
-                // rows
                 tr.positions.forEach(p => {
-                    const row = document.createElement("div");
-                    row.className = "tr-table-row";
-
-                    row.innerHTML = `
-                        <span>${p.isin}</span>
-                        <span>${p.name}</span>
-                        <span>${p.quantity}</span>
-                    `;
-
-                    tableWrapper.appendChild(row);
+                  const row = document.createElement('div');
+                  row.className = 'tr-row';
+                  row.innerHTML = `
+                    <span>${p.isin}</span>
+                    <span title="${p.name}">${p.name}</span>
+                    <span>${p.quantity}</span>
+                  `;
+                  table.appendChild(row);
                 });
 
-                toggleBtn.onclick = () => {
-                    if (tableWrapper.style.display === "none") {
-                        tableWrapper.style.display = "block";
-                        toggleBtn.textContent = "▲ Nascondi posizioni";
-                    } else {
-                        tableWrapper.style.display = "none";
-                        toggleBtn.textContent = "▼ Mostra posizioni";
-                    }
+                toggle.onclick = () => {
+                  if (table.style.display === 'none') {
+                    table.style.display = 'block';
+                    toggle.textContent = '▲ Nascondi posizioni';
+                  } else {
+                    table.style.display = 'none';
+                    toggle.textContent = '▼ Mostra ' + tr.positions.length + ' posizioni';
+                  }
                 };
 
-                positionsContainer.appendChild(toggleBtn);
-                positionsContainer.appendChild(tableWrapper);
-                trCard.appendChild(positionsContainer); // <---- QUESTO È IL PUNTO CHIAVE
+                posContainer.appendChild(toggle);
+                posContainer.appendChild(table);
+              }
             }
 
-
-
-            // ---- Transactions ----
             const allTx = [];
             accounts.forEach(acc => {
               (acc.transactions || []).forEach(t => {
                 allTx.push({
-                  date: t.date || t.made_on || '',
-                  desc: t.description || '',
+                  date: t.date || '',
+                  desc: t.description || '—',
                   amount: t.amount || 0,
-                  currency: t.currency || t.currency_code || 'EUR',
                   account: acc.name || 'Conto'
                 });
               });
@@ -1649,32 +1873,26 @@ def dashboard():
             allTx.sort((a,b) => (b.date || '').localeCompare(a.date || ''));
 
             const txCount = allTx.length;
-            document.getElementById('tx-count').textContent =
-              txCount === 0 ? '0 transazioni' :
-              (txCount === 1 ? '1 transazione' : txCount + ' transazioni');
-
-            const txWrapper = document.getElementById('tx-table-wrapper');
-            const txRows = document.getElementById('tx-rows');
-            const txEmpty = document.getElementById('tx-empty');
+            document.getElementById('tx-count').textContent = txCount + ' transazioni';
 
             if (txCount === 0) {
-              txWrapper.style.display = 'none';
-              txEmpty.style.display = 'block';
+              document.getElementById('tx-table').style.display = 'none';
+              document.getElementById('tx-empty').style.display = 'block';
             } else {
-              txWrapper.style.display = 'block';
-              txEmpty.style.display = 'none';
+              document.getElementById('tx-table').style.display = 'block';
+              document.getElementById('tx-empty').style.display = 'none';
 
+              const txRows = document.getElementById('tx-rows');
               txRows.innerHTML = '';
-              allTx.slice(0, 18).forEach(tx => {
+
+              allTx.slice(0, 20).forEach(tx => {
                 const row = document.createElement('div');
-                row.className = 'table-row';
-                const sign = tx.amount >= 0 ? '' : '-';
+                row.className = 'tx-row';
+                const amountClass = tx.amount >= 0 ? 'amount-positive' : 'amount-negative';
                 row.innerHTML = `
                   <span>${tx.date || '—'}</span>
-                  <span title="${tx.desc}">${tx.desc || '—'}</span>
-                  <span style="text-align:right;color:${tx.amount < 0 ? '#f97373' : '#4ade80'};">
-                    ${fmtCurrency(Math.abs(tx.amount))}
-                  </span>
+                  <span title="${tx.desc}">${tx.desc}</span>
+                  <span class="${amountClass}">${fmtCurrency(tx.amount)}</span>
                   <span title="${tx.account}">${tx.account}</span>
                 `;
                 txRows.appendChild(row);
@@ -1682,13 +1900,52 @@ def dashboard():
             }
           })
           .catch(err => {
-            const errorBox = document.getElementById('error-box');
-            errorBox.style.display = 'block';
-            errorBox.textContent = 'Errore di rete nel contattare /api/networth';
-            document.getElementById('status-pill').textContent = 'Errore rete';
+            document.getElementById('error-box').style.display = 'block';
+            document.getElementById('error-box').textContent = 'Errore di rete';
+            document.getElementById('status-pill').textContent = 'Errore';
           });
       </script>
     </body>
     </html>
     """
     return HTMLResponse(html)
+
+
+@app.get("/reset_customer")
+def reset_customer():
+    """
+    Dev utility: cancella il customer corrente su Salt Edge
+    e pulisce lo stato locale, così riparti da zero.
+    """
+    try:
+        customer_id = STATE.get("customer_id")
+        if not customer_id:
+            return HTMLResponse(
+                "<h2>Nessun customer da resettare</h2>"
+                "<p>Non c'è un customer attivo in memoria.</p>"
+                "<a href='/'>Torna alla home</a>",
+                status_code=200
+            )
+
+        # DELETE /customers/{id} su API v6
+        try:
+            se_delete(f"/customers/{customer_id}")
+        except requests.HTTPError as e:
+            # se fosse già stato cancellato lato Salt Edge, ignoro il 404
+            if e.response is None or e.response.status_code != 404:
+                raise
+
+        # Pulisco lo stato locale
+        STATE["customer_id"] = None
+        STATE["trade_republic"] = None
+
+        return HTMLResponse(
+            "<h2>Customer resettato ✅</h2>"
+            "<p>Il customer demo e tutti i collegamenti (banche fake) "
+            "sono stati rimossi. Ora puoi creare un nuovo customer da zero.</p>"
+            "<a href='/'>Torna alla home</a>",
+            status_code=200
+        )
+
+    except Exception as e:
+        return HTMLResponse(f"<pre>{e}</pre>", status_code=500)
