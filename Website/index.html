@@ -3201,6 +3201,19 @@
         );
 
         chartObserver.observe(chartWrapper);
+
+        // EDGE NAV CLICK
+        const edgeDashes = document.querySelectorAll('.edge-dash');
+        
+        edgeDashes.forEach(btn => {
+          btn.addEventListener('click', () => {
+            const target = document.querySelector(btn.dataset.target);
+            if (target) {
+              target.scrollIntoView({ behavior: 'smooth' });
+            }
+          });
+        });
+
     </script>
 
     <script>
