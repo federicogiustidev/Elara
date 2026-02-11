@@ -1,900 +1,3251 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Aurya — Il tuo Net Worth, ottimizzato con matematica</title>
-  <meta name="description" content="Aurya unisce portafogli e beni fisici per calcolare il tuo Net Worth in tempo reale e lo ottimizza con modelli quantitativi. Unisciti alla waiting list.">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎲</text></svg>">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elara - Portfolio Intelligence & Net Worth Optimization</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-  <!-- Open Graph -->
-  <meta property="og:title" content="Aurya — Il tuo Net Worth, ottimizzato con matematica">
-  <meta property="og:description" content="Aggrega conti, stima i tuoi beni fisici e ottimizza il portafoglio con modelli quantitativi.">
-  <meta property="og:type" content="website">
-  <meta property="og:image" content="https://aurya.example/og-image.png">
-  <meta property="og:url" content="https://aurya.example">
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+            background: #0a0a0f;
+            color: #fff;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
 
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+        .nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1.2rem 6%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(10, 10, 15, 0.7);
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+            border-bottom: 1px solid rgba(139, 92, 246, 0.1);
+            transition: all 0.3s;
+        }
 
-  <style>
-    :root{
-      --bg: #0b0d10;
-      --card: #11141a;
-      --muted: #9aa4b2;
-      --text: #e8eef7;
-      --brand: #6ee7ff;       /* ciano */
-      --brand-2:#7c5cff;      /* violet */
-      --accent:#22d3ee;
-      --ring: rgba(124,92,255,.35);
-      --ok:#34d399; --warn:#f59e0b;
-      --danger:#ef4444;
-      --radius: 14px;
-      --shadow: 0 8px 30px rgba(0,0,0,.45);
-    }
-    @media (prefers-color-scheme: light){
-      :root{ --bg:#f7f8fa; --card:#ffffff; --text:#0b0d10; --muted:#5b6b7b; --ring:rgba(124,92,255,.2) }
-      .hero::before{ opacity:.6 }
-    }
-    *{box-sizing:border-box} html,body{margin:0;height:100%}
-    body{
-      font-family:Inter,system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
-      background: radial-gradient(1200px 600px at 70% -10%, rgba(124,92,255,.20), transparent 60%),
-                  radial-gradient(800px 400px at -10% 10%, rgba(34,211,238,.20), transparent 60%),
-                  var(--bg);
-      color:var(--text);
-      line-height:1.45;
-    }
-    a{color:var(--text); text-decoration: none}
-    .container{width:100%; max-width:1120px; margin:0 auto; padding:0 20px}
+        .nav.scrolled {
+            background: rgba(10, 10, 15, 0.95);
+            padding: 0.8rem 6%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
 
-    /* Header */
-    header{position:sticky; top:0; backdrop-filter:saturate(140%) blur(8px); background: color-mix(in oklab, var(--bg) 75%, transparent); z-index:40; border-bottom:1px solid rgba(255,255,255,.06)}
-    .nav{display:flex; align-items:center; justify-content:space-between; padding:14px 0}
-    .brand{display:flex; align-items:center; gap:12px; font-weight:800; letter-spacing:.4px}
-    .logo{width:36px; height:36px; border-radius:10px; background:
-      conic-gradient(from 200deg, var(--brand), var(--brand-2));
-      display:grid; place-items:center; color:#0b0d10; font-weight:900; box-shadow:var(--shadow)}
-    .nav a.mini{opacity:.8; transition:opacity .2s}
-    .nav a.mini:hover{opacity:1}
-    .cta{display:inline-grid; place-items:center; padding:10px 16px; border-radius:12px; font-weight:700; background:
-      linear-gradient(100deg, var(--brand-2), var(--accent));
-      box-shadow: 0 10px 24px rgba(124,92,255,.35); color:#0b0d10}
-    .cta:hover{transform: translateY(-1px); transition:transform .15s}
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.03em;
+        }
 
-    /* Hero */
-    .hero{position:relative; overflow:hidden; border-bottom:1px solid rgba(255,255,255,.06)}
-    .hero::before{
-      content:"";
-      position:absolute; inset:-20% -10% auto -10%;
-      height:60%;
-      background: radial-gradient(600px 260px at 60% 30%, rgba(126,58,242,.20), transparent 60%),
-                  radial-gradient(500px 220px at 20% 10%, rgba(34,211,238,.18), transparent 60%);
-      pointer-events:none; opacity:.35;
-    }
-    .hero-inner{display:grid; grid-template-columns:1.2fr 1fr; gap:40px; align-items:center; padding:64px 0 44px}
-    @media (max-width: 920px){ .hero-inner{grid-template-columns:1fr; padding:40px 0} }
-    .kicker{display:inline-flex; align-items:center; gap:10px; padding:6px 10px; border-radius:999px; background:rgba(124,92,255,.10); border:1px solid rgba(124,92,255,.25); color:#cbd5e1; font-weight:600; font-size:12.5px}
-    .title{font-size: clamp(34px, 5.4vw, 58px); font-weight:900; letter-spacing:-.02em; margin:14px 0}
-    .title strong{background: linear-gradient(100deg, var(--brand), var(--brand-2)); background-clip:text; -webkit-background-clip: text; color:transparent}
-    .lead{font-size: clamp(16px, 2.4vw, 19px); color:var(--muted); max-width: 56ch}
-    .points{display:grid; gap:10px; margin:20px 0 28px}
-    .point{display:flex; align-items:flex-start; gap:10px; color:#c8d2df}
-    .point .b{width:22px; height:22px; border-radius:6px; background:linear-gradient(120deg, var(--brand), var(--brand-2)); display:grid; place-items:center; font-weight:900; color:#0b0d10}
-    .hero-card{
-      background:linear-gradient(180deg, color-mix(in oklab, var(--card) 78%, transparent), color-mix(in oklab, var(--card) 92%, transparent));
-      border:1px solid rgba(255,255,255,.08); padding:18px; border-radius:16px; box-shadow:var(--shadow)
-    }
-    .meter{
-      margin:14px 0 10px; height:10px; background: #0c1117; border-radius:999px; overflow:hidden; border:1px solid rgba(255,255,255,.06)
-    }
-    .meter > span{display:block; height:100%; width:72%; background:linear-gradient(90deg, var(--brand-2), var(--accent))}
-    .mini-stat{display:flex; justify-content:space-between; font-size:12.5px; color:#9fb0c3}
+        .nav-links {
+            display: flex;
+            gap: 3rem;
+            align-items: center;
+        }
 
-    /* Sections */
-    section{padding:64px 0}
-    .eyebrow{font-size:12px; text-transform:uppercase; letter-spacing:.14em; color:#98a6b8; font-weight:700}
-    h2{font-size: clamp(26px, 4.2vw, 40px); margin:8px 0 14px}
-    .grid{display:grid; gap:16px}
-    .grid-3{grid-template-columns: repeat(3,1fr)}
-    .grid-2{grid-template-columns: 1.2fr 1fr}
-    @media (max-width: 960px){ .grid-3,.grid-2{grid-template-columns:1fr} }
+        .nav-links a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            font-weight: 500;
+            position: relative;
+        }
 
-    .card{
-      background: linear-gradient(180deg, color-mix(in oklab, var(--card) 86%, transparent), color-mix(in oklab, var(--card) 94%, transparent));
-      border:1px solid rgba(255,255,255,.08);
-      border-radius: var(--radius);
-      padding:18px;
-      box-shadow: var(--shadow);
-    }
-    .card h3{margin:6px 0 6px; font-size:20px}
-    .muted{color:var(--muted)}
-    .chip{display:inline-flex; gap:6px; align-items:center; padding:6px 10px; border-radius:999px; background:#0d121a; border:1px solid rgba(255,255,255,.08); font-size:12.5px}
-    .check{width:18px; height:18px; border-radius:6px; background:linear-gradient(120deg, var(--brand), var(--brand-2)); display:inline-grid; place-items:center; color:#0b0d10; font-weight:900}
+        .nav-links a:hover {
+            color: #8b5cf6;
+        }
 
-    /* Form */
-    .signup{display:grid; gap:10px; grid-template-columns:1.6fr .9fr}
-    @media (max-width: 720px){ .signup{grid-template-columns:1fr} }
-    input, button{
-      font: inherit; border-radius:12px; padding:14px 16px; border:1px solid rgba(255,255,255,.12); background:#0e131a; color:var(--text);
-      outline:none;
-    }
-    input:focus{border-color:var(--accent); box-shadow:0 0 0 6px var(--ring)}
-    button{cursor:pointer; border:none; font-weight:800; letter-spacing:.2px; background:linear-gradient(100deg, var(--brand-2), var(--accent)); color:#0b0d10}
-    button:hover{transform: translateY(-1px)}
-    .note{font-size:12px; color:#9fb0c3}
+        .nav-cta {
+            padding: 0.75rem 2rem;
+            background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.95rem;
+        }
 
-    /* Marquee / logos */
-    .strip{display:flex; overflow:auto; gap:24px; padding:10px 0 4px}
-    .logo-badge{min-width:120px; height:46px; border-radius:12px; background:#0e131a; border:1px dashed rgba(255,255,255,.10); display:grid; place-items:center; color:#a9b6c7; font-weight:700}
+        .nav-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(139, 92, 246, 0.5);
+        }
 
-    /* Steps */
-    .step{display:flex; gap:14px}
-    .bullet{width:34px; height:34px; border-radius:10px; background:linear-gradient(120deg, var(--brand), var(--brand-2)); display:grid; place-items:center; color:#0b0d10; font-weight:900}
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 12rem 6% 8rem;
+            position: relative;
+            overflow: hidden;
+        }
 
-    /* FAQ */
-    .faq details{border:1px solid rgba(255,255,255,.1); border-radius:14px; padding:16px; background:#0d1219}
-    .faq summary{cursor:pointer; font-weight:700; list-style:none}
-    .faq summary::-webkit-details-marker{display:none}
-    .faq details + details{margin-top:10px}
-    .faq p{color:#b8c3d3}
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(ellipse at 50% 20%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 50%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 20% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 50%);
+            animation: gradientFloat 20s ease infinite;
+        }
 
-    /* Footer */
-    footer{padding:34px 0 60px; border-top:1px solid rgba(255,255,255,.06); color:#9fb0c3}
-    .foot-grid{display:grid; grid-template-columns:1.2fr 1fr 1fr; gap:18px}
-    @media (max-width: 960px){ .foot-grid{grid-template-columns:1fr} }
+        @keyframes gradientFloat {
+            0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.8; }
+            33% { transform: scale(1.1) rotate(120deg); opacity: 1; }
+            66% { transform: scale(0.95) rotate(240deg); opacity: 0.9; }
+        }
 
-    /* Animations */
-    .reveal{opacity:0; transform: translateY(10px); transition: opacity .6s ease, transform .6s ease}
-    .reveal.visible{opacity:1; transform:none}
-    @media (prefers-reduced-motion: reduce){
-      .reveal{opacity:1; transform:none}
-      button:hover{transform:none}
-    }
+        .grid-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(rgba(139, 92, 246, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(139, 92, 246, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            mask-image: radial-gradient(ellipse at center, black 0%, transparent 70%);
+        }
 
-    .lang-wrapper { position: relative; }
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 1100px;
+        }
 
-    .lang-btn {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.2);
-      padding: 8px 14px;
-      border-radius: 14px;
-      cursor: pointer;
-      color: var(--text);
-      font-size: 14px;
-      transition: background 0.2s;
-    }
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.5rem;
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 50px;
+            color: #a78bfa;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 2.5rem;
+            animation: fadeInUp 0.6s ease;
+            backdrop-filter: blur(10px);
+        }
+    
+        .badge-dot {
+            width: 8px;
+            height: 8px;
+            background: #8b5cf6;
+            border-radius: 50%;
+            animation: pulse 2s ease infinite;
+        }
 
-    .lang-btn img {
-      width: 20px;
-      height: auto;
-      border-radius: 4px;
-    }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
 
-    .lang-btn:hover {
-      background: rgba(255,255,255,0.14);
-    }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-    .lang-dropdown {
-      display: none;
-      position: absolute;
-      top: 46px;
-      right: 0;
-      background: #11141a;
-      border: 1px solid rgba(255,255,255,0.15);
-      border-radius: 14px;
-      width: 180px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.35);
-      padding: 6px;
-      z-index: 200;
-    }
+        .hero h1 {
+            font-size: 6rem;
+            font-weight: 900;
+            line-height: 1.05;
+            margin-bottom: 2rem;
+            letter-spacing: -0.04em;
+            animation: fadeInUp 0.6s ease 0.1s both;
+        }
 
-    .lang-option {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px;
-      border-radius: 10px;
-      cursor: pointer;
-      font-size: 14px;
-      color: var(--text);
-    }
+        .gradient-text {
+            background: linear-gradient(135deg, #fff 0%, #e0e7ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
 
-    .lang-option img {
-      width: 20px;
-      border-radius: 4px;
-    }
+        .hero p {
+            font-size: 1.4rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 3.5rem;
+            line-height: 1.7;
+            max-width: 750px;
+            margin-left: auto;
+            margin-right: auto;
+            animation: fadeInUp 0.6s ease 0.2s both;
+        }
 
-    .lang-option:hover {
-      background: rgba(255,255,255,0.08);
-    }
+        .hero-buttons {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeInUp 0.6s ease 0.3s both;
+            margin-bottom: 5rem;
+        }
 
-    .lang-open #lang-dropdown {
-      display: block;
-    }
+        .primary-btn {
+            padding: 1.3rem 3.5rem;
+            background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+            border: none;
+            border-radius: 14px;
+            color: #fff;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: all 0.4s;
+            box-shadow: 0 10px 40px rgba(139, 92, 246, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
 
-    .lang-open #lang-arrow {
-      transform: rotate(180deg);
-      transition: transform 0.2s;
-    }
+        .primary-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
 
-    #lang-arrow {
-      transition: transform 0.2s;
-    }
+        .primary-btn:hover::before {
+            left: 100%;
+        }
+
+        .primary-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 60px rgba(139, 92, 246, 0.6);
+        }
+
+        .secondary-btn {
+            padding: 1.3rem 3.5rem;
+            background: rgba(139, 92, 246, 0.1);
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            border-radius: 14px;
+            color: #fff;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+        }
+
+        .secondary-btn:hover {
+            background: rgba(139, 92, 246, 0.2);
+            border-color: #8b5cf6;
+            transform: translateY(-3px);
+        }
 
 
-  </style>
+        /* dashboard */
+        .insight-strip {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 3rem;
 
-  <!-- JSON-LD -->
-  <script type="application/ld+json">
-  {
-    "@context":"https://schema.org",
-    "@type":"Organization",
-    "name":"Aurya",
-    "url":"https://aurya.example",
-    "logo":"https://aurya.example/logo.png",
-    "sameAs": [],
-    "description":"App che aggrega conti, stima beni fisici e ottimizza il portafoglio con modelli quantitativi."
+            background: linear-gradient(
+                180deg,
+                rgba(139,92,246,0.06),
+                rgba(10,10,15,0.85)
+            );
+
+            border-radius: 28px;
+            padding: 3.5rem 4rem;
+
+            border: 1px solid rgba(139,92,246,0.18);
+            backdrop-filter: blur(20px);
+
+            box-shadow:
+                0 40px 80px rgba(0,0,0,0.45),
+                inset 0 0 0 1px rgba(255,255,255,0.03);
+        }
+
+        .insight-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        .insight-label {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: rgba(255,255,255,0.45);
+        }
+
+       .insight-value {
+            font-size: 2.4rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+
+            background: linear-gradient(135deg, #ffffff, #dcdcff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .insight-meta {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: rgba(255,255,255,0.55);
+        }
+
+        .insight-meta.positive {
+            color: rgba(255,255,255,0.65);
+        }
+
+        .insight-meta.neutral {
+            color: rgba(255,255,255,0.55);
+        }
+
+        /* responsive */
+        @media (max-width: 900px) {
+            .insight-strip {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 3rem;
+        }
+        }
+
+
+        @media (max-width: 500px) {
+            .insight-strip {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .dashboard-mockup {
+            position: relative;
+            width: 100%;
+            max-width: 1300px;
+            margin: 0 auto;
+            animation: fadeInUp 0.8s ease 0.4s both;
+        }
+
+        .mockup-container {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.05) 0%, rgba(99, 102, 241, 0.05) 100%);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 24px;
+            padding: 3rem;
+            backdrop-filter: blur(20px);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5);
+        }
+
+        .mockup-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, transparent 70%);
+            animation: rotate 30s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .mockup-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stat-card {
+            background: rgba(10, 10, 15, 0.6);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.4s;
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(139, 92, 246, 0.5);
+            box-shadow: 0 20px 40px rgba(139, 92, 246, 0.2);
+        }
+
+        .stat-label {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.85rem;
+            margin-bottom: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-change {
+            font-size: 0.9rem;
+            color: #10b981;
+            margin-top: 0.5rem;
+        }
+
+        .brands-section {
+            padding: 5rem 6%;
+            background: rgba(139, 92, 246, 0.02);
+            border-top: 1px solid rgba(139, 92, 246, 0.1);
+            border-bottom: 1px solid rgba(139, 92, 246, 0.1);
+        }
+
+        .brands-label {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.85rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            margin-bottom: 3rem;
+            font-weight: 600;
+        }
+
+        .brands-grid {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5rem;
+            flex-wrap: wrap;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .brand-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .brand-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+
+        .brand-icon svg {
+            width: 20px;
+            height: 20px;
+        }
+        
+        .brand-item:hover {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+
+@media (max-width: 768px) {
+
+  .brands-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.2rem 1.6rem;
+
+    max-width: 360px;
+    margin: 0 auto;
+    justify-items: center;
   }
-  </script>
+
+  .brand-item {
+    width: 100%;
+    max-width: 160px;
+
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+
+    padding: 0.7rem 0.8rem;
+    border-radius: 14px;
+
+    font-size: 0.75rem;
+    white-space: nowrap;
+  }
+
+  .brand-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 10px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(139,92,246,0.12);
+    flex-shrink: 0;
+  }
+
+  .icon-svg {
+    width: 15px;
+    height: 15px;
+    stroke: #8b5cf6;
+    stroke-width: 1.6;
+    fill: none;
+  }
+}
+
+        .features-section {
+            padding: 10rem 6%;
+            background: #0a0a0f;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .features-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(139, 92, 246, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(99, 102, 241, 0.05) 0%, transparent 50%);
+        }
+
+        .section-header {
+            text-align: center;
+            max-width: 850px;
+            margin: 0 auto 8rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .section-tag {
+            display: inline-block;
+            padding: 0.6rem 1.5rem;
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 50px;
+            color: #a78bfa;
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .section-title {
+            font-size: 4.5rem;
+            font-weight: 900;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.04em;
+            line-height: 1.1;
+        }
+
+        .section-description {
+            font-size: 1.35rem;
+            color: rgba(255, 255, 255, 0.6);
+            line-height: 1.7;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2.5rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.03) 0%, rgba(10, 10, 15, 0.8) 100%);
+            border: 1px solid rgba(139, 92, 246, 0.15);
+            border-radius: 28px;
+            padding: 4rem;
+            transition: all 0.5s;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(20px);
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.05) 0%, transparent 100%);
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .feature-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-12px);
+            border-color: rgba(139, 92, 246, 0.4);
+            box-shadow: 0 40px 80px rgba(139, 92, 246, 0.15);
+        }
+
+        .feature-card:hover::before {
+            opacity: 1;
+        }
+
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(99, 102, 241, 0.1) 100%);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 2.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .icon-svg {
+            width: 36px;
+            height: 36px;
+            stroke: #8b5cf6;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .feature-card h3 {
+            font-size: 2.2rem;
+            margin-bottom: 1.2rem;
+            font-weight: 800;
+            position: relative;
+            z-index: 1;
+            letter-spacing: -0.02em;
+        }
+
+        .feature-card p {
+            color: rgba(255, 255, 255, 0.6);
+            line-height: 1.8;
+            font-size: 1.15rem;
+            position: relative;
+            z-index: 1;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            color: #8b5cf6;
+            font-weight: 700;
+            font-size: 1rem;
+            transition: all 0.3s;
+            position: relative;
+            z-index: 1;
+            text-decoration: none;
+        }
+
+        .feature-link:hover {
+            gap: 1rem;
+        }
+
+        .algorithms-section {
+            padding: 10rem 6%;
+            background: linear-gradient(180deg, #0a0a0f 0%, #050508 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .algorithms-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('data:image/svg+xml,<svg width="60" height="60" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse"><path d="M 60 0 L 0 0 0 60" fill="none" stroke="rgba(139,92,246,0.05)" stroke-width="1"/></pattern></defs><rect width="60" height="60" fill="url(%23grid)"/></svg>');
+            mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+        }
+
+        .split-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .content-block h2 {
+            font-size: 4.5rem;
+            font-weight: 900;
+            margin-bottom: 2.5rem;
+            line-height: 1.05;
+            letter-spacing: -0.04em;
+        }
+
+        .content-block p {
+            font-size: 1.25rem;
+            color: rgba(255, 255, 255, 0.6);
+            line-height: 1.8;
+            margin-bottom: 4rem;
+        }
+
+        .algo-grid {
+            display: grid;
+            gap: 1.8rem;
+        }
+
+        .algo-card {
+            background: rgba(139, 92, 246, 0.05);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 18px;
+            padding: 2rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 1.5rem;
+            transition: all 0.4s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .algo-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.1), transparent);
+            transition: left 0.6s;
+        }
+
+        .algo-card:hover::before {
+            left: 100%;
+        }
+
+        .algo-card:hover {
+            background: rgba(139, 92, 246, 0.08);
+            border-color: rgba(139, 92, 246, 0.4);
+            transform: translateX(15px);
+        }
+
+        .algo-number {
+            width: 50px;
+            height: 50px;
+            background: rgba(139, 92, 246, 0.15);
+            border: 1px solid rgba(139, 92, 246, 0.35);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .algo-icon {
+            width: 26px;
+            height: 26px;
+            stroke: #8b5cf6;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .algo-content h4 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .algo-content p {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.5);
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        .visual-block {
+            position: relative;
+        }
+
+        .chart-wrapper {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.08) 0%, rgba(10, 10, 15, 0.9) 100%);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 28px;
+            padding: 4rem;
+            backdrop-filter: blur(20px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chart-wrapper::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, transparent 60%);
+            animation: rotate 25s linear infinite;
+        }
+
+        .chart-visual {
+            width: 100%;
+            height: 450px;
+            background: linear-gradient(180deg, rgba(139, 92, 246, 0.1) 0%, rgba(99, 102, 241, 0.05) 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chart-lines {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: flex-end;
+            padding: 3rem;
+        }
+
+        .chart-svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .chart-path {
+            fill: none;
+            stroke: #8b5cf6;
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-dasharray: 1200;
+            stroke-dashoffset: 1200;
+        }
+
+        .chart-path {
+            animation-timing-function: cubic-bezier(.22,.61,.36,1);
+        }
+
+        .chart-area {
+            fill: url(#areaGradient);
+            opacity: 0;
+        }
+
+        .chart-wrapper.is-visible .chart-path {
+        animation: drawLine 2.2s cubic-bezier(.4,0,.2,1) forwards;
+        }
+
+        .chart-wrapper.is-visible .chart-area {
+        animation: fadeArea 1.6s ease forwards;
+        animation-delay: 1.2s;
+        }
+
+        @keyframes drawLine {
+        to {
+            stroke-dashoffset: 0;
+        }
+        }
+
+        @keyframes fadeArea {
+        to {
+            opacity: 1;
+        }
+}
+
+
+        @keyframes drawLine {
+        to {
+            stroke-dashoffset: 0;
+        }
+        }
+
+        @keyframes fadeArea {
+        to {
+            opacity: 1;
+        }
+        }
+
+        /* quando attivo */
+        .chart-animate .chart-path {
+        animation: drawLine 2.2s cubic-bezier(.4,0,.2,1) forwards;
+        }
+
+        .chart-animate .chart-area {
+        animation: fadeArea 1.6s ease forwards;
+        animation-delay: 1.2s;
+        }
+        @keyframes drawLine {
+            to { stroke-dashoffset: 0; }
+        }
+
+        @keyframes fadeArea {
+            to { opacity: 1; }
+        }
+
+        @keyframes chartWave {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        .chart-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(rgba(139, 92, 246, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(139, 92, 246, 0.1) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        /* AI copilot */
+        .elara-avatar {
+            width: 44px;
+            height: 44px;
+            padding: 6px;
+            border-radius: 12px;
+            background: linear-gradient(
+                135deg,
+                rgba(139,92,246,0.25),
+                rgba(99,102,241,0.15)
+            );
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow:
+                0 8px 24px rgba(139,92,246,0.35),
+                inset 0 0 0 1px rgba(255,255,255,0.08);
+            flex-shrink: 0;
+        }
+
+        .elara-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 10px rgba(139,92,246,0.5));
+        }
+
+        .ai-message .elara-avatar {
+            width: 36px;
+            height: 36px;
+            padding: 5px;
+            border-radius: 10px;
+        }
+        .chart-labels {
+            position: absolute;
+            inset: 0;
+            padding: 2rem 3rem;
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.55);
+            display: flex;
+            justify-content: space-between;
+            pointer-events: none;
+        }
+
+        .chart-y {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .security-section {
+            padding: 10rem 6%;
+            background: #0a0a0f;
+            position: relative;
+        }
+
+        .security-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2.5rem;
+            max-width: 1400px;
+            margin: 4rem auto 0;
+        }
+
+        .security-card {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.03) 0%, rgba(10, 10, 15, 0.5) 100%);
+            border: 1px solid rgba(139, 92, 246, 0.15);
+            border-radius: 24px;
+            padding: 3.5rem;
+            text-align: center;
+            transition: all 0.5s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .security-card::before {
+            content: '';
+            position: absolute;
+            top: -100%;
+            left: 50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, transparent 70%);
+            transform: translateX(-50%);
+            transition: top 0.6s;
+        }
+
+        .security-card:hover::before {
+            top: -50%;
+        }
+
+        .security-card:hover {
+            background: rgba(139, 92, 246, 0.05);
+            border-color: rgba(139, 92, 246, 0.3);
+            transform: translateY(-15px);
+        }
+
+        .security-icon-wrap {
+            width: 90px;
+            height: 90px;
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2.5rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+
+        .security-card h3 {
+            font-size: 1.7rem;
+            margin-bottom: 1.2rem;
+            font-weight: 800;
+            position: relative;
+            z-index: 1;
+        }
+
+        .security-card p {
+            color: rgba(255, 255, 255, 0.6);
+            line-height: 1.8;
+            font-size: 1.05rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .testimonials-section {
+            padding: 10rem 6%;
+            background: linear-gradient(180deg, #0a0a0f 0%, #12121c 100%);
+            position: relative;
+        }
+
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2.5rem;
+            max-width: 1400px;
+            margin: 4rem auto 0;
+            align-items: stretch;
+        }
+
+        .testimonial {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.05) 0%, rgba(10, 10, 15, 0.8) 100%);
+            border: 1px solid rgba(139, 92, 246, 0.15);
+            border-radius: 24px;
+            padding: 3.5rem;
+            transition: all 0.5s;
+            position: relative;
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .testimonial:hover {
+            transform: translateY(-10px);
+            border-color: rgba(139, 92, 246, 0.4);
+            box-shadow: 0 30px 60px rgba(139, 92, 246, 0.15);
+        }
+
+        .stars {
+            color: #f59e0b;
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            letter-spacing: 0.2rem;
+        }
+
+        .testimonial-tag {
+            display: inline-block;
+            font-size: 0.7rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.45);
+            margin-bottom: 1.5rem;
+        }
+
+        .testimonial-text {
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.9;
+            margin-bottom: 2.5rem;
+            font-size: 1.1rem;
+            flex: 1;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .testimonial-author {
+            display: flex;
+            margin-top: auto;
+            align-items: center;
+            gap: 1.2rem;
+        }
+
+        .testimonial-text {
+            flex: 1;
+        }
+
+
+        .pricing-section {
+            padding: 10rem 6%;
+            background: #0a0a0f;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pricing-section::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 1200px;
+            height: 1200px;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.08) 0%, transparent 70%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.1); }
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2.5rem;
+            max-width: 1400px;
+            margin: 4rem auto 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .pricing-card {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.03) 0%, rgba(10, 10, 15, 0.9) 100%);
+            border: 1px solid rgba(139, 92, 246, 0.15);
+            border-radius: 28px;
+            padding: 3.5rem;
+            transition: all 0.5s;
+            position: relative;
+            backdrop-filter: blur(20px);
+        }
+
+        .pricing-card.featured {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(99, 102, 241, 0.08) 100%);
+            border: 2px solid rgba(139, 92, 246, 0.4);
+            transform: scale(1.05);
+            box-shadow: 0 40px 80px rgba(139, 92, 246, 0.2);
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-15px);
+            border-color: rgba(139, 92, 246, 0.4);
+            box-shadow: 0 30px 60px rgba(139, 92, 246, 0.2);
+        }
+
+        .pricing-card.featured:hover {
+            transform: translateY(-15px) scale(1.05);
+        }
+
+        .pricing-badge {
+            position: absolute;
+            top: -18px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 0.6rem 1.8rem;
+            background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.4);
+        }
+
+        .pricing-name {
+            font-size: 1.4rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            color: #a78bfa;
+        }
+
+        .pricing-price {
+            font-size: 4rem;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.03em;
+        }
+
+        .pricing-price span {
+            font-size: 1.3rem;
+            color: rgba(255, 255, 255, 0.5);
+            font-weight: 600;
+        }
+
+        .pricing-description {
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 2.5rem;
+            line-height: 1.7;
+            font-size: 1.05rem;
+        }
+
+        .pricing-features {
+            list-style: none;
+            margin-bottom: 2.5rem;
+        }
+
+        .pricing-features li {
+            padding: 1rem 0;
+            color: rgba(255, 255, 255, 0.7);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            border-bottom: 1px solid rgba(139, 92, 246, 0.1);
+            font-size: 1rem;
+        }
+
+        .pricing-features li:last-child {
+            border-bottom: none;
+        }
+
+        .pricing-features li::before {
+            content: '✓';
+            color: #8b5cf6;
+            font-weight: 900;
+            font-size: 1.3rem;
+            flex-shrink: 0;
+        }
+
+        .pricing-btn {
+            width: 100%;
+            padding: 1.2rem;
+            background: transparent;
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            border-radius: 14px;
+            color: #fff;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1rem;
+        }
+
+        .pricing-card.featured .pricing-btn {
+            background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+            border: none;
+            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.4);
+        }
+
+        .pricing-btn:hover {
+            transform: translateY(-3px);
+            border-color: #8b5cf6;
+            background: rgba(139, 92, 246, 0.1);
+        }
+
+        .pricing-card.featured .pricing-btn:hover {
+            background: linear-gradient(135deg, #9d6fff 0%, #7c7ff6 100%);
+            box-shadow: 0 15px 40px rgba(139, 92, 246, 0.5);
+        }
+
+        .cta-final {
+            padding: 12rem 6%;
+            background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-final::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.08) 0%, transparent 50%);
+        }
+
+        .cta-final::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('data:image/svg+xml,<svg width="80" height="80" xmlns="http://www.w3.org/2000/svg"><circle cx="2" cy="2" r="2" fill="rgba(255,255,255,0.1)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .cta-content {
+            max-width: 950px;
+            margin: 0 auto;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .cta-final h2 {
+            font-size: 5rem;
+            font-weight: 900;
+            margin-bottom: 2rem;
+            line-height: 1.1;
+            letter-spacing: -0.04em;
+        }
+
+        .cta-final p {
+            font-size: 1.5rem;
+            margin-bottom: 4rem;
+            opacity: 0.95;
+            line-height: 1.7;
+        }
+
+        .cta-form {
+            display: flex;
+            gap: 1.2rem;
+            max-width: 650px;
+            margin: 0 auto 2rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .cta-input {
+            flex: 1;
+            min-width: 320px;
+            padding: 1.4rem 1.8rem;
+            background: rgba(255, 255, 255, 0.95);
+            border: none;
+            border-radius: 14px;
+            font-size: 1.05rem;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .cta-input:focus {
+            background: #fff;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .cta-input::placeholder {
+            color: rgba(0, 0, 0, 0.75);
+        }
+
+        .cta-submit {
+            padding: 1.4rem 3.5rem;
+            background: #0a0a0f;
+            color: #fff;
+            border: none;
+            border-radius: 14px;
+            font-weight: 800;
+            font-size: 1.05rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .cta-submit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+            background: #000;
+        }
+
+        .cta-note {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.95rem;
+        }
+
+        footer {
+            padding: 6rem 6% 3rem;
+            background: #0a0a0f;
+            border-top: 1px solid rgba(139, 92, 246, 0.1);
+        }
+
+        .footer-grid {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2.5fr 1fr 1fr 1fr 1fr;
+            gap: 4rem;
+            margin-bottom: 4rem;
+        }
+
+        .footer-brand h3 {
+            font-size: 2rem;
+            background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1.5rem;
+            font-weight: 900;
+        }
+
+        .footer-brand p {
+            color: rgba(255, 255, 255, 0.5);
+            line-height: 1.8;
+            margin-bottom: 2rem;
+            font-size: 1.05rem;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .social-btn {
+            width: 44px;
+            height: 44px;
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, 0.6);
+            transition: all 0.3s;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .social-btn:hover {
+            background: rgba(139, 92, 246, 0.2);
+            border-color: #8b5cf6;
+            color: #8b5cf6;
+            transform: translateY(-3px);
+        }
+
+        .footer-column h4 {
+            font-size: 1.05rem;
+            margin-bottom: 1.8rem;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .footer-column ul {
+            list-style: none;
+        }
+
+        .footer-column li {
+            margin-bottom: 1rem;
+        }
+
+        .footer-column a {
+            color: rgba(255, 255, 255, 0.5);
+            text-decoration: none;
+            transition: color 0.3s;
+            font-size: 0.95rem;
+        }
+
+        .footer-column a:hover {
+            color: #8b5cf6;
+        }
+
+        .footer-bottom {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding-top: 3rem;
+            border-top: 1px solid rgba(139, 92, 246, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.9rem;
+        }
+
+        .footer-links-bottom {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .footer-links-bottom a {
+            color: rgba(255, 255, 255, 0.4);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links-bottom a:hover {
+            color: #8b5cf6;
+        }
+
+        @media (max-width: 1200px) {
+            .hero h1 { font-size: 4.5rem; }
+            .section-title { font-size: 3.5rem; }
+            .features-grid { grid-template-columns: 1fr; }
+            .split-container { grid-template-columns: 1fr; gap: 4rem; }
+            .mockup-stats { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .hero h1 { font-size: 3rem; }
+            .hero p { font-size: 1.2rem; }
+            .section-title { font-size: 2.5rem; }
+            .cta-final h2 { font-size: 3rem; }
+            .mockup-stats { grid-template-columns: 1fr; }
+            .security-grid, .testimonials-grid, .pricing-grid { grid-template-columns: 1fr; }
+            .footer-grid { grid-template-columns: 1fr; gap: 3rem; }
+            .footer-bottom { flex-direction: column; gap: 2rem; }
+            .cta-form { flex-direction: column; }
+            .cta-input { min-width: 100%; }
+        }
+
+        .ai-action-section {
+            margin-top: 120px; /* aumenta o riduci */
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 1.2rem 1.8rem;
+            background: rgba(139, 92, 246, 0.06);
+            border: 1px solid rgba(139, 92, 246, 0.25);
+            border-radius: 16px;
+            color: #fff;
+            font-size: 1rem;
+            outline: none;
+            backdrop-filter: blur(10px);
+        }
+
+        .chat-input::placeholder {
+            color: rgba(255,255,255,0.35);
+        }
+
+        .send-btn {
+            padding: 1.2rem 2.2rem;
+            background: linear-gradient(135deg, #8b5cf6, #6366f1);
+            border: none;
+            border-radius: 16px;
+            color: #fff;
+            font-weight: 700;
+            cursor: not-allowed;
+            opacity: 0.7;
+            box-shadow: 0 10px 30px rgba(139,92,246,0.35);
+        }
+
+        /* ==================== VALIDATION: AI DEMO STYLES ==================== */
+
+        .question-pill {
+            padding: 1rem 2rem;
+            background: rgba(139, 92, 246, 0.1);
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            border-radius: 50px;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .question-pill:hover {
+            background: rgba(139, 92, 246, 0.2);
+            border-color: #8b5cf6;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3);
+        }
+
+        .question-pill:active {
+            transform: translateY(0);
+        }
+
+        #chat-input:focus {
+            border-color: #8b5cf6;
+            background: rgba(139, 92, 246, 0.1);
+        }
+
+        .send-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(139, 92, 246, 0.5);
+        }
+
+        .user-message {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.4s ease;
+        }
+
+        .user-message > div {
+            background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+            border-radius: 18px;
+            padding: 1.5rem 2rem;
+            max-width: 75%;
+        }
+
+        .user-message p {
+            margin: 0;
+            color: #fff;
+            line-height: 1.7;
+            font-size: 1.05rem;
+        }
+
+        .ai-message {
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 0.4rem;
+            padding: 1rem;
+        }
+
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            background: #8b5cf6;
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% {
+                transform: translateY(0);
+                opacity: 0.7;
+            }
+            30% {
+                transform: translateY(-10px);
+                opacity: 1;
+            }
+        }
+
+        .problem-card {
+            transition: all 0.5s;
+        }
+
+        .problem-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(139, 92, 246, 0.4);
+            box-shadow: 0 30px 60px rgba(139, 92, 246, 0.15);
+        }
+
+        @media (max-width: 768px) {
+            .problem-card {
+                grid-template-columns: 1fr !important;
+                text-align: center;
+            }
+            
+            .quick-questions {
+                flex-direction: column;
+            }
+            
+            .question-pill {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .insight-strip {
+                padding: 2rem;
+                gap: 2rem;
+            }
+
+            .insight-value {
+                font-size: 2rem;
+            }
+        }
+
+        .insight-value {
+            word-break: keep-all;
+            white-space: nowrap;
+        }
+
+        .insight-item {
+            animation: fadeInUp 0.6s ease both;
+        }
+
+        .insight-item:nth-child(2) { animation-delay: 0.1s; }
+        .insight-item:nth-child(3) { animation-delay: 0.2s; }
+        .insight-item:nth-child(4) { animation-delay: 0.3s; }
+
+        /* Testimonials */
+
+        .author-info h4 {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: rgba(255,255,255,0.95);
+            margin-bottom: 0.3rem;
+        }
+
+        .author-role {
+            font-size: 0.95rem;
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 0.4rem;
+        }
+
+        .author-meta {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.45);
+            letter-spacing: 0.02em;
+        }
+
+
+        /* ===========================
+        ELARA — FIX MOBILE iPHONE
+        =========================== */
+        @media (max-width: 768px) {
+
+        /* 1️⃣ Compensa NAVBAR fixed */
+        body {
+            padding-top: 72px;
+        }
+
+        .nav {
+            height: 72px;
+            padding: 0.8rem 1.2rem;
+        }
+
+        /* 2️⃣ HERO: rimuovi vh bug iOS */
+        .hero {
+            min-height: unset !important;
+            padding: 2.5rem 1.25rem 2rem !important;
+        }
+
+        .hero h1 {
+            font-size: 2.2rem;
+            line-height: 1.15;
+        }
+
+        .hero p {
+            font-size: 0.95rem;
+            max-width: 38ch;
+        }
+
+        /* 3️⃣ Dashboard sotto hero */
+        .dashboard-mockup {
+            margin-top: 2rem;
+        }
+
+        /* 4️⃣ Insight strip */
+        .insight-strip {
+            grid-template-columns: 1fr !important;
+            padding: 1.5rem !important;
+            gap: 1.25rem;
+        }
+
+        /* 5️⃣ Split container (algoritmi) */
+        .split-container {
+            grid-template-columns: 1fr !important;
+            gap: 2.5rem !important;
+        }
+
+        /* 6️⃣ Chart FIX */
+        .chart-wrapper {
+            padding: 1.25rem !important;
+        }
+
+        .chart-visual {
+            height: 240px !important;
+        }
+
+        .chart-labels {
+            font-size: 0.7rem;
+            padding: 0.75rem 1rem;
+        }
+
+        /* 7️⃣ Cards densità */
+        .feature-card,
+        .algo-card,
+        .security-card,
+        .testimonial,
+        .pricing-card {
+            padding: 1.25rem !important;
+        }
+
+        /* 8️⃣ Griglie sempre colonna */
+        .features-grid,
+        .security-grid,
+        .testimonials-grid,
+        .pricing-grid {
+            grid-template-columns: 1fr !important;
+            gap: 1.5rem;
+        }
+
+        /* 9️⃣ CTA finale */
+        .cta-final {
+            padding: 3rem 1.25rem !important;
+        }
+
+        .cta-final h2 {
+            font-size: 2.1rem;
+        }
+
+        /* 10️⃣ Footer */
+        .footer-grid {
+            grid-template-columns: 1fr !important;
+        }
+        }
+
+        /* 🔥 FIX iOS tap highlight / focus */
+        * {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        button,
+        a,
+        .algo-card,
+        .stat-card {
+            outline: none;
+        }
+
+        button:focus,
+        button:focus-visible,
+        a:focus,
+        a:focus-visible {
+            outline: none;
+            box-shadow: none;
+        }
+
+        /* =========================
+        FIX iOS / iPhone SAFARI
+        ========================= */
+        @media (max-width: 768px) {
+
+        /* 1. Compensa navbar fixed (BUG iOS) */
+        body {
+            padding-top: 72px;
+        }
+
+        .nav {
+            height: 72px;
+        }
+
+        /* 2. HERO: rimuovi 100vh (BUG iOS Safari) */
+        .hero {
+            min-height: auto !important;
+            padding-top: 2rem !important;
+            padding-bottom: 2rem !important;
+        }
+
+        /* 3. Titoli troppo grandi su mobile */
+        h1 {
+            font-size: 2.2rem !important;
+            line-height: 1.2 !important;
+        }
+
+        h2 {
+            font-size: 2rem !important;
+            line-height: 1.2 !important;
+        }
+
+        /* 4. Sezioni: evita “salti” verticali */
+        section {
+            padding-top: 4rem !important;
+            padding-bottom: 4rem !important;
+        }
+
+        /* 5. Split layout → colonna singola */
+        .split-container {
+            grid-template-columns: 1fr !important;
+            gap: 2.5rem !important;
+        }
+
+        /* 6. FIX grafico */
+        .chart-wrapper {
+            padding: 1.25rem !important;
+        }
+
+        .chart-visual {
+            height: 240px !important;
+        }
+
+        /* 7. Tutte le grid in colonna */
+        .features-grid,
+        .security-grid,
+        .testimonials-grid,
+        .pricing-grid {
+            grid-template-columns: 1fr !important;
+        }
+        }
+
+        /* Rimuove highlight viola iOS */
+        * {
+        -webkit-tap-highlight-color: transparent;
+        }
+
+        /* FIX testo lungo nelle pill su mobile */
+        .question-pill {
+        white-space: normal;
+        text-align: center;
+        line-height: 1.35;
+        }
+
+        @media (max-width: 768px) {
+        .question-pill {
+            white-space: normal;
+            text-align: center;
+            line-height: 1.35;
+        }
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .brand-logo {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+        }
+
+        /* ===============================
+   TESTIMONIALS FLOW – ELARA
+   =============================== */
+
+/* SECTION */
+.testimonials-flow {
+  padding: 7rem 0;
+  overflow: hidden;
+}
+
+/* HEADER */
+.testimonials-header {
+  max-width: 720px;
+  margin: 0 auto 3.5rem;
+  text-align: center;
+}
+
+.testimonials-header h2 {
+  font-size: 2.9rem;
+  font-weight: 900;
+  margin: 1rem 0;
+  letter-spacing: -0.03em;
+}
+
+.testimonials-header p {
+  color: rgba(255,255,255,0.55);
+  font-size: 1.1rem;
+  line-height: 1.65;
+}
+
+/* MARQUEE WRAPPER */
+.testimonials-marquee {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 8%,
+    black 92%,
+    transparent
+  );
+}
+
+/* MARQUEE TRACK */
+.marquee-track {
+  display: flex;
+  gap: 1.6rem;
+  width: max-content;
+  animation: marquee 45s linear infinite;
+  will-change: transform;
+}
+
+/* SCROLL */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* CARD */
+.quote-card {
+  flex-shrink: 0;
+  min-width: 360px;
+  max-width: 360px;
+
+  min-height: 220px;
+  max-height: 220px;
+
+  padding: 2.1rem 2.3rem;
+  background: linear-gradient(
+    135deg,
+    rgba(139,92,246,0.06),
+    rgba(10,10,15,0.9)
+  );
+  border: 1px solid rgba(139,92,246,0.18);
+  border-radius: 22px;
+  backdrop-filter: blur(18px);
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* TESTO */
+.quote-card p {
+  font-size: 1rem;
+  line-height: 1.65;
+  color: rgba(255,255,255,0.9);
+  margin-bottom: 1.3rem;
+}
+
+/* AUTORE */
+.quote-card span {
+  display: block;
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.55);
+  letter-spacing: 0.01em;
+}
+
+.quote-card p {
+  font-size: 1.02rem;
+  line-height: 1.6;
+  font-weight: 500;
+}
+
+.quote-rating {
+  font-size: 0.9rem;
+  letter-spacing: 0.25em;
+  color: #8b5cf6;
+  margin-bottom: 0.9rem;
+
+  text-shadow:
+    0 0 8px rgba(139,92,246,0.6),
+    0 0 18px rgba(139,92,246,0.25);
+}
+
+/* ===============================
+   MOBILE – CARD PIÙ CICCIOTTE
+   =============================== */
+@media (max-width: 768px) {
+
+  .marquee-track {
+    gap: 1.2rem;
+    animation-duration: 30s;
+  }
+
+   .quote-card {
+    min-width: 300px;
+    max-width: 300px;
+    min-height: 240px;
+    max-height: 240px;
+    padding: 1.9rem 1.8rem;
+  }
+
+  .quote-card p {
+    -webkit-line-clamp: 5;
+    font-size: 0.95rem;
+  }
+
+  .quote-card span {
+    font-size: 0.8rem;
+    opacity: 0.65;
+  }
+}
+
+
+
+    </style>
 </head>
-
 <body>
-  <header>
-    <div class="container nav">
-      <div class="brand">
-        <div class="logo">
-          <img src="logo.jpg" alt="Aurya logo" style="width:100%; height:100%; object-fit:contain; border-radius:10px;">
+    <nav class="nav">
+        <div class="brand">
+            <img src="Elara_logo_trasparent.png" alt="Elara logo" class="brand-logo">
+            <div class="logo">Elara</div>
         </div>
-        <a href="#top" class="mini">Aurya</a>
-      </div>
-      <nav style="display:flex; gap:18px; align-items:center">
-        <a class="mini" href="#prodotto" data-i18n="nav_product">Prodotto</a>
-        <a class="mini" href="#come-funziona" data-i18n="nav_how">Come funziona</a>
-        <a class="mini" href="#sicurezza" data-i18n="nav_security">Sicurezza</a>
-        <a class="mini" href="#faq" data-i18n="nav_faq">FAQ</a>
-
-        <!-- Language switcher -->
-        <div class="lang-wrapper">
-          <button class="lang-btn" id="lang-btn">
-            <img id="lang-flag" src="https://flagcdn.com/w40/it.png" alt="Italy">
-            <span id="lang-label">Italy</span>
-            <svg id="lang-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none">
-              <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-          </button>
-
-          <div class="lang-dropdown" id="lang-dropdown">
-            <div class="lang-option" data-lang="it">
-              <img src="https://flagcdn.com/w40/it.png" alt="Italy">
-              Italy
-            </div>
-            <div class="lang-option" data-lang="en">
-              <img src="https://flagcdn.com/w40/gb.png" alt="United Kingdom">
-              United Kingdom
-            </div>
-          </div>
+        <div class="nav-links">
+            <a href="#features">Funzionalità</a>
+            <a href="#technology">Tecnologia</a>
+            <a href="#security">Sicurezza</a>
+            <a href="#pricing">Pricing</a>
+            <button class="nav-cta">Inizia ora</button>
         </div>
+    </nav>
 
-        <a class="cta" href="#waiting-list" data-i18n="nav_waiting">Entra nella waiting list</a>
-      </nav>
-    </div>
-  </header>
-
-  <main id="top">
-
-    <!-- HERO -->
     <section class="hero">
-      <div class="container hero-inner">
-        <div>
-          <span class="kicker" data-i18n="hero_kicker">Nuovo • Private Beta</span>
-          <h1 class="title" data-i18n="hero_title">
-            Il tuo <strong>Net Worth</strong>, unito e <strong>ottimizzato</strong>.
-          </h1>
-          <p class="lead" data-i18n="hero_lead">
-            Aurya aggrega i tuoi conti e investimenti, stima il valore dei tuoi beni fisici
-            e usa modelli quantitativi (Markowitz, CVaR, Black-Litterman) per suggerirti come
-            riequilibrare secondo il tuo profilo rischio, preferenze settoriali e vincoli.
-          </p>
-
-          <div class="points">
-            <div class="point">
-              <div class="b">✓</div>
-              <div data-i18n="hero_point1">Aggregazione multi-conto &amp; stima beni fisici</div>
+        <div class="grid-background"></div>
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span class="badge-dot"></span>
+                Ora in Beta Privata — Posti limitati
             </div>
-            <div class="point">
-              <div class="b">✓</div>
-              <div data-i18n="hero_point2">Ottimizzazione automatica con vincoli personalizzati</div>
+            <h1 class="gradient-text">Il tuo copilota AI<br>finanziario</h1>
+            <p>Unifica il tuo patrimonio e ottimizzalo con Modelli Quantitativi, Machine Learning e AI.</p>
+            <div class="hero-buttons">
+                <button class="primary-btn">Accedi alla beta privata</button>
+                <button class="secondary-btn">Guarda la demo →</button>
             </div>
-            <div class="point">
-              <div class="b">✓</div>
-              <div data-i18n="hero_point3">Privacy e sicurezza bancarie, dati sempre tuoi</div>
-            </div>
-          </div>
-
-          <a class="cta" href="#waiting-list" data-i18n="hero_cta">Entra nella waiting list</a>
-          <p class="note" data-i18n="hero_note">Niente spam. Accessi scaglionati in base alla priorità.</p>
         </div>
+        
+        <div class="dashboard-mockup">
+            <div class="insight-strip">
 
-        <div class="hero-card" aria-label="Anteprima interfaccia">
-          <div style="display:grid; gap:12px">
-            <div class="chip"><span class="check">✓</span><span data-i18n="hero_chip_networth">Net Worth stimato</span></div>
-            <div class="meter"><span style="width:76%"></span></div>
-            <div class="mini-stat">
-              <span data-i18n="hero_meter_label">Copertura asset</span><span>76%</span>
-            </div>
-          </div>
+                <div class="insight-item">
+                    <span class="insight-label">Net worth totale</span>
+                    <span class="insight-value" data-value="487400">€0</span>
+                    <span class="insight-meta positive">+12.4% questo mese</span>
+                </div>
 
-          <div class="grid grid-3" style="margin-top:12px">
-            <div class="card">
-              <strong data-i18n="hero_card1_title">Conti &amp; Broker</strong>
-              <p class="muted" data-i18n="hero_card1_body">Collega banche e broker (es. Fineco, Revolut, TR, ecc.)</p>
+                <div class="insight-item">
+                    <span class="insight-label">Performance YTD</span>
+                    <span class="insight-value" data-value="24.3">0%</span>
+                    <span class="insight-meta positive">+5.2% vs benchmark</span>
+                </div>
+
+                <div class="insight-item">
+                    <span class="insight-label">Sharpe ratio</span>
+                    <span class="insight-value" data-value="1.87">0</span>
+                    <span class="insight-meta neutral">Profilo ottimizzato</span>
+                </div>
+
+                <div class="insight-item">
+                    <span class="insight-label">Asset allocati</span>
+                    <span class="insight-value" data-value="23">0</span>
+                    <span class="insight-meta neutral">Ben diversificato</span>
+                </div>
+
             </div>
-            <div class="card">
-              <strong data-i18n="hero_card2_title">Beni fisici</strong>
-              <p class="muted" data-i18n="hero_card2_body">Inserisci beni (tech, auto, libri, ecc.) con stime assistite.</p>
-            </div>
-            <div class="card">
-              <strong data-i18n="hero_card3_title">Ottimizzazione</strong>
-              <p class="muted" data-i18n="hero_card3_body">Portafoglio target con rischio/rendimento coerente al profilo.</p>
-            </div>
-          </div>
         </div>
-      </div>
     </section>
 
-    <!-- TRUST -->
-    <section aria-labelledby="trust">
-      <div class="container reveal">
-        <div class="eyebrow" id="trust" data-i18n="trust_eyebrow">Integrazioni (beta, placeholder)</div>
-        <div class="strip" role="list" aria-label="Integrazioni">
-          <div class="logo-badge">PSD2/OpenBanking</div>
-          <div class="logo-badge">TrueLayer</div>
-          <div class="logo-badge">Tink</div>
-          <div class="logo-badge">Salt Edge</div>
-          <div class="logo-badge">Plaid EU</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- PRODOTTO -->
-    <section id="prodotto" aria-labelledby="prodotto-h">
-      <div class="container grid grid-3">
-        <div class="card reveal">
-          <h3 data-i18n="product_card1_title">1) Aggrega</h3>
-          <p class="muted" data-i18n="product_card1_body">Collega conti e broker via Open Banking. Import automatico di saldi, posizioni e movimenti.</p>
-          <ul class="muted">
-            <li data-i18n="product_card1_li1">Supporto multi-istituto</li>
-            <li data-i18n="product_card1_li2">Riconciliazione smart</li>
-            <li data-i18n="product_card1_li3">Tagging transazioni</li>
-          </ul>
-        </div>
-
-        <div class="card reveal">
-          <h3 data-i18n="product_card2_title">2) Stima</h3>
-          <p class="muted" data-i18n="product_card2_body">Aggiungi beni fisici. Stime basate su mercato, usura e comparabili.</p>
-          <ul class="muted">
-            <li data-i18n="product_card2_li1">Template guidati per categorie</li>
-            <li data-i18n="product_card2_li2">Storico delle valutazioni</li>
-            <li data-i18n="product_card2_li3">Deprezzamento/ rivalutazione</li>
-          </ul>
-        </div>
-
-        <div class="card reveal">
-          <h3 data-i18n="product_card3_title">3) Ottimizza</h3>
-          <p class="muted" data-i18n="product_card3_body">Scegli obiettivi (rendimento atteso, volatilità, vincoli ESG/settoriali) e ottieni un portafoglio target.</p>
-          <ul class="muted">
-            <li data-i18n="product_card3_li1">Markowitz / CVaR / Black-Litterman</li>
-            <li data-i18n="product_card3_li2">Backtest e scenari what-if</li>
-            <li data-i18n="product_card3_li3">Ribilanciamenti suggeriti</li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <!-- COME FUNZIONA -->
-    <section id="come-funziona" aria-labelledby="how-h">
-      <div class="container grid grid-2">
-        <div class="reveal">
-          <span class="eyebrow" data-i18n="how_eyebrow">Come funziona</span>
-          <h2 id="how-h" data-i18n="how_title">Dati, preferenze e modelli. In tre passi.</h2>
-          <div class="step">
-            <div class="bullet">1</div>
-            <div>
-              <strong data-i18n="step1_title">Profilazione</strong>
-              <p class="muted" data-i18n="step1_body">Valutiamo propensione al rischio, orizzonte, preferenze settoriali e vincoli.</p>
-            </div>
-          </div>
-          <div class="step">
-            <div class="bullet">2</div>
-            <div>
-              <strong data-i18n="step2_title">Unificazione</strong>
-              <p class="muted" data-i18n="step2_body">Un’unica vista su conti, investimenti e patrimonio fisico. Net Worth sempre aggiornato.</p>
-            </div>
-          </div>
-          <div class="step">
-            <div class="bullet">3</div>
-            <div>
-              <strong data-i18n="step3_title">Ottimizzazione</strong>
-              <p class="muted" data-i18n="step3_body">Calcolo del portafoglio target e suggerimenti di ribilanciamento con spiegazioni chiare.</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="card reveal">
-          <h3 data-i18n="rebalance_title">Anteprima ribilanciamento</h3>
-          <p class="muted" data-i18n="rebalance_body">Esempio: riduci concentrazione tech al 35% e inserisci bond 4–5% YTM per abbassare la volatilità.</p>
-          <div class="meter"><span style="width:62%"></span></div>
-          <div class="mini-stat"><span data-i18n="rebalance_vol_label">Volatilità stimata</span><span>-18%</span></div>
-          <div class="mini-stat"><span data-i18n="rebalance_dd_label">Drawdown atteso</span><span>-12% → -9%</span></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- SICUREZZA -->
-    <section id="sicurezza" aria-labelledby="sec-h">
-      <div class="container grid grid-3">
-        <div class="card reveal">
-          <h3 data-i18n="security_card1_title">Open Banking</h3>
-          <p class="muted" data-i18n="security_card1_body">Connessioni PSD2 tramite provider certificati. SSO sicuro e permessi granulari.</p>
-        </div>
-        <div class="card reveal">
-          <h3 data-i18n="security_card2_title">Privacy first</h3>
-          <p class="muted" data-i18n="security_card2_body">Cifratura in transito e a riposo. Minimo necessario, dati sempre revocabili.</p>
-        </div>
-        <div class="card reveal">
-          <h3 data-i18n="security_card3_title">Trasparenza</h3>
-          <p class="muted" data-i18n="security_card3_body">Spieghiamo i modelli, i rischi e le assunzioni. Report esportabili.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- WAITING LIST -->
-    <section id="waiting-list" aria-labelledby="wl-h">
-      <div class="container reveal">
-        <span class="eyebrow" id="wl-h" data-i18n="wl_eyebrow">Accesso anticipato</span>
-        <h2 data-i18n="wl_title">Unisciti alla waiting list</h2>
-        <form id="wl-form" class="signup card" action="https://formspree.io/f/your-id-here" method="POST" novalidate>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            placeholder="la-tua@email.com"
-            aria-label="Email"
-            required
-          />
-          <button type="submit" aria-label="Iscriviti alla waiting list" data-i18n="wl_btn">Iscrivimi</button>
-          <input type="hidden" name="source" value="Aurya-landing">
-          <input type="hidden" name="plan" value="private-beta">
-        </form>
-        <p class="note" id="wl-note" data-i18n="wl_note">
-          Inserendo la tua email accetti <a href="#privacy">Privacy</a> &amp; <a href="#termini">Termini</a>.
-        </p>
-        <div id="wl-msg" role="status" aria-live="polite" class="note"></div>
-      </div>
-    </section>
-
-    <!-- FAQ -->
-    <section id="faq" class="faq" aria-labelledby="faq-h">
-      <div class="container reveal">
-        <span class="eyebrow" data-i18n="faq_eyebrow">Domande frequenti</span>
-        <h2 id="faq-h" data-i18n="faq_title">FAQ</h2>
-        <details>
-          <summary data-i18n="faq1_q">È un consulente finanziario?</summary>
-          <p data-i18n="faq1_a">No. Aurya è uno strumento informativo/educativo. Le decisioni restano dell’utente; potremmo integrare partner regolati per l’esecuzione.</p>
-        </details>
-        <details>
-          <summary data-i18n="faq2_q">Come collegate i conti?</summary>
-          <p data-i18n="faq2_a">Tramite provider PSD2/Open Banking (es. TrueLayer/Tink). Autorizzi l’accesso in sola lettura e puoi revocarlo quando vuoi.</p>
-        </details>
-        <details>
-          <summary data-i18n="faq3_q">Come valutate i beni fisici?</summary>
-          <p data-i18n="faq3_a">Template per categoria, curve di deprezzamento e comparabili di mercato. L’utente può sovrascrivere le stime.</p>
-        </details>
-        <details>
-          <summary data-i18n="faq4_q">Quali modelli di ottimizzazione usate?</summary>
-          <p data-i18n="faq4_a">Portafogli media-varianza (Markowitz), ottimizzazione CVaR e Black-Litterman, con vincoli personalizzabili (settori, ESG, liquidità).</p>
-        </details>
-      </div>
-    </section>
-
-  </main>
-
-  <footer id="privacy">
-    <div class="container foot-grid">
-      <div>
-        <div class="brand" style="margin-bottom:10px">
-          <div class="logo" style="width:38px; height:38px; border-radius:12px; overflow:hidden;">
-            <img src="logo.jpg" alt="Logo Aurya" style="width:100%; height:100%; object-fit:contain;">
-          </div>
-          <strong>Aurya</strong>
-        </div>
-        <p>© <span id="year"></span> Aurya. <span data-i18n="footer_rights">Tutti i diritti riservati.</span></p>
-      </div>
-      <div>
-        <strong data-i18n="footer_legal_title">Legal</strong>
-        <ul style="list-style:none; padding:0; margin:8px 0 0">
-          <li><a href="#privacy" data-i18n="footer_privacy">Privacy</a></li>
-          <li id="termini"><a href="#termini" data-i18n="footer_terms">Termini</a></li>
-          <li><a href="#faq" data-i18n="footer_faq">FAQ</a></li>
-        </ul>
-      </div>
-      <div>
-        <strong data-i18n="footer_contact_title">Contatti</strong>
-        <ul style="list-style:none; padding:0; margin:8px 0 0">
-          <li><a href="mailto:hello@aurya.example">hello@aurya.example</a></li>
-          <li><a href="#waiting-list" data-i18n="footer_waiting">Waiting list</a></li>
-        </ul>
-      </div>
+    <!-- ==================== AI IN AZIONE ==================== -->
+<section class="ai-demo-section" style="padding: 10rem 6%; background: linear-gradient(180deg, #0a0a0f 0%, #050508 100%); position: relative; overflow: hidden;">
+    
+    <!-- Background effects -->
+    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: radial-gradient(circle at 30% 30%, rgba(139, 92, 246, 0.08) 0%, transparent 50%), radial-gradient(circle at 70% 70%, rgba(99, 102, 241, 0.06) 0%, transparent 50%);"></div>
+    
+    <div class="section-header" style="position: relative; z-index: 1; margin-bottom: 8rem;">
+        <span class="section-tag">AI in azione</span>
+        <h2 class="section-title">Modelli quantitativi <br> per l’ottimizzazione del patrimonio</h2>
+        <p class="section-description" style="margin-top: 2rem;">La nostra AI lavora 24/7 per massimizzare i tuoi rendimenti e minimizzare i rischi</p>
     </div>
-  </footer>
 
-  <script>
-    // TRANSLATIONS
-    const translations = {
-      it: {
-        nav_product: "Prodotto",
-        nav_how: "Come funziona",
-        nav_security: "Sicurezza",
-        nav_faq: "FAQ",
-        nav_waiting: "Entra nella waiting list",
+    <!-- AI Capabilities Grid -->
+    <div style="max-width: 1200px; margin: 0 auto; position: relative; z-index: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem;">
+        
+        <!-- Capability 1 -->
+        <div class="ai-capability-card">
+            <div style="width: 60px; height: 60px; background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(99, 102, 241, 0.1) 100%); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin-bottom: 2rem;">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="3"/>
+                    <path d="M12 1v6m0 6v6"/>
+                    <circle cx="12" cy="12" r="10"/>
+                </svg>
+            </div>
+            <h3 style="font-size: 1.3rem; font-weight: 700; margin-bottom: 1rem; color: #fff;">Ottimizzazione di portafoglio</h3>
+            <p style="color: rgba(255, 255, 255, 0.6); line-height: 1.7; font-size: 1rem;">Algoritmi quantitativi che ribilanciano continuamente il tuo portafoglio per massimizzare il rapporto rischio-rendimento</p>
+        </div>
 
-        hero_kicker: "Nuovo • Private Beta",
-        hero_title: "Il tuo <strong>Net Worth</strong>, unito e <strong>ottimizzato</strong>.",
-        hero_lead: "Aurya aggrega i tuoi conti e investimenti, stima il valore dei tuoi beni fisici e usa modelli quantitativi (Markowitz, CVaR, Black-Litterman) per suggerirti come riequilibrare secondo il tuo profilo rischio, preferenze settoriali e vincoli.",
-        hero_point1: "Aggregazione multi-conto &amp; stima beni fisici",
-        hero_point2: "Ottimizzazione automatica con vincoli personalizzati",
-        hero_point3: "Privacy e sicurezza bancarie, dati sempre tuoi",
-        hero_cta: "Entra nella waiting list",
-        hero_note: "Niente spam. Accessi scaglionati in base alla priorità.",
-        hero_chip_networth: "Net Worth stimato",
-        hero_meter_label: "Copertura asset",
-        hero_card1_title: "Conti &amp; Broker",
-        hero_card1_body: "Collega banche e broker (es. Fineco, Revolut, TR, ecc.)",
-        hero_card2_title: "Beni fisici",
-        hero_card2_body: "Inserisci beni (tech, auto, libri, ecc.) con stime assistite.",
-        hero_card3_title: "Ottimizzazione",
-        hero_card3_body: "Portafoglio target con rischio/rendimento coerente al profilo.",
+        <!-- Capability: Patrimonio unificato -->
+        <div class="ai-capability-card">
+        <div style="width: 60px; height: 60px; background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(99, 102, 241, 0.1) 100%); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin-bottom: 2rem;">
+  <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="puzzleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#a78bfa;stop-opacity:1" />
+        <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
+      </linearGradient>
+    </defs>
+    
+    <!-- Pezzo superiore sinistro -->
+    <rect x="4" y="4" width="11" height="11" fill="url(#puzzleGrad)" rx="1"/>
+    
+    <!-- Incastro destro pezzo superiore sinistro -->
+    <circle cx="15" cy="9.5" r="2" fill="url(#puzzleGrad)"/>
+    
+    <!-- Pezzo superiore destro -->
+    <rect x="17" y="4" width="11" height="11" fill="#8b5cf6" rx="1"/>
+    
+    <!-- Pezzo inferiore sinistro -->
+    <rect x="4" y="17" width="11" height="11" fill="#7c3aed" rx="1"/>
+    
+    <!-- Incastro superiore pezzo inferiore destro -->
+    <circle cx="22.5" cy="15" r="2" fill="#9333ea"/>
+    
+    <!-- Pezzo inferiore destro -->
+    <rect x="17" y="17" width="11" height="11" fill="#a78bfa" rx="1" opacity="0.9"/>
+  </svg>
+</div>
 
-        trust_eyebrow: "Integrazioni (beta, placeholder)",
+        <h3 style="font-size: 1.3rem; font-weight: 700; margin-bottom: 1rem; color: #fff;">
+            Patrimonio unificato
+        </h3>
 
-        product_card1_title: "1) Aggrega",
-        product_card1_body: "Collega conti e broker via Open Banking. Import automatico di saldi, posizioni e movimenti.",
-        product_card1_li1: "Supporto multi-istituto",
-        product_card1_li2: "Riconciliazione smart",
-        product_card1_li3: "Tagging transazioni",
+        <p style="color: rgba(255, 255, 255, 0.6); line-height: 1.7; font-size: 1rem;">
+            Tutti i tuoi asset finanziari e beni fisici, aggregati da banche,
+            conti personali e broker, riuniti in un’unica schermata
+        </p>
+        </div>
 
-        product_card2_title: "2) Stima",
-        product_card2_body: "Aggiungi beni fisici. Stime basate su mercato, usura e comparabili.",
-        product_card2_li1: "Template guidati per categorie",
-        product_card2_li2: "Storico delle valutazioni",
-        product_card2_li3: "Deprezzamento/ rivalutazione",
+        <!-- Capability 2 -->
+        <div class="ai-capability-card">
+            <div style="width: 60px; height: 60px; background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(99, 102, 241, 0.1) 100%); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin-bottom: 2rem;">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    <line x1="9" y1="10" x2="15" y2="10"/>
+                    <line x1="9" y1="14" x2="13" y2="14"/>
+                </svg>
+            </div>
+            <h3 style="font-size: 1.3rem; font-weight: 700; margin-bottom: 1rem; color: #fff;">Chat conversazionale</h3>
+            <p style="color: rgba(255, 255, 255, 0.6); line-height: 1.7; font-size: 1rem;">Chiedi qualsiasi cosa sul tuo patrimonio e ricevi risposte immediate basate sui tuoi dati reali e sul contesto di mercato</p>
+        </div>
 
-        product_card3_title: "3) Ottimizza",
-        product_card3_body: "Scegli obiettivi (rendimento atteso, volatilità, vincoli ESG/settoriali) e ottieni un portafoglio target.",
-        product_card3_li1: "Markowitz / CVaR / Black-Litterman",
-        product_card3_li2: "Backtest e scenari what-if",
-        product_card3_li3: "Ribilanciamenti suggeriti",
 
-        how_eyebrow: "Come funziona",
-        how_title: "Dati, preferenze e modelli. In tre passi.",
-        step1_title: "Profilazione",
-        step1_body: "Valutiamo propensione al rischio, orizzonte, preferenze settoriali e vincoli.",
-        step2_title: "Unificazione",
-        step2_body: "Un’unica vista su conti, investimenti e patrimonio fisico. Net Worth sempre aggiornato.",
-        step3_title: "Ottimizzazione",
-        step3_body: "Calcolo del portafoglio target e suggerimenti di ribilanciamento con spiegazioni chiare.",
+        <!-- Capability 4 -->
+        <div class="ai-capability-card">
+            <div style="width: 60px; height: 60px; background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(99, 102, 241, 0.1) 100%); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin-bottom: 2rem;">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+            </div>
+            <h3 style="font-size: 1.3rem; font-weight: 700; margin-bottom: 1rem; color: #fff;">Analisi predittiva</h3>
+            <p style="color: rgba(255, 255, 255, 0.6); line-height: 1.7; font-size: 1rem;">Simulazioni Quantitative e scenari What-If per anticipare l'evoluzione del tuo patrimonio in diverse condizioni di mercato</p>
+        </div>       
 
-        rebalance_title: "Anteprima ribilanciamento",
-        rebalance_body: "Esempio: riduci concentrazione tech al 35% e inserisci bond 4–5% YTM per abbassare la volatilità.",
-        rebalance_vol_label: "Volatilità stimata",
-        rebalance_dd_label: "Drawdown atteso",
 
-        security_card1_title: "Open Banking",
-        security_card1_body: "Connessioni PSD2 tramite provider certificati. SSO sicuro e permessi granulari.",
-        security_card2_title: "Privacy first",
-        security_card2_body: "Cifratura in transito e a riposo. Minimo necessario, dati sempre revocabili.",
-        security_card3_title: "Trasparenza",
-        security_card3_body: "Spieghiamo i modelli, i rischi e le assunzioni. Report esportabili.",
+        <!-- Capability 5 -->
+        <div class="ai-capability-card">
+            <div style="width: 60px; height: 60px; background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(99, 102, 241, 0.1) 100%); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin-bottom: 2rem;">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none"
+                    stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 17l6-6 4 4 7-7"/>
+                    <circle cx="20" cy="6" r="2"/>
+                </svg>
+            </div>
+            <h3 style="font-size: 1.3rem; font-weight: 700; margin-bottom: 1rem; color: #fff;">
+            Insight intelligenti
+            </h3>
+            <p style="color: rgba(255, 255, 255, 0.6); line-height: 1.7; font-size: 1rem;">
+            Analisi statistiche sui dati del tuo patrimonio,
+            tradotte in metriche chiare e coerenti con i tuoi obiettivi.</p>
+        </div>
 
-        wl_eyebrow: "Accesso anticipato",
-        wl_title: "Unisciti alla waiting list",
-        wl_note: 'Inserendo la tua email accetti <a href="#privacy">Privacy</a> &amp; <a href="#termini">Termini</a>.',
-        wl_btn: "Iscrivimi",
-        email_placeholder: "la-tua@email.com",
-        email_aria: "Email",
-        wl_btn_aria: "Iscriviti alla waiting list",
 
-        faq_eyebrow: "Domande frequenti",
-        faq_title: "FAQ",
-        faq1_q: "È un consulente finanziario?",
-        faq1_a: "No. Aurya è uno strumento informativo/educativo. Le decisioni restano dell’utente; potremmo integrare partner regolati per l’esecuzione.",
-        faq2_q: "Come collegate i conti?",
-        faq2_a: "Tramite provider PSD2/Open Banking (es. TrueLayer/Tink). Autorizzi l’accesso in sola lettura e puoi revocarlo quando vuoi.",
-        faq3_q: "Come valutate i beni fisici?",
-        faq3_a: "Template per categoria, curve di deprezzamento e comparabili di mercato. L’utente può sovrascrivere le stime.",
-        faq4_q: "Quali modelli di ottimizzazione usate?",
-        faq4_a: "Portafogli media-varianza (Markowitz), ottimizzazione CVaR e Black-Litterman, con vincoli personalizzabili (settori, ESG, liquidità).",
+        <!-- Capability 3 -->
+        <div class="ai-capability-card">
+            <div style="width: 60px; height: 60px; background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(99, 102, 241, 0.1) 100%); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin-bottom: 2rem;">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                    <polyline points="9 22 9 12 15 12 15 22"/>
+                </svg>
+            </div>
+            <h3 style="font-size: 1.3rem; font-weight: 700; margin-bottom: 1rem; color: #fff;">Valutazione beni fisici</h3>
+            <p style="color: rgba(255, 255, 255, 0.6); line-height: 1.7; font-size: 1rem;">Stima automatica del valore degli immobili, veicoli e oggetti di valore con aggiornamenti real-time</p>
+        </div>
 
-        footer_legal_title: "Legal",
-        footer_contact_title: "Contatti",
-        footer_privacy: "Privacy",
-        footer_terms: "Termini",
-        footer_faq: "FAQ",
-        footer_waiting: "Waiting list",
-        footer_rights: "Tutti i diritti riservati.",
-
-        lang_label: "IT"
-      },
-
-      en: {
-        nav_product: "Product",
-        nav_how: "How it works",
-        nav_security: "Security",
-        nav_faq: "FAQ",
-        nav_waiting: "Join the waiting list",
-
-        hero_kicker: "New • Private Beta",
-        hero_title: "Your <strong>Net Worth</strong>, unified and <strong>optimized</strong>.",
-        hero_lead: "Aurya aggregates your accounts and investments, estimates the value of your physical assets and uses quantitative models (Markowitz, CVaR, Black-Litterman) to suggest how to rebalance according to your risk profile, sector preferences and constraints.",
-        hero_point1: "Multi-account aggregation &amp; physical assets estimation",
-        hero_point2: "Automatic optimization with custom constraints",
-        hero_point3: "Bank-grade privacy and security, your data stays yours",
-        hero_cta: "Join the waiting list",
-        hero_note: "No spam. Access is granted in waves based on priority.",
-        hero_chip_networth: "Estimated Net Worth",
-        hero_meter_label: "Asset coverage",
-        hero_card1_title: "Accounts &amp; Brokers",
-        hero_card1_body: "Connect banks and brokers (e.g. Fineco, Revolut, TR, etc.)",
-        hero_card2_title: "Physical assets",
-        hero_card2_body: "Add assets (tech, car, books, etc.) with assisted estimates.",
-        hero_card3_title: "Optimization",
-        hero_card3_body: "Target portfolio with risk/return aligned to your profile.",
-
-        trust_eyebrow: "Integrations (beta, placeholder)",
-
-        product_card1_title: "1) Aggregate",
-        product_card1_body: "Connect accounts and brokers via Open Banking. Automatic import of balances, positions and transactions.",
-        product_card1_li1: "Multi-institution support",
-        product_card1_li2: "Smart reconciliation",
-        product_card1_li3: "Transaction tagging",
-
-        product_card2_title: "2) Estimate",
-        product_card2_body: "Add physical assets. Estimates based on market, wear and comparables.",
-        product_card2_li1: "Guided templates by category",
-        product_card2_li2: "Valuation history",
-        product_card2_li3: "Depreciation / revaluation",
-
-        product_card3_title: "3) Optimize",
-        product_card3_body: "Choose objectives (expected return, volatility, ESG/sector constraints) and get a target portfolio.",
-        product_card3_li1: "Markowitz / CVaR / Black-Litterman",
-        product_card3_li2: "Backtests and what-if scenarios",
-        product_card3_li3: "Suggested rebalancing actions",
-
-        how_eyebrow: "How it works",
-        how_title: "Data, preferences and models. In three steps.",
-        step1_title: "Profiling",
-        step1_body: "We assess risk appetite, horizon, sector preferences and constraints.",
-        step2_title: "Unification",
-        step2_body: "A single view over accounts, investments and physical wealth. Net Worth always up to date.",
-        step3_title: "Optimization",
-        step3_body: "Target portfolio computation and rebalancing suggestions with clear explanations.",
-
-        rebalance_title: "Rebalancing preview",
-        rebalance_body: "Example: reduce tech concentration to 35% and add 4–5% YTM bonds to lower volatility.",
-        rebalance_vol_label: "Estimated volatility",
-        rebalance_dd_label: "Expected drawdown",
-
-        security_card1_title: "Open Banking",
-        security_card1_body: "PSD2 connections via certified providers. Secure SSO and granular permissions.",
-        security_card2_title: "Privacy first",
-        security_card2_body: "Encryption in transit and at rest. Minimal data, always revocable.",
-        security_card3_title: "Transparency",
-        security_card3_body: "We explain models, risks and assumptions. Exportable reports.",
-
-        wl_eyebrow: "Early access",
-        wl_title: "Join the waiting list",
-        wl_note: 'By entering your email you accept our <a href="#privacy">Privacy</a> &amp; <a href="#termini">Terms</a>.',
-        wl_btn: "Sign me up",
-        email_placeholder: "your@email.com",
-        email_aria: "Email",
-        wl_btn_aria: "Join the waiting list",
-
-        faq_eyebrow: "Frequently asked questions",
-        faq_title: "FAQ",
-        faq1_q: "Is it a financial advisor?",
-        faq1_a: "No. Aurya is an informational/educational tool. Decisions always remain with the user; we may integrate regulated partners for execution.",
-        faq2_q: "How do you connect accounts?",
-        faq2_a: "Through PSD2/Open Banking providers (e.g. TrueLayer/Tink). You authorize read-only access and can revoke it at any time.",
-        faq3_q: "How do you value physical assets?",
-        faq3_a: "Category templates, depreciation curves and market comparables. The user can override estimates.",
-        faq4_q: "Which optimization models do you use?",
-        faq4_a: "Mean-variance portfolios (Markowitz), CVaR optimization and Black-Litterman, with customizable constraints (sectors, ESG, liquidity).",
-
-        footer_legal_title: "Legal",
-        footer_contact_title: "Contacts",
-        footer_privacy: "Privacy",
-        footer_terms: "Terms",
-        footer_faq: "FAQ",
-        footer_waiting: "Waiting list",
-        footer_rights: "All rights reserved.",
-
-        lang_label: "EN"
-      }
-    };
-
-    let currentLang = "it";
-
-    function switchLanguage() {
-      currentLang = currentLang === "it" ? "en" : "it";
-      const dict = translations[currentLang];
-
-      // generic elements with data-i18n
-      document.querySelectorAll("[data-i18n]").forEach(el => {
-        const key = el.getAttribute("data-i18n");
-        if (dict[key]) {
-          el.innerHTML = dict[key];
+    <style>
+        .ai-capability-card {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.03) 0%, rgba(10, 10, 15, 0.8) 100%);
+            border: 1px solid rgba(139, 92, 246, 0.1);
+            border-radius: 20px;
+            padding: 2.5rem;
+            transition: all 0.4s ease;
+            position: relative;
         }
-      });
 
-      // email placeholder + aria
-      const email = document.getElementById("email");
-      if (email && dict.email_placeholder) {
-        email.placeholder = dict.email_placeholder;
-        email.setAttribute("aria-label", dict.email_aria || "");
-      }
+        .ai-capability-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.05) 0%, transparent 100%);
+            opacity: 0;
+            transition: opacity 0.4s;
+            border-radius: 20px;
+        }
 
-      // waiting list button aria
-      const wlBtn = document.querySelector("#wl-form button[type='submit']");
-      if (wlBtn && dict.wl_btn_aria) {
-        wlBtn.setAttribute("aria-label", dict.wl_btn_aria);
-      }
+        .ai-capability-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(139, 92, 246, 0.3);
+            box-shadow: 0 20px 50px rgba(139, 92, 246, 0.15);
+        }
 
-      // flag + label
-      const flag = document.getElementById("lang-flag");
-      const label = document.getElementById("lang-label");
-      if (flag) {
-        flag.src = currentLang === "it"
-          ? "https://flagcdn.com/w20/it.png"
-          : "https://flagcdn.com/w20/gb.png";
-        flag.alt = currentLang === "it" ? "Italiano" : "English";
-      }
-      if (label) {
-        label.textContent = dict.lang_label || currentLang.toUpperCase();
-      }
-    }
+        .ai-capability-card:hover::before {
+            opacity: 1;
+        }
 
-    // Smooth scroll
-    document.querySelectorAll('a[href^="#"]').forEach(a=>{
-      a.addEventListener('click', e=>{
-        const id = a.getAttribute('href').slice(1);
-        const el = document.getElementById(id);
-        if(el){ e.preventDefault(); el.scrollIntoView({behavior:'smooth', block:'start'}); }
-      })
-    });
+        @media (max-width: 1024px) {
+            .ai-demo-section > div:last-of-type {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+        }
 
-    // Reveal on scroll
-    const io = new IntersectionObserver((entries)=>{
-      entries.forEach(e=>{
-        if(e.isIntersecting){ e.target.classList.add('visible'); io.unobserve(e.target); }
-      })
-    },{ threshold:.12 });
-    document.querySelectorAll('.reveal').forEach(el=> io.observe(el));
+        @media (max-width: 768px) {
+            .ai-demo-section > div:last-of-type {
+                grid-template-columns: 1fr !important;
+            }
+        }
+    </style>
+</section>
+    
+    <section class="algorithms-section" id="technology">
+        <div class="split-container">
+            <div class="content-block">
+                <span class="section-tag">Tecnologia</span>
+                <h2>Algoritmi quantitativi di livello istituzionale</h2>
+                <p>Utilizziamo i metodi di ottimizzazione più avanzati del settore finanziario, gli stessi utilizzati dai grandi hedge fund e dai gestori patrimoniali globali, resi accessibili attraverso un'interfaccia intuitiva.</p>
+                
+                <div class="algo-grid">
 
-    // Year
-    document.getElementById('year').textContent = new Date().getFullYear();
+    <div class="algo-card">
+        <div class="algo-number">
+            <!-- Mean-Variance -->
+            <svg class="algo-icon" viewBox="0 0 24 24">
+                <polyline points="4 14 8 10 12 13 16 6 20 10"/>
+            </svg>
+        </div>
+        <div class="algo-content">
+            <h4>Mean-Variance Optimization</h4>
+            <p>Teoria classica di Markowitz per il trade-off ottimale tra rischio e rendimento atteso</p>
+        </div>
+    </div>
 
-    // Waiting list validation + graceful submit
-    const form = document.getElementById('wl-form');
-    const emailInput = document.getElementById('email');
-    const note = document.getElementById('wl-note');
-    const msg = document.getElementById('wl-msg');
+    <div class="algo-card">
+        <div class="algo-number">
+            <!-- Black-Litterman -->
+            <svg class="algo-icon" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="3"/>
+                <line x1="12" y1="2" x2="12" y2="6"/>
+                <line x1="12" y1="18" x2="12" y2="22"/>
+                <line x1="2" y1="12" x2="6" y2="12"/>
+                <line x1="18" y1="12" x2="22" y2="12"/>
+            </svg>
+        </div>
+        <div class="algo-content">
+            <h4>Black-Litterman Model</h4>
+            <p>Integrazione delle tue view personali di mercato con l'equilibrio globale degli asset</p>
+        </div>
+    </div>
 
-    const validEmail = v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+    <div class="algo-card">
+        <div class="algo-number">
+            <!-- Risk Parity -->
+            <svg class="algo-icon" viewBox="0 0 24 24">
+                <line x1="4" y1="12" x2="20" y2="12"/>
+                <line x1="12" y1="4" x2="12" y2="20"/>
+            </svg>
+        </div>
+        <div class="algo-content">
+            <h4>Risk Parity</h4>
+            <p>Bilanciamento ottimale del contributo al rischio di ogni asset nel portafoglio</p>
+        </div>
+    </div>
 
-    form.addEventListener('submit', async (e)=>{
-      e.preventDefault();
-      msg.textContent = "";
-      const v = emailInput.value.trim();
+    <div class="algo-card">
+        <div class="algo-number">
+            <!-- Minimum Variance -->
+            <svg class="algo-icon" viewBox="0 0 24 24">
+                <path d="M3 12h18"/>
+                <path d="M7 8h10"/>
+                <path d="M9 16h6"/>
+            </svg>
+        </div>
+        <div class="algo-content">
+            <h4>Minimum Variance</h4>
+            <p>Minimizzazione della volatilità complessiva del portafoglio mantenendo rendimenti target</p>
+        </div>
+    </div>
 
-      if(!validEmail(v)){
-        emailInput.focus();
-        emailInput.setAttribute('aria-invalid','true');
-        msg.style.color = 'var(--danger)';
-        msg.textContent = currentLang === "it" ? "Inserisci un'email valida." : "Please enter a valid email.";
-        return;
-      }
-      emailInput.removeAttribute('aria-invalid');
+    <div class="algo-card">
+        <div class="algo-number">
+            <!-- Sharpe Ratio -->
+            <svg class="algo-icon" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="8 12 11 15 16 9"/>
+            </svg>
+        </div>
+        <div class="algo-content">
+            <h4>Sharpe Ratio Maximization</h4>
+            <p>Massimizzazione del rendimento per unità di rischio con vincoli personalizzabili</p>
+        </div>
+    </div>
 
-      // POST to Formspree (replace action URL)
-      try{
-        const res = await fetch(form.action, {
-          method:'POST',
-          headers:{'Accept':'application/json'},
-          body: new FormData(form)
+</div>
+                 
+            </div>
+            
+            <div class="visual-block">
+                <div class="chart-wrapper">
+                    <div class="chart-visual">
+                        <div class="chart-grid"></div>
+                        <div class="chart-lines">
+                        <svg class="chart-svg" viewBox="0 0 600 300" preserveAspectRatio="none">
+
+                            <defs>
+                                <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stop-color="#8b5cf6" stop-opacity="0.35"/>
+                                    <stop offset="100%" stop-color="#8b5cf6" stop-opacity="0"/>
+                                </linearGradient>
+                            </defs>
+
+                            <!-- AREA -->
+                            <path class="chart-area"
+                                d="M0 260 
+                                L60 220 L120 210 L180 180 L240 160 
+                                L300 140 L360 130 L420 110 L480 95 
+                                L540 80 L600 70 
+                                L600 300 L0 300 Z"/>
+
+                            <!-- LINE -->
+                            <path class="chart-path"
+                                d="M0 260 
+                                L60 220 L120 210 L180 180 L240 160 
+                                L300 140 L360 130 L420 110 L480 95 
+                                L540 80 L600 70"/>
+                        </svg>
+                        </div>
+
+                        <!-- ✅ QUI VA QUESTO -->
+                        <div class="chart-labels">
+                            <div class="chart-y">
+                                <span>€505k</span>
+                                <span>€455k</span>
+                                <span>€430k</span>
+                                <span>€410k</span>
+                            </div>
+                            <div>Ultimi 24 mesi →</div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+     <section class="brands-section">
+        <div class="brands-label">Sicurezza di livello bancario e conformità certificata</div>
+        <div class="brands-grid">
+            <div class="brand-item">
+                <div class="brand-icon">
+                    <svg class="icon-svg" width="24" height="24" viewBox="0 0 24 24">
+                        <rect x="3" y="11" width="18" height="11" rx="2"/>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                </div>
+                AES-256
+            </div>
+            <div class="brand-item">
+                <div class="brand-icon">
+                    <svg class="icon-svg" width="24" height="24" viewBox="0 0 24 24">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    </svg>
+                </div>
+                PSD2 Compliant
+            </div>
+            <div class="brand-item">
+                <div class="brand-icon">
+                    <svg class="icon-svg" width="24" height="24" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 6v6l4 2"/>
+                    </svg>
+                </div>
+                ISO 27001
+            </div>
+            <div class="brand-item">
+                <div class="brand-icon">
+                    <svg class="icon-svg" width="24" height="24" viewBox="0 0 24 24">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                    </svg>
+                </div>
+                GDPR Ready
+            </div>
+        </div>
+    </section>
+
+   <section class="security-section" id="security">
+        <div class="section-header">
+            <span class="section-tag">Sicurezza</span>
+            <h2 class="section-title">La tua sicurezza<br>è la nostra priorità assoluta</h2>
+            <p class="section-description">Standard di sicurezza bancari, conformità normativa completa e audit regolari da enti certificati</p>
+        </div>
+
+        <div class="security-grid">
+            <div class="security-card">
+                <div class="security-icon-wrap">
+                    <svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Scudo principale -->
+  <path d="M60 25L25 40V60C25 80 40 95 60 100C80 95 95 80 95 60V40L60 25Z" 
+        fill="#8b5cf6" fill-opacity="0.1" stroke="#8b5cf6" stroke-width="3"/>
+  
+  <!-- Circuito/processore interno -->
+  <rect x="40" y="50" width="40" height="30" rx="3" stroke="#8b5cf6" stroke-width="2" fill="#a78bfa" fill-opacity="0.3"/>
+  <path d="M45 55H55M45 60H55M45 65H55M65 55H75M65 60H75M65 65H75" 
+        stroke="#8b5cf6" stroke-width="2" stroke-linecap="round"/>
+  
+  <!-- Nodo centrale (crittografia) -->
+  <circle cx="60" cy="65" r="4" fill="#8b5cf6"/>
+  
+  <!-- Linee di connessione -->
+  <path d="M60 45V50M60 80V85M40 65H35M80 65H85" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round"/>
+  
+  <!-- Lucchetto inferiore -->
+  <rect x="55" y="85" width="10" height="8" rx="2" fill="#8b5cf6"/>
+  <path d="M60 93V98C60 101 57 103 54 103C51 103 48 101 48 98V93" stroke="#8b5cf6" stroke-width="3"/>
+</svg>
+                </div>
+                <h3>Crittografia End-to-End</h3>
+                <p>Tutti i dati sono protetti con crittografia militare AES-256 sia in transito che a riposo. Le tue credenziali non vengono mai memorizzate nei nostri server e utilizziamo tokenizzazione avanzata per ogni connessione bancaria.</p>
+            </div>
+
+            <div class="security-card">
+                <div class="security-icon-wrap">
+                    <svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Badge/targa -->
+  <rect x="25" y="35" width="70" height="50" rx="10" fill="#a78bfa" fill-opacity="0.2" stroke="#8b5cf6" stroke-width="4"/>
+  
+  <!-- Bandiera superiore -->
+  <path d="M25 45H95L90 35H30L25 45Z" fill="#8b5cf6" fill-opacity="0.3"/>
+  
+  <!-- Testo CERTIFIED -->
+  <text x="60" y="55" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#8b5cf6">CERTIFIED</text>
+  
+  <!-- Simboli norme -->
+  <g transform="translate(60, 68)">
+    <!-- ISO -->
+    <rect x="-25" y="-5" width="18" height="10" rx="2" stroke="#8b5cf6" stroke-width="1.5" fill="#c4b5fd" fill-opacity="0.4"/>
+    <text x="-16" y="2" text-anchor="middle" font-family="Arial, sans-serif" font-size="7" fill="#8b5cf6">ISO</text>
+    
+    <!-- GDPR -->
+    <rect x="-5" y="-5" width="18" height="10" rx="2" stroke="#8b5cf6" stroke-width="1.5" fill="#c4b5fd" fill-opacity="0.4"/>
+    <text x="4" y="2" text-anchor="middle" font-family="Arial, sans-serif" font-size="7" fill="#8b5cf6">GDPR</text>
+    
+    <!-- PSD2 -->
+    <rect x="15" y="-5" width="18" height="10" rx="2" stroke="#8b5cf6" stroke-width="1.5" fill="#c4b5fd" fill-opacity="0.4"/>
+    <text x="24" y="2" text-anchor="middle" font-family="Arial, sans-serif" font-size="7" fill="#8b5cf6">PSD2</text>
+  </g>
+  
+  <!-- Simbolo di controllo/audit -->
+  <circle cx="60" cy="85" r="8" stroke="#8b5cf6" stroke-width="2" fill="#a78bfa" fill-opacity="0.3"/>
+  <path d="M57 85L59 87L63 83" stroke="#8b5cf6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- Riflessi metallici -->
+  <path d="M30 40L40 35" stroke="#8b5cf6" stroke-width="1" stroke-opacity="0.5"/>
+  <path d="M90 40L80 35" stroke="#8b5cf6" stroke-width="1" stroke-opacity="0.5"/>
+</svg>
+                </div>
+                <h3>Conformità Normativa</h3>
+                <p>Completamente conformi alle normative PSD2, GDPR e standard internazionali ISO 27001. Sottoposti ad audit di sicurezza trimestrali da parte di enti certificati indipendenti con penetration testing regolari.</p>
+            </div>
+
+            <div class="security-card">
+                <div class="security-icon-wrap">
+                    <svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Scudo protettivo -->
+  <path d="M60 20L20 35V55C20 75 40 95 60 100C80 95 100 75 100 55V35L60 20Z" 
+        fill="#8b5cf6" fill-opacity="0.1" stroke="#8b5cf6" stroke-width="3"/>
+  
+  <!-- Occhio (sorveglianza/lettura) -->
+  <circle cx="60" cy="55" r="25" stroke="#8b5cf6" stroke-width="3" fill="#a78bfa" fill-opacity="0.2"/>
+  <circle cx="60" cy="55" r="12" fill="#8b5cf6" fill-opacity="0.3"/>
+  <circle cx="60" cy="55" r="6" fill="#8b5cf6"/>
+  
+  <!-- Simbolo "sola lettura" -->
+  <path d="M40 80L80 80M50 75V85M70 75V85" stroke="#8b5cf6" stroke-width="3" stroke-linecap="round"/>
+</svg>
+                </div>
+                <h3>Read-Only Access</h3>
+                <p>Accesso esclusivamente in sola lettura ai tuoi conti bancari e broker. Non possiamo mai eseguire transazioni, prelievi o movimentare i tuoi fondi in alcun modo. Zero rischio di manipolazione.</p>
+            </div>
+        </div>
+    </section>
+<section class="testimonials-flow">
+  <div class="testimonials-header">
+    <span class="section-tag">Feedback</span>
+    <h2>Cosa dicono i primi utenti</h2>
+    <p>
+      Investitori reali che utilizzano Elara per analizzare e ottimizzare
+      il proprio patrimonio.
+    </p>
+  </div>
+
+  <div class="testimonials-marquee">
+    <div class="marquee-track">
+
+      <!-- CARD 1 -->
+      <div class="quote-card">
+        <div class="quote-rating">★★★★★</div>
+        <p>
+          “Finalmente una visione unificata del mio patrimonio.
+          L’ottimizzazione quantitativa è chiara e applicabile.”
+        </p>
+        <span>Marco R. · Investitore retail</span>
+      </div>
+
+      <!-- CARD 2 -->
+      <div class="quote-card">
+        <div class="quote-rating">★★★★★</div>
+        <p>
+          “Qui c’è una logica quantitativa reale.
+          Non suggerimenti generici.”
+        </p>
+        <span>Luca T. · Analista finanziario</span>
+      </div>
+
+      <!-- CARD 3 -->
+      <div class="quote-card">
+        <div class="quote-rating">★★★★★</div>
+        <p>
+          “Il tracking dei beni fisici ha cambiato il modo
+          in cui prendo decisioni patrimoniali.”
+        </p>
+        <span>Alessia M. · Imprenditrice</span>
+      </div>
+
+      <!-- CARD 4 -->
+      <div class="quote-card">
+        <div class="quote-rating">★★★★★</div>
+        <p>
+          “Finalmente riesco a vedere insieme investimenti,
+          liquidità e patrimonio non finanziario.”
+        </p>
+        <span>Francesco D. · Private investor</span>
+      </div>
+
+      <!-- ===== DUPLICATI PER LOOP CONTINUO ===== -->
+
+      <div class="quote-card">
+        <div class="quote-rating">★★★★★</div>
+        <p>
+          “Finalmente una visione unificata del mio patrimonio.
+          L’ottimizzazione quantitativa è chiara e applicabile.”
+        </p>
+        <span>Marco R. · Investitore retail</span>
+      </div>
+
+      <div class="quote-card">
+        <div class="quote-rating">★★★★★</div>
+        <p>
+          “Qui c’è una logica quantitativa reale.
+          Non suggerimenti generici.”
+        </p>
+        <span>Luca T. · Analista finanziario</span>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+    <section class="pricing-section" id="pricing">
+        <div class="section-header">
+            <span class="section-tag">Pricing</span>
+            <h2 class="section-title">Scegli il piano<br>perfetto per te</h2>
+            <p class="section-description">Prezzi trasparenti, nessun costo nascosto. Annulla quando vuoi, nessun vincolo contrattuale.</p>
+        </div>
+
+        <div class="pricing-grid">
+            <div class="pricing-card">
+                <div class="pricing-name">Starter</div>
+                <div class="pricing-price">Gratis</div>
+                <p class="pricing-description">Perfetto per iniziare a tracciare il tuo patrimonio e esplorare le funzionalità base</p>
+                <ul class="pricing-features">
+                    <li>Fino a 3 conti collegati</li>
+                    <li>Net worth tracking in tempo reale</li>
+                    <li>Dashboard base con grafici</li>
+                    <li>Timeline storica 1 anno</li>
+                    <li>Report mensili automatici</li>
+                    <li>5 beni fisici tracciabili</li>
+                    <li>Supporto via email</li>
+                </ul>
+                <button class="pricing-btn">Inizia gratis</button>
+            </div>
+
+            <div class="pricing-card featured">
+                <span class="pricing-badge">Più popolare</span>
+                <div class="pricing-name">Pro</div>
+                <div class="pricing-price">€29<span>/mese</span></div>
+                <p class="pricing-description">Per investitori seri che vogliono ottimizzare e massimizzare i rendimenti</p>
+                <ul class="pricing-features">
+                    <li>Conti bancari e broker illimitati</li>
+                    <li>Tutti gli algoritmi di ottimizzazione</li>
+                    <li>Patrimonio fisico illimitato</li>
+                    <li>Simulazioni what-if avanzate</li>
+                    <li>Alert personalizzati real-time</li>
+                    <li>Export dati completo (CSV, Excel)</li>
+                    <li>Timeline storica illimitata</li>
+                    <li>API access per integrazioni</li>
+                    <li>Supporto prioritario 24/7</li>
+                </ul>
+                <button class="pricing-btn">Inizia 14 giorni gratis</button>
+            </div>
+
+            <div class="pricing-card">
+                <div class="pricing-name">Enterprise</div>
+                <div class="pricing-price">Custom</div>
+                <p class="pricing-description">Per family office, wealth manager e team che gestiscono patrimoni complessi</p>
+                <ul class="pricing-features">
+                    <li>Tutto incluso in Pro</li>
+                    <li>Multi-portfolio management</li>
+                    <li>White label personalizzabile</li>
+                    <li>API dedicata con SLA garantito</li>
+                    <li>SSO e gestione team avanzata</li>
+                    <li>Account manager dedicato</li>
+                    <li>Custom integrations su richiesta</li>
+                    <li>Onboarding personalizzato</li>
+                    <li>Training e formazione team</li>
+                </ul>
+                <button class="pricing-btn">Contatta il team sales</button>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-final">
+        <div class="cta-content">
+            <h2>Pronto a ottimizzare<br>il tuo patrimonio?</h2>
+            <p>Unisciti a migliaia di investitori che stanno già usando Elara per gestire il loro patrimonio in modo intelligente e data-driven</p>
+            <form class="cta-form">
+                <input
+                    type="email"
+                    class="cta-input"
+                    id="cta-email"
+                    placeholder=""
+                />
+                <button type="submit" class="cta-submit">Richiedi accesso beta</button>
+            </form>
+            <p class="cta-note">✓ Nessuna carta richiesta</p>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <h3>Elara</h3>
+                <p>Portfolio Intelligence & Net Worth Optimization. Il copilota finanziario intelligente per investitori moderni che vogliono massimizzare il loro patrimonio.</p>
+                <div class="footer-social">
+                    <a href="#" class="social-btn">𝕏</a>
+                    <a href="#" class="social-btn">in</a>
+                    <a href="#" class="social-btn">f</a>
+                    <a href="#" class="social-btn">yt</a>
+                </div>
+            </div>
+            
+            <div class="footer-column">
+                <h4>Prodotto</h4>
+                <ul>
+                    <li><a href="#features">Funzionalità</a></li>
+                    <li><a href="#pricing">Pricing</a></li>
+                    <li><a href="#">Integrazioni</a></li>
+                    <li><a href="#">Changelog</a></li>
+                    <li><a href="#">Roadmap</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-column">
+                <h4>Risorse</h4>
+                <ul>
+                    <li><a href="#">Documentazione</a></li>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">Guide</a></li>
+                    <li><a href="#">API Reference</a></li>
+                    <li><a href="#">Help Center</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-column">
+                <h4>Azienda</h4>
+                <ul>
+                    <li><a href="#">Chi siamo</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">Press Kit</a></li>
+                    <li><a href="#">Partner</a></li>
+                    <li><a href="#">Contatti</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-column">
+                <h4>Legale</h4>
+                <ul>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Termini di servizio</a></li>
+                    <li><a href="#">Cookie Policy</a></li>
+                    <li><a href="#">Conformità</a></li>
+                    <li><a href="#">Sicurezza</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>© 2026 Elara Technologies S.r.l. — Tutti i diritti riservati.</p>
+            <div class="footer-links-bottom">
+                <a href="#">Stato dei servizi</a>
+                <a href="#">Italiano</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+
+       
+
+        // Smooth scroll navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
         });
-        if(res.ok){
-          form.reset();
-          msg.style.color = 'var(--ok)';
-          msg.textContent = currentLang === "it"
-            ? "Perfetto! Ti abbiamo aggiunto alla waiting list. Ti avviseremo al lancio."
-            : "Great! We’ve added you to the waiting list. We’ll notify you at launch.";
-          note.style.display='none';
-        }else{
-          msg.style.color = 'var(--warn)';
-          msg.textContent = currentLang === "it"
-            ? "Quasi fatto. Problema temporaneo con il server — riprova tra poco."
-            : "Almost done. Temporary server issue — please try again soon.";
+
+        // Navbar scroll effect
+        let lastScroll = 0;
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('.nav');
+            const currentScroll = window.pageYOffset;
+            
+            if (currentScroll > 100) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+            
+            lastScroll = currentScroll;
+        });
+
+        // Intersection Observer for fade-in animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe feature cards, testimonials, and pricing cards
+        document.querySelectorAll('.feature-card, .testimonial, .pricing-card, .security-card, .algo-card').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+
+        // Form submission handler
+        document.querySelector('.cta-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = e.target.querySelector('input[type="email"]').value;
+            alert(`Grazie! Ti abbiamo aggiunto alla lista d'attesa: ${email}`);
+            e.target.reset();
+        });
+
+        
+
+
+        // ==================== VALIDATION: AI CHAT DEMO LOGIC ====================
+
+        const chatResponses = {
+            risk: {
+                user: "Sto prendendo troppo rischio?",
+                ai: `Ho analizzato il tuo portafoglio attuale:
+
+        **Situazione:**
+        - 68% in azioni (vs 55% target per il tuo profilo)
+        - Volatilità attuale: 18.2% annua
+        - Beta vs mercato: 1.34 (più volatile del mercato)
+
+        **Verdetto:**
+        Sì, stai prendendo **~20% più rischio** di quanto indicato nel tuo profilo "moderato". Negli ultimi 6 mesi hai avuto 3 drawdown superiori al 7% - più del previsto.
+
+        **Cosa fare:**
+        Ti suggerisco di spostare €12.400 da azioni growth a bond governativi. Questo ridurrebbe la volatilità al 14.8% mantenendo rendimento atteso simile.
+
+        Vuoi che simuli l'impatto di questo ribilanciamento?`
+            },
+            
+            diversification: {
+                user: "Il mio portafoglio è ben diversificato?",
+                ai: `Ho fatto un'analisi di correlazione del tuo portafoglio:
+
+        **Concentrazione settoriale:**
+        - Tech: 47% (⚠️ troppo alto)
+        - Finanza: 18%
+        - Healthcare: 12%
+        - Altri: 23%
+
+        **Overlap nascosto:**
+        Hai 5 ETF che sembrano diversi, ma in realtà hanno il 63% di overlap sugli stessi titoli (Apple, Microsoft, NVIDIA).
+
+        **Correlazione:**
+        Durante i ribassi, i tuoi asset si muovono insieme nel 78% dei casi - troppo correlati.
+
+        **Consiglio:**
+        Aggiungi esposizione a:
+        - Real Estate (8-10%)
+        - Commodities (5%)
+        - Mercati emergenti Asia (7%)
+
+        Questo ridurrebbe la correlazione al 45% e migliorerebbe il tuo Sharpe ratio da 1.12 a 1.58.`
+            },
+            
+            tax: {
+                user: "Come posso ottimizzare le tasse sulle plusvalenze?",
+                ai: `Ottima domanda! Ho identificato **3 opportunità concrete**:
+
+        **1. Tax-Loss Harvesting (immediato)**
+        Hai €4.200 di minusvalenze latenti su 2 ETF. Se vendi ora e reinvesti in alternative simili, puoi:
+        - Compensare plusvalenze future
+        - Risparmiare ~€1.092 di tasse (26%)
+        - Mantenere la stessa esposizione di mercato
+
+        **2. Timing vendite (Q1 2026)**
+        Hai €18.500 di plusvalenze su Apple. Se vendi a gennaio invece che ora:
+        - Sposti la tassazione al 2027
+        - Guadagni 14 mesi di time value
+        - Possibile deducibilità maggiore
+
+        **3. Compensazione automatica**
+        Ho trovato 4 posizioni in perdita che puoi vendere per compensare €6.300 di gain realizzati quest'anno.
+
+        **Risparmio totale stimato: €2.847**
+
+        Vuoi che attivi il monitoraggio automatico di queste opportunità?`
+            },
+            
+            crypto: {
+                user: "Quanto crypto dovrei avere?",
+                ai: `Basandomi sul tuo profilo di rischio "moderato" e orizzonte 8 anni:
+
+        **Allocazione consigliata: 3-5% del portafoglio**
+
+        **Perché non di più:**
+        - Volatilità crypto: 65% annua (vs 15% azioni)
+        - Correlazione in aumento con tech stocks
+        - Liquidity risk durante crash
+
+        **Perché non di meno:**
+        - Potenziale upside asimmetrico
+        - Hedge contro inflazione monetaria
+        - Decorrelazione parziale nei bull market
+
+        **La tua situazione:**
+        Attualmente hai 1.2% in crypto (€5.800). 
+
+        **Suggerimento:**
+        - Porta a 4% gradualmente (€19.200 totale)
+        - 70% Bitcoin, 25% Ethereum, 5% altre
+        - DCA mensile di €450 per 6 mesi
+        - Mai più del 7% anche se performa bene
+
+        **Rischio aggiuntivo:** +2.3% volatilità portfolio
+        **Rendimento atteso aggiuntivo:** +0.8% annuo
+
+        Vuoi che configuri un piano DCA automatico?`
+            }
+        };
+
+        // Question pills click handler
+        document.querySelectorAll('.question-pill').forEach(pill => {
+            pill.addEventListener('click', function() {
+                const questionType = this.dataset.question;
+                const response = chatResponses[questionType];
+                
+                if (!response) return;
+                
+                // Log for validation
+                console.log('[VALIDATION] Demo question clicked:', questionType);
+                
+                // Clear chat
+                const chatMessages = document.getElementById('chat-messages');
+                
+                // Add user message
+                const userMsg = document.createElement('div');
+                userMsg.className = 'user-message';
+                userMsg.innerHTML = `
+                    <div>
+                        <p><strong>${response.user}</strong></p>
+                    </div>
+                `;
+                chatMessages.appendChild(userMsg);
+                
+                // Scroll to bottom
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                
+                // Show typing indicator
+                const typingDiv = document.createElement('div');
+                typingDiv.className = 'message ai-message';
+                typingDiv.innerHTML = `
+                    <div style="display: flex; gap: 1rem; align-items: flex-start;">
+                        <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 1.1rem;">
+                            🤖
+                        </div>
+                        <div style="background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.2); border-radius: 18px; padding: 1.5rem 2rem;">
+                            <div class="typing-indicator">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                chatMessages.appendChild(typingDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                
+                // Simulate AI thinking time
+                setTimeout(() => {
+                    // Remove typing indicator
+                    typingDiv.remove();
+                    
+                    // Add AI response
+                    const aiMsg = document.createElement('div');
+                    aiMsg.className = 'message ai-message';
+                    aiMsg.innerHTML = `
+                        <div style="display: flex; gap: 1rem; align-items: flex-start;">
+                            <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 1.1rem;">
+                                🤖
+                            </div>
+                            <div style="background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.2); border-radius: 18px; padding: 1.5rem 2rem; max-width: 85%;">
+                                <p style="margin: 0; color: rgba(255,255,255,0.9); line-height: 1.8; font-size: 1.05rem; white-space: pre-wrap;">${response.ai}</p>
+                            </div>
+                        </div>
+                    `;
+                    chatMessages.appendChild(aiMsg);
+                    
+                    // Scroll to bottom smoothly
+                    chatMessages.scrollTo({
+                        top: chatMessages.scrollHeight,
+                        behavior: 'smooth'
+                    });
+                    
+                }, 1800); // Realistic AI response time
+                
+            });
+        });
+
+        // Track problem card hovers (validation metric)
+        document.querySelectorAll('.problem-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                const problemTitle = this.querySelector('h3').textContent;
+                console.log('[VALIDATION] Problem card hovered:', problemTitle);
+            });
+        });
+
+
+        function animateInsight(el, duration = 1400) {
+            const target = parseFloat(el.dataset.value);
+            const isCurrency = el.textContent.includes('€');
+            const isPercent = el.textContent.includes('%');
+
+            let startTime = null;
+
+            function step(timestamp) {
+                if (!startTime) startTime = timestamp;
+                const progress = Math.min((timestamp - startTime) / duration, 1);
+                const value = target * progress;
+
+                if (isCurrency) {
+                    el.textContent = '€' + (value / 1000).toFixed(1) + 'K';
+                } else if (isPercent) {
+                    el.textContent = value.toFixed(1) + '%';
+                } else {
+                    el.textContent = Number.isInteger(target)
+                        ? Math.round(value)
+                        : value.toFixed(2);
+                }
+
+                if (progress < 1) {
+                    requestAnimationFrame(step);
+                }
+            }
+
+            requestAnimationFrame(step);
         }
-      }catch(err){
-        msg.style.color = 'var(--warn)';
-        msg.textContent = currentLang === "it"
-          ? "Connessione assente. Riprova quando sei online."
-          : "No connection. Please try again when you are online.";
-      }
-    });
 
-    // Language switch click
-    function applyLanguage(lang) {
-    currentLang = lang;
-    const dict = translations[currentLang];
+        // 👀 VIEWPORT OBSERVER
+        const insightObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !entry.target.dataset.animated) {
+                    entry.target.dataset.animated = "true";
+                    animateInsight(entry.target);
+                }
+            });
+        }, {
+            threshold: 0.6
+        });
 
-    // Apply translations
-    document.querySelectorAll("[data-i18n]").forEach(el => {
-      const key = el.getAttribute("data-i18n");
-      if (dict[key]) {
-        el.innerHTML = dict[key];
-      }
-    });
-
-    // Email placeholder + aria
-    const email = document.getElementById("email");
-    if (email && dict.email_placeholder) {
-      email.placeholder = dict.email_placeholder;
-      email.setAttribute("aria-label", dict.email_aria || "");
-    }
-
-    // Update flag + label
-    const flag = document.getElementById("lang-flag");
-    const label = document.getElementById("lang-label");
-
-    flag.src = lang === "it"
-      ? "https://flagcdn.com/w40/it.png"
-      : "https://flagcdn.com/w40/gb.png";
-
-    label.textContent = lang === "it" ? "Italy" : "United Kingdom";
-  }
+        // osserva tutti i valori
+        document.querySelectorAll('.insight-value').forEach(el => {
+            insightObserver.observe(el);
+        });
 
 
+        const chartWrapper = document.querySelector('.chart-wrapper');
 
-    // Dropdown button
-    const langBtn = document.getElementById("lang-btn");
-    const langDropdown = document.getElementById("lang-dropdown");
+        const chartObserver = new IntersectionObserver(
+        (entries, observer) => {
+            entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                chartWrapper.classList.add('is-visible');
+                observer.unobserve(entry.target); // 🔥 una volta sola
+            }
+            });
+        },
+        {
+            root: null,
+            threshold: 0.6,      // deve essere BEN dentro
+            rootMargin: '0px'
+        }
+        );
 
-    // Apertura/chiusura dropdown
-    langBtn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      langBtn.parentElement.classList.toggle("lang-open");
-    });
+        chartObserver.observe(chartWrapper);
+    </script>
 
-    // Click fuori → chiudi menu
-    document.addEventListener("click", () => {
-      langBtn.parentElement.classList.remove("lang-open");
-    });
+    <script>
+        const input = document.getElementById("cta-email");
 
-    // Selezione lingua
-    document.querySelectorAll(".lang-option").forEach(option => {
-      option.addEventListener("click", (e) => {
-        e.stopPropagation();
-        const lang = option.getAttribute("data-lang");
-        applyLanguage(lang);
-        langBtn.parentElement.classList.remove("lang-open");
-      });
-    }); 
-  </script>
+        const texts = [
+            "Il tuo indirizzo email",
+            "Inserisci la tua email",
+            "Accedi alla beta privata"
+        ];
+
+        let textIndex = 0;
+        let charIndex = 0;
+        let typing = true;
+        let cursorVisible = true;
+        let active = true;
+
+        const typingSpeed = 55;
+        const deletingSpeed = 35;
+        const pauseAfterTyping = 1600;
+        const pauseAfterDeleting = 600;
+        const cursorBlinkSpeed = 520;
+
+        function getCursor() {
+            return cursorVisible ? "▍" : "";
+        }
+
+        function updatePlaceholder(text) {
+            input.setAttribute("placeholder", text + getCursor());
+        }
+
+        function typeLoop() {
+            if (!active) return;
+
+            const currentText = texts[textIndex];
+
+            if (typing) {
+            updatePlaceholder(currentText.slice(0, charIndex + 1));
+            charIndex++;
+
+            if (charIndex === currentText.length) {
+                typing = false;
+                setTimeout(typeLoop, pauseAfterTyping);
+                return;
+            }
+            } else {
+            updatePlaceholder(currentText.slice(0, charIndex - 1));
+            charIndex--;
+
+            if (charIndex === 0) {
+                typing = true;
+                textIndex = (textIndex + 1) % texts.length;
+                setTimeout(typeLoop, pauseAfterDeleting);
+                return;
+            }
+            }
+
+            setTimeout(typeLoop, typing ? typingSpeed : deletingSpeed);
+        }
+
+        // Cursor blink
+        setInterval(() => {
+            if (!active) return;
+            cursorVisible = !cursorVisible;
+        }, cursorBlinkSpeed);
+
+        // Stop animation on focus
+        input.addEventListener("focus", () => {
+            active = false;
+            input.setAttribute("placeholder", "");
+        });
+
+        // Restart animation if input is empty on blur
+        input.addEventListener("blur", () => {
+            if (input.value === "") {
+            active = true;
+            charIndex = 0;
+            typing = true;
+            textIndex = 0;
+            setTimeout(typeLoop, 600);
+            }
+        });
+
+        // Start
+        setTimeout(typeLoop, 900);
+
+        input.addEventListener("focus", () => {
+            input.setAttribute("placeholder", "");
+        });
+    </script>
 </body>
 </html>
