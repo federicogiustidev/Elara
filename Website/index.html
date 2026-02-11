@@ -2102,41 +2102,49 @@
     opacity: 0.65;
   }
 
-  .brand-link {
+.brand-link {
     text-decoration: none;
     cursor: pointer;
-   }
+}
     
-    /* EDGE DASH NAV */
-    .edge-nav{
-      position: fixed;
-      right: 18px;
-      top: 50%;
-      transform: translateY(-50%);
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      z-index: 1200;
-    }
-    
-    .edge-dash{
-      width: 34px;
-      height: 6px;
-      border: 0;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.22);
-      cursor: pointer;
-      transition: all .25s ease;
-    }
-    
-    .edge-dash:hover{
-      transform: scaleX(1.15);
-      background: rgba(139,92,246,0.55);
-    }
-    
-    .edge-dash.is-active{
-      background: rgba(139,92,246,0.9);
-    }
+/* EDGE DASH NAV — VISIBILE SEMPRE */
+.edge-nav{
+  position: fixed;
+  right: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  z-index: 9999;
+}
+
+.edge-dash{
+  width: 34px;
+  height: 6px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.28);
+  cursor: pointer;
+  transition: transform .2s ease, background .2s ease, opacity .2s ease;
+  opacity: 0.95;
+}
+
+.edge-dash:hover{
+  transform: scaleX(1.2);
+  background: rgba(139,92,246,0.65);
+}
+
+.edge-dash.is-active{
+  background: rgba(139,92,246,0.95);
+}
+
+/* mobile: un filo più piccoli */
+@media (max-width: 768px){
+  .edge-nav{ right: 12px; gap: 12px; }
+  .edge-dash{ width: 28px; height: 6px; }
+}
+
 
     
     </style>
