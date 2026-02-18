@@ -2131,7 +2131,7 @@
   transform: translateY(-50%);
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 22px;   /* prima 14px */
   z-index: 9999;
 }
 
@@ -2162,8 +2162,8 @@
 
 @media (max-width: 768px){
   .edge-nav{ 
-    right: 10px; 
-    gap: 10px; 
+    right: 12px; 
+    gap: 18px;   /* più ariose */
   }
 
   .edge-dash{ 
@@ -3255,25 +3255,52 @@
 
         chartObserver.observe(chartWrapper);
 
-        // EDGE NAV CLICK + attivo solo al click
-        const edgeDashes = document.querySelectorAll('.edge-dash');
+        // EDGE NAV: click -> scroll, ma attivo = dinamico via scroll
+        const edgeDashes = Array.from(document.querySelectorAll('.edge-dash'));
         
+        // click: scrolla e basta (NON fissiamo lo stato)
         edgeDashes.forEach(btn => {
           btn.addEventListener('click', (e) => {
             e.preventDefault();
-        
-            // rimuove viola da tutte
-            edgeDashes.forEach(b => b.classList.remove('is-active'));
-        
-            // aggiunge viola solo a quella cliccata
-            btn.classList.add('is-active');
-        
             const target = document.querySelector(btn.dataset.target);
-            if (target) {
-              target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
+            if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
           });
         });
+        
+        // mappa bottoni -> sezioni
+        const dashMap = edgeDashes
+          .map(btn => ({ btn, el: document.querySelector(btn.dataset.target) }))
+          .filter(x => x.el);
+        
+        // funzione: attiva solo 1 dash
+        function setActiveDash(activeBtn) {
+          edgeDashes.forEach(b => b.classList.remove('is-active'));
+          if (activeBtn) activeBtn.classList.add('is-active');
+        }
+        
+        // osserva le sezioni e attiva quella più “presente” in viewport
+        const sectionObserver = new IntersectionObserver((entries) => {
+          // prendiamo solo quelle visibili
+          const visible = entries.filter(e => e.isIntersecting);
+        
+          if (!visible.length) return;
+        
+          // scegli quella con maggiore area visibile (intersectionRatio)
+          visible.sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+          const best = visible[0].target;
+        
+          const match = dashMap.find(x => x.el === best);
+          if (match) setActiveDash(match.btn);
+        
+        }, {
+          root: null,
+          threshold: [0.25, 0.4, 0.55, 0.7],
+          rootMargin: '-20% 0px -55% 0px' 
+        });
+        
+        // avvia observer
+        dashMap.forEach(({ el }) => sectionObserver.observe(el));
+
 
     </script>
 
