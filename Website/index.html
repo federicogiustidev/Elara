@@ -2909,7 +2909,7 @@
 
     <!-- MENU TRATTINI LATERALI -->
     <div class="edge-nav">
-      <button class="edge-dash is-active" data-target="#top"></button>
+      <button class="edge-dash" data-target="#top"></button>
       <button class="edge-dash" data-target="#technology"></button>
       <button class="edge-dash" data-target="#security"></button>
       <button class="edge-dash" data-target="#pricing"></button>
@@ -3250,14 +3250,22 @@
 
         chartObserver.observe(chartWrapper);
 
-        // EDGE NAV CLICK
+        // EDGE NAV CLICK + attivo solo al click
         const edgeDashes = document.querySelectorAll('.edge-dash');
         
         edgeDashes.forEach(btn => {
-          btn.addEventListener('click', () => {
+          btn.addEventListener('click', (e) => {
+            e.preventDefault();
+        
+            // rimuove viola da tutte
+            edgeDashes.forEach(b => b.classList.remove('is-active'));
+        
+            // aggiunge viola solo a quella cliccata
+            btn.classList.add('is-active');
+        
             const target = document.querySelector(btn.dataset.target);
             if (target) {
-              target.scrollIntoView({ behavior: 'smooth' });
+              target.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
           });
         });
