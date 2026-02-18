@@ -3294,28 +3294,46 @@
           if (activeBtn) activeBtn.classList.add('is-active');
         }
         
-        // osserva le sezioni e attiva quella più “presente” in viewport
-        const sectionObserver = new IntersectionObserver((entries) => {
-          // prendiamo solo quelle visibili
-          const visible = entries.filter(e => e.isIntersecting);
+        // ===== EDGE NAV: attivo dinamico in base allo scroll (no "cliccato fisso") =====
+
+        // target sections (ordine dall'alto verso il basso)
+        const dashTargets = edgeDashes
+          .map(btn => ({ btn, el: document.querySelector(btn.dataset.target) }))
+          .filter(x => x.el)
+          .sort((a, b) => a.el.offsetTop - b.el.offsetTop);
         
-          if (!visible.length) return;
+        function setActiveDash(activeBtn) {
+          edgeDashes.forEach(b => b.classList.remove('is-active'));
+          if (activeBtn) activeBtn.classList.add('is-active');
+        }
         
-          // scegli quella con maggiore area visibile (intersectionRatio)
-          visible.sort((a, b) => b.intersectionRatio - a.intersectionRatio);
-          const best = visible[0].target;
+        function updateActiveDash() {
+          const trigger = window.scrollY + window.innerHeight * 0.35; // punto di lettura
+          let current = dashTargets[0];
         
-          const match = dashMap.find(x => x.el === best);
-          if (match) setActiveDash(match.btn);
+          for (const item of dashTargets) {
+            if (item.el.offsetTop <= trigger) current = item;
+          }
         
-        }, {
-          root: null,
-          threshold: [0.25, 0.4, 0.55, 0.7],
-          rootMargin: '-20% 0px -55% 0px' 
-        });
+          setActiveDash(current?.btn);
+        }
         
-        // avvia observer
-        dashMap.forEach(({ el }) => sectionObserver.observe(el));
+        // super smooth: rAF throttle
+        let ticking = false;
+        window.addEventListener('scroll', () => {
+          if (!ticking) {
+            requestAnimationFrame(() => {
+              updateActiveDash();
+              ticking = false;
+            });
+            ticking = true;
+          }
+        }, { passive: true });
+        
+        window.addEventListener('load', updateActiveDash);
+        window.addEventListener('resize', updateActiveDash);
+        updateActiveDash();
+
 
 
     </script>
