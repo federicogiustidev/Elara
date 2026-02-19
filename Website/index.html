@@ -10,7 +10,7 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
             background: #0a0a0f;
@@ -2084,7 +2084,7 @@
     animation-duration: 30s;
   }
 
-  .quote-card {
+   .quote-card {
     min-width: 300px;
     max-width: 300px;
     min-height: 240px;
@@ -2101,104 +2101,31 @@
     font-size: 0.8rem;
     opacity: 0.65;
   }
-
-}  /* ← CHIUDI QUI IL MEDIA */
-
-/* 🔥 QUESTO VA FUORI */
-.brand-link {
-  text-decoration: none;
-  cursor: pointer;
 }
 
-.brand-link,
-.brand-link:visited,
-.brand-link:hover,
-.brand-link:active {
-  text-decoration: none !important;
-}
 
-.brand-link:focus,
-.brand-link:focus-visible {
-  outline: none !important;
-  box-shadow: none !important;
-}
 
-/* EDGE DASH NAV — VISIBILE SEMPRE */
-.edge-nav{
-  position: fixed;
-  right: 18px;
-  top: 50%;
-  transform: translateY(-50%);
-  display: flex;
-  flex-direction: column;
-  gap: 22px;   /* prima 14px */
-  z-index: 9999;
-}
-
-.edge-dash{
-  width: 24px;          /* prima 34px */
-  height: 5px;          /* prima 6px */
-  border: 0;
-  border-radius: 999px;
-  background: rgba(255,255,255,0.28);
-  cursor: pointer;
-  transition: transform .2s ease, background .2s ease, opacity .2s ease;
-  opacity: 0.85;
-}
-
-.edge-dash{
-  transform: scale(1);
-  transform-origin: center;
-  transition: transform 0.25s cubic-bezier(.22,.61,.36,1),
-                        background 0.2s ease,
-                        box-shadow 0.25s ease;
-}
-
-.edge-dash:hover{
-  transform: scale(1.9, 1.6);   /* molto più evidente */
-  background: rgba(139,92,246,0.9);
-  box-shadow: 0 0 12px rgba(139,92,246,0.6);
-}
-.edge-dash{
-  position: relative;
-}
-
-.edge-dash::before{
-  content: "";
-  position: absolute;
-  top: -12px;
-  bottom: -12px;
-  left: -10px;
-  right: -10px;
-}
-
-.edge-dash.is-active{
-  background: rgba(139,92,246,0.95);
-}
-
-@media (max-width: 768px){
-  .edge-nav{
-    display: none !important;
-    pointer-events: none;
-  }
-}
-
-/* FIX iOS doppio tap logo */
-.brand-link {
-  touch-action: manipulation;
-  -webkit-touch-callout: none;
-}
     
-    </style>
+        .lang-toggle{
+            background: transparent;
+            border: 0;
+            padding: 0;
+            color: rgba(255, 255, 255, 0.4);
+            font: inherit;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        .lang-toggle:hover{
+            color: #8b5cf6;
+        }
+</style>
 </head>
 <body>
-    <div id="top"></div>
-    
     <nav class="nav">
-        <a href="#top" class="brand brand-link">
+        <div class="brand">
             <img src="Elara_logo_trasparent.png" alt="Elara logo" class="brand-logo">
             <div class="logo">Elara</div>
-        </a>
+        </div>
         <div class="nav-links">
             <a href="#features">Funzionalità</a>
             <a href="#technology">Tecnologia</a>
@@ -2255,7 +2182,7 @@
     </section>
 
     <!-- ==================== AI IN AZIONE ==================== -->
-<section id="features" class="ai-demo-section" style="padding: 10rem 6%; background: linear-gradient(180deg, #0a0a0f 0%, #050508 100%); position: relative; overflow: hidden;">
+<section class="ai-demo-section" style="padding: 10rem 6%; background: linear-gradient(180deg, #0a0a0f 0%, #050508 100%); position: relative; overflow: hidden;">
     
     <!-- Background effects -->
     <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: radial-gradient(circle at 30% 30%, rgba(139, 92, 246, 0.08) 0%, transparent 50%), radial-gradient(circle at 70% 70%, rgba(99, 102, 241, 0.06) 0%, transparent 50%);"></div>
@@ -2918,47 +2845,25 @@
             <p>© 2026 Elara Technologies S.r.l. — Tutti i diritti riservati.</p>
             <div class="footer-links-bottom">
                 <a href="#">Stato dei servizi</a>
-                <a href="#">Italiano</a>
+                <button id="lang-toggle" class="lang-toggle" type="button">English</button>
             </div>
         </div>
     </footer>
 
-    <!-- MENU TRATTINI LATERALI -->
-    <div class="edge-nav">
-      <button class="edge-dash" data-target=".hero"></button>
-      <button class="edge-dash" data-target="#technology"></button>
-      <button class="edge-dash" data-target="#security"></button>
-      <button class="edge-dash" data-target="#pricing"></button>
-    </div>
-        
     <script>
 
        
 
-        // Smooth scroll (escludi il logo)
-        document.querySelectorAll('a[href^="#"]:not(.brand-link)').forEach(anchor => {
-          anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
-            if (target) {
-              target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-          });
-        });
-        
-        // FIX iOS: logo torna in cima al primo tap
-        const brandLink = document.querySelector('.brand-link');
-        
-        if (brandLink) {
-          brandLink.addEventListener('click', function (e) {
-            e.preventDefault();
-            window.scrollTo({
-              top: 0,
-              left: 0,
-              behavior: 'smooth'
+        // Smooth scroll navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
             });
-          });
-        }
+        });
 
         // Navbar scroll effect
         let lastScroll = 0;
@@ -3011,7 +2916,7 @@
 
         // ==================== VALIDATION: AI CHAT DEMO LOGIC ====================
 
-        const chatResponses = {
+        const chatResponsesIT = {
             risk: {
                 user: "Sto prendendo troppo rischio?",
                 ai: `Ho analizzato il tuo portafoglio attuale:
@@ -3110,6 +3015,107 @@
         Vuoi che configuri un piano DCA automatico?`
             }
         };
+        const chatResponsesEN = {
+            risk: {
+                user: "Am I taking too much risk?",
+                ai: `I analyzed your current portfolio:
+
+**Situation:**
+- 68% in equities (vs 55% target for your profile)
+- Current volatility: 18.2% per year
+- Beta vs market: 1.34 (more volatile than the market)
+
+**Verdict:**
+Yes — you’re taking **~20% more risk** than your “moderate” profile suggests. Over the last 6 months you had 3 drawdowns above 7%, more than expected.
+
+**What you can do:**
+Consider moving €12,400 from growth equities to government bonds. This would reduce volatility to ~14.8% while keeping a similar expected return.
+
+Want me to simulate the impact of this rebalance?`
+            },
+            diversification: {
+                user: "Is my portfolio well diversified?",
+                ai: `I ran a correlation and overlap analysis:
+
+**Sector concentration:**
+- Tech: 47% (⚠️ too high)
+- Financials: 18%
+- Healthcare: 12%
+- Other: 23%
+
+**Hidden overlap:**
+You hold 5 ETFs that look different, but they share ~63% overlap in the same names (Apple, Microsoft, NVIDIA).
+
+**Correlation:**
+During drawdowns, your assets move together in ~78% of cases — too correlated.
+
+**What to improve:**
+Add exposure to:
+- Real Estate (8–10%)
+- Commodities (5%)
+- Asia Emerging Markets (7%)
+
+This could reduce correlation to ~45% and improve your Sharpe ratio from 1.12 to ~1.58.`
+            },
+            tax: {
+                user: "How can I optimize capital gains taxes?",
+                ai: `Good question — I found **3 actionable opportunities**:
+
+**1) Tax‑loss harvesting (now)**
+You have €4,200 of unrealized losses across 2 ETFs. If you sell and reinvest in close alternatives you can:
+- Offset future gains
+- Save ~€1,092 in taxes (26%)
+- Keep similar market exposure
+
+**2) Timing sales (Q1 2026)**
+You have €18,500 of gains on Apple. If you sell in January instead of now:
+- You shift taxation to 2027
+- You gain ~14 months of time value
+
+**3) Automatic offsetting**
+I found 4 losing positions you could sell to offset €6,300 of realized gains this year.
+
+**Estimated total tax saved: €2,847**
+
+Want me to enable monitoring for these opportunities?`
+            },
+            crypto: {
+                user: "How much crypto should I hold?",
+                ai: `Based on your “moderate” risk profile and an 8‑year horizon:
+
+**Suggested allocation: 3–5% of the portfolio**
+
+**Why not more:**
+- Crypto volatility: ~65% per year (vs ~15% equities)
+- Increasing correlation with tech
+- Liquidity risk during crashes
+
+**Why not less:**
+- Asymmetric upside potential
+- Partial hedge in certain regimes
+
+**Your current setup:**
+You currently hold 1.2% in crypto (€5,800).
+
+**Suggestion:**
+- Move gradually to 4% (€19,200 total)
+- 70% Bitcoin, 25% Ethereum, 5% others
+- Monthly DCA of €450 for 6 months
+- Never exceed 7% even after strong performance
+
+**Added portfolio volatility:** +2.3%
+**Added expected return:** +0.8% / year
+
+Want me to set up a DCA plan?`
+            }
+        };
+
+        let chatResponses = chatResponsesIT;
+
+        window.__ELARA_SET_CHAT_LANG__ = function(lang){
+            chatResponses = (lang === "en") ? chatResponsesEN : chatResponsesIT;
+        };
+        
 
         // Question pills click handler
         document.querySelectorAll('.question-pill').forEach(pill => {
@@ -3265,96 +3271,18 @@
         );
 
         chartObserver.observe(chartWrapper);
-
-        // ==================== EDGE NAV (FIX DEFINITIVO) ====================
-        const edgeDashes = Array.from(document.querySelectorAll('.edge-dash'));
-        
-        // click: scrolla con offset per navbar fixed
-        function scrollToWithOffset(el) {
-          const nav = document.querySelector('.nav');
-          const navH = nav ? nav.offsetHeight : 0;
-        
-          const y = el.getBoundingClientRect().top + window.scrollY - navH - 12; // 12px respiro
-          window.scrollTo({ top: y, behavior: 'smooth' });
-        }
-        
-        edgeDashes.forEach(btn => {
-          btn.addEventListener('click', (e) => {
-            e.preventDefault();
-            const target = document.querySelector(btn.dataset.target);
-            if (target) scrollToWithOffset(target);
-          });
-        });
-        
-        // mappa bottoni -> sezioni (ordine top->bottom)
-        const dashTargets = edgeDashes
-          .map(btn => ({ btn, el: document.querySelector(btn.dataset.target) }))
-          .filter(x => x.el)
-          .sort((a, b) => a.el.getBoundingClientRect().top - b.el.getBoundingClientRect().top);
-        
-        // attiva solo 1 dash
-        function setActiveDash(activeBtn) {
-          edgeDashes.forEach(b => b.classList.remove('is-active'));
-          if (activeBtn) activeBtn.classList.add('is-active');
-        }
-        
-        // trova sezione più vicina al "punto lettura" nel viewport
-        function updateActiveDash() {
-          const nav = document.querySelector('.nav');
-          const navH = nav ? nav.offsetHeight : 0;
-        
-          const triggerY = navH + window.innerHeight * 0.30; // punto lettura (sotto la navbar)
-          let bestBtn = dashTargets[0]?.btn || null;
-          let bestDist = Infinity;
-        
-          dashTargets.forEach(({ btn, el }) => {
-            const rect = el.getBoundingClientRect();
-            const elCenter = rect.top + rect.height / 2;
-            const dist = Math.abs(elCenter - triggerY);
-        
-            if (dist < bestDist) {
-              bestDist = dist;
-              bestBtn = btn;
-            }
-          });
-        
-          setActiveDash(bestBtn);
-        }
-        
-        // rAF throttle
-        let ticking = false;
-        window.addEventListener('scroll', () => {
-          if (!ticking) {
-            requestAnimationFrame(() => {
-              updateActiveDash();
-              ticking = false;
-            });
-            ticking = true;
-          }
-        }, { passive: true });
-        
-        window.addEventListener('resize', updateActiveDash);
-        window.addEventListener('load', () => {
-          setActiveDash(null);      // niente viola al load
-          updateActiveDash();       // ma calcola subito (se vuoi: commenta questa riga)
-        });
-        
-        // prima chiamata (se vuoi che appena atterra evidenzi già la hero/top)
-        updateActiveDash();
-
-
-
-
     </script>
 
     <script>
         const input = document.getElementById("cta-email");
 
-        const texts = [
-            "Il tuo indirizzo email",
-            "Inserisci la tua email",
-            "Accedi alla beta privata"
-        ];
+        const texts = (window.__ELARA_PLACEHOLDER_TEXTS__ && window.__ELARA_PLACEHOLDER_TEXTS__.length)
+            ? window.__ELARA_PLACEHOLDER_TEXTS__
+            : [
+                "Il tuo indirizzo email",
+                "Inserisci la tua email",
+                "Accedi alla beta privata"
+              ];
 
         let textIndex = 0;
         let charIndex = 0;
@@ -3435,5 +3363,444 @@
             input.setAttribute("placeholder", "");
         });
     </script>
+
+<script>
+/* ==================== ELARA i18n (IT/EN) ==================== */
+(function(){
+  const LANG_KEY = "elara_lang";
+  const $ = (sel) => document.querySelector(sel);
+  const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+
+  const copy = {
+    it: {
+      nav: { features:"Funzionalità", tech:"Tecnologia", security:"Sicurezza", pricing:"Pricing", cta:"Inizia ora" },
+      hero: {
+        badge:"Ora in Beta Privata — Posti limitati",
+        title_html:"Il tuo copilota AI<br>finanziario",
+        subtitle:"Unifica il tuo patrimonio e ottimizzalo con Modelli Quantitativi, Machine Learning e AI.",
+        primary:"Accedi alla beta privata",
+        secondary:"Guarda la demo →"
+      },
+      insights: [
+        {label:"Net worth totale", meta:"+12.4% questo mese"},
+        {label:"Performance YTD", meta:"+5.2% vs benchmark"},
+        {label:"Sharpe ratio", meta:"Profilo ottimizzato"},
+        {label:"Asset allocati", meta:"Ben diversificato"},
+      ],
+      ai: {
+        tag:"AI in azione",
+        title_html:"Modelli quantitativi <br> per l’ottimizzazione del patrimonio",
+        desc:"La nostra AI lavora 24/7 per massimizzare i tuoi rendimenti e minimizzare i rischi",
+        cards:[
+          {h:"Ottimizzazione di portafoglio", p:"Algoritmi quantitativi che ribilanciano continuamente il tuo portafoglio per massimizzare il rapporto rischio-rendimento"},
+          {h:"Patrimonio unificato", p:"Tutti i tuoi asset finanziari e beni fisici, aggregati da banche, conti personali e broker, riuniti in un’unica schermata"},
+          {h:"Chat conversazionale", p:"Chiedi qualsiasi cosa sul tuo patrimonio e ricevi risposte immediate basate sui tuoi dati reali e sul contesto di mercato"},
+          {h:"Analisi predittiva", p:"Simulazioni Quantitative e scenari What-If per anticipare l'evoluzione del tuo patrimonio in diverse condizioni di mercato"},
+          {h:"Insight intelligenti", p:"Analisi statistiche sui dati del tuo patrimonio, tradotte in metriche chiare e coerenti con i tuoi obiettivi."},
+          {h:"Valutazione beni fisici", p:"Stima automatica del valore degli immobili, veicoli e oggetti di valore con aggiornamenti real-time"}
+        ]
+      },
+      tech: {
+        tag:"Tecnologia",
+        title:"Algoritmi quantitativi di livello istituzionale",
+        desc:"Utilizziamo i metodi di ottimizzazione più avanzati del settore finanziario, gli stessi utilizzati dai grandi hedge fund e dai gestori patrimoniali globali, resi accessibili attraverso un'interfaccia intuitiva.",
+        algo_desc:[
+          "Teoria classica di Markowitz per il trade-off ottimale tra rischio e rendimento atteso",
+          "Integrazione delle tue view personali di mercato con l'equilibrio globale degli asset",
+          "Bilanciamento ottimale del contributo al rischio di ogni asset nel portafoglio",
+          "Minimizzazione della volatilità complessiva del portafoglio mantenendo rendimenti target",
+          "Massimizzazione del rendimento per unità di rischio con vincoli personalizzabili"
+        ],
+        chartRight:"Ultimi 24 mesi →"
+      },
+      brands:"Sicurezza di livello bancario e conformità certificata",
+      security:{
+        tag:"Sicurezza",
+        title_html:"La tua sicurezza<br>è la nostra priorità assoluta",
+        desc:"Standard di sicurezza bancari, conformità normativa completa e audit regolari da enti certificati",
+        cards:[
+          {h:"Crittografia End-to-End", p:"Tutti i dati sono protetti con crittografia militare AES-256 sia in transito che a riposo. Le tue credenziali non vengono mai memorizzate nei nostri server e utilizziamo tokenizzazione avanzata per ogni connessione bancaria."},
+          {h:"Conformità Normativa", p:"Completamente conformi alle normative PSD2, GDPR e standard internazionali ISO 27001. Sottoposti ad audit di sicurezza trimestrali da parte di enti certificati indipendenti con penetration testing regolari."},
+          {h:"Read-Only Access", p:"Accesso esclusivamente in sola lettura ai tuoi conti bancari e broker. Non possiamo mai eseguire transazioni, prelievi o movimentare i tuoi fondi in alcun modo. Zero rischio di manipolazione."}
+        ]
+      },
+      testi:{
+        tag:"Feedback",
+        title:"Cosa dicono i primi utenti",
+        desc:"Investitori reali che utilizzano Elara per analizzare e ottimizzare il proprio patrimonio.",
+        quotes:[
+          "“Finalmente una visione unificata del mio patrimonio. L’ottimizzazione quantitativa è chiara e applicabile.”",
+          "“Qui c’è una logica quantitativa reale. Non suggerimenti generici.”",
+          "“Il tracking dei beni fisici ha cambiato il modo in cui prendo decisioni patrimoniali.”",
+          "“Finalmente riesco a vedere insieme investimenti, liquidità e patrimonio non finanziario.”"
+        ]
+      },
+      pricing:{
+        title_html:"Scegli il piano<br>perfetto per te",
+        desc:"Prezzi trasparenti, nessun costo nascosto. Annulla quando vuoi, nessun vincolo contrattuale.",
+        cards:{
+          starter:{price:"Gratis", desc:"Perfetto per iniziare a tracciare il tuo patrimonio e esplorare le funzionalità base",
+            btn:"Inizia gratis",
+            features:["Fino a 3 conti collegati","Net worth tracking in tempo reale","Dashboard base con grafici","Timeline storica 1 anno","Report mensili automatici","5 beni fisici tracciabili","Supporto via email"]
+          },
+          pro:{badge:"Più popolare", price:"€29", per:"/mese", desc:"Per investitori seri che vogliono ottimizzare e massimizzare i rendimenti",
+            btn:"Inizia 14 giorni gratis",
+            features:["Conti bancari e broker illimitati","Tutti gli algoritmi di ottimizzazione","Patrimonio fisico illimitato","Simulazioni what-if avanzate","Alert personalizzati real-time","Export dati completo (CSV, Excel)","Timeline storica illimitata","API access per integrazioni","Supporto prioritario 24/7"]
+          },
+          ent:{price:"Custom", desc:"Per family office, wealth manager e team che gestiscono patrimoni complessi",
+            btn:"Contatta il team sales",
+            features:["Tutto incluso in Pro","Multi-portfolio management","White label personalizzabile","API dedicata con SLA garantito","SSO e gestione team avanzata","Account manager dedicato","Custom integrations su richiesta","Onboarding personalizzato","Training e formazione team"]
+          }
+        }
+      },
+      cta:{
+        title_html:"Pronto a ottimizzare<br>il tuo patrimonio?",
+        desc:"Unisciti a migliaia di investitori che stanno già usando Elara per gestire il loro patrimonio in modo intelligente e data-driven",
+        btn:"Richiedi accesso beta",
+        note:"✓ Nessuna carta richiesta",
+        placeholder_texts:["Il tuo indirizzo email","Inserisci la tua email","Accedi alla beta privata"],
+        alert:(email)=>`Grazie! Ti abbiamo aggiunto alla lista d'attesa: ${email}`
+      },
+      footer:{
+        blurb:"Portfolio Intelligence & Net Worth Optimization. Il copilota finanziario intelligente per investitori moderni che vogliono massimizzare il loro patrimonio.",
+        cols:["Prodotto","Risorse","Azienda","Legale"],
+        product:["Funzionalità","Pricing","Integrazioni","Changelog","Roadmap"],
+        resources:["Documentazione","Blog","Guide","API Reference","Help Center"],
+        company:["Chi siamo","Careers","Press Kit","Partner","Contatti"],
+        legal:["Privacy Policy","Termini di servizio","Cookie Policy","Conformità","Sicurezza"],
+        bottom:"© 2026 Elara Technologies S.r.l. — Tutti i diritti riservati.",
+        status:"Stato dei servizi"
+      },
+      toggleLabel:"English"
+    },
+    en: {
+      nav: { features:"Features", tech:"Technology", security:"Security", pricing:"Pricing", cta:"Get started" },
+      hero: {
+        badge:"Now in Private Beta — Limited spots available",
+        title_html:"Your AI financial<br>copilot",
+        subtitle:"Unify your wealth and optimize it with Quantitative Models, Machine Learning and AI.",
+        primary:"Join private beta",
+        secondary:"Watch demo →"
+      },
+      insights: [
+        {label:"Total net worth", meta:"+12.4% this month"},
+        {label:"YTD performance", meta:"+5.2% vs benchmark"},
+        {label:"Sharpe ratio", meta:"Optimized profile"},
+        {label:"Allocated assets", meta:"Well diversified"},
+      ],
+      ai: {
+        tag:"AI in action",
+        title_html:"Quantitative models <br> for wealth optimization",
+        desc:"Our AI works 24/7 to maximize returns and minimize risk",
+        cards:[
+          {h:"Portfolio optimization", p:"Quantitative algorithms that continuously rebalance your portfolio to maximize risk-adjusted returns"},
+          {h:"Unified wealth", p:"All your financial assets and physical holdings aggregated from banks, personal accounts and brokers into one dashboard"},
+          {h:"Conversational chat", p:"Ask anything about your wealth and get instant answers based on your real data and market context"},
+          {h:"Predictive analysis", p:"Quantitative simulations and what‑if scenarios to anticipate how your wealth evolves across market conditions"},
+          {h:"Smart insights", p:"Statistical analysis of your wealth translated into clear metrics aligned with your goals."},
+          {h:"Physical assets valuation", p:"Automated valuation of real estate, vehicles and valuable items with near real‑time updates"}
+        ]
+      },
+      tech: {
+        tag:"Technology",
+        title:"Institutional‑grade quantitative algorithms",
+        desc:"We use the most advanced optimization methods in finance — the same ones used by hedge funds and global asset managers — made accessible through an intuitive interface.",
+        algo_desc:[
+          "Markowitz’s classic framework to find the optimal trade‑off between risk and expected return",
+          "Blend your market views with the global equilibrium portfolio",
+          "Balance each asset’s contribution to total portfolio risk",
+          "Minimize overall portfolio volatility while meeting target returns",
+          "Maximize return per unit of risk with customizable constraints"
+        ],
+        chartRight:"Last 24 months →"
+      },
+      brands:"Bank‑grade security and certified compliance",
+      security:{
+        tag:"Security",
+        title_html:"Your security<br>is our absolute priority",
+        desc:"Bank‑grade standards, full regulatory compliance and regular audits by certified third parties",
+        cards:[
+          {h:"End‑to‑end encryption", p:"All data is protected with AES‑256 encryption both in transit and at rest. Your credentials are never stored on our servers, and we use advanced tokenization for every bank connection."},
+          {h:"Regulatory compliance", p:"Fully compliant with PSD2 and GDPR, aligned with international ISO 27001 standards. Quarterly security audits by independent certified bodies with regular penetration testing."},
+          {h:"Read‑only access", p:"We only access your bank and broker accounts in read‑only mode. We can never execute transactions, withdraw funds or move money in any way. Zero manipulation risk."}
+        ]
+      },
+      testi:{
+        tag:"Feedback",
+        title:"What early users say",
+        desc:"Real investors using Elara to analyze and optimize their wealth.",
+        quotes:[
+          "“Finally a unified view of my wealth. The quantitative optimization is clear and actionable.”",
+          "“There’s real quantitative logic here — not generic advice.”",
+          "“Tracking physical assets changed the way I make wealth decisions.”",
+          "“I can finally see investments, cash and non‑financial assets in one place.”"
+        ]
+      },
+      pricing:{
+        title_html:"Choose the plan<br>that fits you",
+        desc:"Transparent pricing. No hidden fees. Cancel anytime.",
+        cards:{
+          starter:{price:"Free", desc:"Perfect to start tracking your wealth and explore the basics",
+            btn:"Start free",
+            features:["Up to 3 connected accounts","Real‑time net worth tracking","Basic dashboard & charts","1‑year historical timeline","Automatic monthly reports","Track up to 5 physical assets","Email support"]
+          },
+          pro:{badge:"Most popular", price:"€29", per:"/month", desc:"For serious investors who want to optimize and maximize returns",
+            btn:"Start 14‑day free trial",
+            features:["Unlimited banks & brokers","All optimization algorithms","Unlimited physical assets","Advanced what‑if simulations","Real‑time personalized alerts","Full data export (CSV, Excel)","Unlimited historical timeline","API access for integrations","Priority support 24/7"]
+          },
+          ent:{price:"Custom", desc:"For family offices, wealth managers and teams with complex wealth",
+            btn:"Contact sales",
+            features:["Everything in Pro","Multi‑portfolio management","Customizable white‑label","Dedicated API with guaranteed SLA","SSO & advanced team management","Dedicated account manager","Custom integrations on request","Personalized onboarding","Team training"]
+          }
+        }
+      },
+      cta:{
+        title_html:"Ready to optimize<br>your wealth?",
+        desc:"Join thousands of investors already using Elara to manage wealth intelligently and data‑driven.",
+        btn:"Request beta access",
+        note:"✓ No credit card required",
+        placeholder_texts:["Your email address","Enter your email","Join the private beta"],
+        alert:(email)=>`Thanks! You’ve been added to the waitlist: ${email}`
+      },
+      footer:{
+        blurb:"Portfolio Intelligence & Net Worth Optimization. The smart financial copilot for modern investors who want to maximize their wealth.",
+        cols:["Product","Resources","Company","Legal"],
+        product:["Features","Pricing","Integrations","Changelog","Roadmap"],
+        resources:["Documentation","Blog","Guides","API Reference","Help Center"],
+        company:["About","Careers","Press Kit","Partners","Contact"],
+        legal:["Privacy Policy","Terms of Service","Cookie Policy","Compliance","Security"],
+        bottom:"© 2026 Elara Technologies S.r.l. — All rights reserved.",
+        status:"Service status"
+      },
+      toggleLabel:"Italiano"
+    }
+  };
+
+  function setText(sel, value, html=false){
+    const el = $(sel);
+    if(!el) return;
+    if(html) el.innerHTML = value;
+    else el.textContent = value;
+  }
+
+  function setManyText(sel, values){
+    const els = $$(sel);
+    values.forEach((v,i)=>{
+      if(els[i]) els[i].textContent = v;
+    });
+  }
+
+  function setLang(lang){
+    const t = copy[lang] || copy.it;
+
+    // NAV
+    setText('.nav-links a[href="#features"]', t.nav.features);
+    setText('.nav-links a[href="#technology"]', t.nav.tech);
+    setText('.nav-links a[href="#security"]', t.nav.security);
+    setText('.nav-links a[href="#pricing"]', t.nav.pricing);
+    setText('.nav-cta', t.nav.cta);
+
+    // HERO
+    setText('.hero-badge', '', false);
+    const badge = $('.hero-badge');
+    if(badge){
+      badge.innerHTML = `<span class="badge-dot"></span>${t.hero.badge}`;
+    }
+    setText('.hero h1.gradient-text', t.hero.title_html, true);
+    setText('.hero p', t.hero.subtitle);
+    setText('.hero-buttons .primary-btn', t.hero.primary);
+    setText('.hero-buttons .secondary-btn', t.hero.secondary);
+
+    // INSIGHTS
+    const insightItems = $$('.insight-strip .insight-item');
+    t.insights.forEach((it,i)=>{
+      const item = insightItems[i];
+      if(!item) return;
+      const label = item.querySelector('.insight-label');
+      const meta  = item.querySelector('.insight-meta');
+      if(label) label.textContent = it.label;
+      if(meta) meta.textContent = it.meta;
+    });
+
+    // AI SECTION
+    const aiSection = document.querySelector('.ai-demo-section .section-header');
+    if(aiSection){
+      const tag = aiSection.querySelector('.section-tag');
+      const title = aiSection.querySelector('.section-title');
+      const desc = aiSection.querySelector('.section-description');
+      if(tag) tag.textContent = t.ai.tag;
+      if(title) title.innerHTML = t.ai.title_html;
+      if(desc) desc.textContent = t.ai.desc;
+    }
+    const aiCards = $$('.ai-demo-section .ai-capability-card');
+    t.ai.cards.forEach((c,i)=>{
+      const card = aiCards[i];
+      if(!card) return;
+      const h = card.querySelector('h3');
+      const p = card.querySelector('p');
+      if(h) h.textContent = c.h;
+      if(p) p.textContent = c.p;
+    });
+
+    // TECHNOLOGY SECTION
+    setText('.algorithms-section .content-block .section-tag', t.tech.tag);
+    setText('.algorithms-section .content-block h2', t.tech.title);
+    setText('.algorithms-section .content-block > p', t.tech.desc);
+    const algoPs = $$('.algo-grid .algo-card .algo-content p');
+    t.tech.algo_desc.forEach((d,i)=>{ if(algoPs[i]) algoPs[i].textContent = d; });
+    // Chart right label
+    const chartRight = document.querySelector('.chart-labels > div:last-child');
+    if(chartRight) chartRight.textContent = t.tech.chartRight;
+
+    // BRANDS
+    setText('.brands-label', t.brands);
+
+    // SECURITY
+    const secHeader = document.querySelector('.security-section .section-header');
+    if(secHeader){
+      const tag = secHeader.querySelector('.section-tag');
+      const title = secHeader.querySelector('.section-title');
+      const desc = secHeader.querySelector('.section-description');
+      if(tag) tag.textContent = t.security.tag;
+      if(title) title.innerHTML = t.security.title_html;
+      if(desc) desc.textContent = t.security.desc;
+    }
+    const secCards = $$('.security-section .security-card');
+    t.security.cards.forEach((c,i)=>{
+      const card = secCards[i];
+      if(!card) return;
+      const h = card.querySelector('h3');
+      const p = card.querySelector('p');
+      if(h) h.textContent = c.h;
+      if(p) p.textContent = c.p;
+    });
+
+    // TESTIMONIALS FLOW
+    const tf = document.querySelector('.testimonials-flow .testimonials-header');
+    if(tf){
+      const tag = tf.querySelector('.section-tag');
+      const title = tf.querySelector('h2');
+      const desc = tf.querySelector('p');
+      if(tag) tag.textContent = t.testi.tag;
+      if(title) title.textContent = t.testi.title;
+      if(desc) desc.textContent = t.testi.desc;
+    }
+    const quotePs = $$('.testimonials-flow .quote-card p');
+    // first 4 are unique, later duplicates — set first 4 and then duplicate for remaining if present
+    t.testi.quotes.forEach((q,i)=>{ if(quotePs[i]) quotePs[i].textContent = q; });
+    // Duplicate loop cards (if any)
+    if(quotePs.length > 4){
+      for(let i=4;i<quotePs.length;i++){
+        quotePs[i].textContent = t.testi.quotes[i % 2]; // matches existing duplication pattern (first 2 repeated)
+      }
+    }
+
+    // PRICING
+    const prHeader = document.querySelector('.pricing-section .section-header');
+    if(prHeader){
+      const title = prHeader.querySelector('.section-title');
+      const desc = prHeader.querySelector('.section-description');
+      if(title) title.innerHTML = t.pricing.title_html;
+      if(desc) desc.textContent = t.pricing.desc;
+    }
+    const pCards = $$('.pricing-grid .pricing-card');
+    if(pCards[0]){
+      pCards[0].querySelector('.pricing-price').textContent = t.pricing.cards.starter.price;
+      pCards[0].querySelector('.pricing-description').textContent = t.pricing.cards.starter.desc;
+      setManyText('.pricing-grid .pricing-card:nth-child(1) .pricing-features li', t.pricing.cards.starter.features);
+      pCards[0].querySelector('.pricing-btn').textContent = t.pricing.cards.starter.btn;
+    }
+    if(pCards[1]){
+      const badge = pCards[1].querySelector('.pricing-badge');
+      if(badge) badge.textContent = t.pricing.cards.pro.badge;
+      const priceEl = pCards[1].querySelector('.pricing-price');
+      if(priceEl){
+        // Preserve <span> for /mese
+        priceEl.innerHTML = `${t.pricing.cards.pro.price}<span>${t.pricing.cards.pro.per}</span>`;
+      }
+      pCards[1].querySelector('.pricing-description').textContent = t.pricing.cards.pro.desc;
+      setManyText('.pricing-grid .pricing-card:nth-child(2) .pricing-features li', t.pricing.cards.pro.features);
+      pCards[1].querySelector('.pricing-btn').textContent = t.pricing.cards.pro.btn;
+    }
+    if(pCards[2]){
+      pCards[2].querySelector('.pricing-price').textContent = t.pricing.cards.ent.price;
+      pCards[2].querySelector('.pricing-description').textContent = t.pricing.cards.ent.desc;
+      setManyText('.pricing-grid .pricing-card:nth-child(3) .pricing-features li', t.pricing.cards.ent.features);
+      pCards[2].querySelector('.pricing-btn').textContent = t.pricing.cards.ent.btn;
+    }
+
+    // FINAL CTA
+    const cta = document.querySelector('.cta-final .cta-content');
+    if(cta){
+      const h2 = cta.querySelector('h2');
+      const p = cta.querySelector('p');
+      const btn = cta.querySelector('.cta-submit');
+      const note = cta.querySelector('.cta-note');
+      if(h2) h2.innerHTML = t.cta.title_html;
+      if(p) p.textContent = t.cta.desc;
+      if(btn) btn.textContent = t.cta.btn;
+      if(note) note.textContent = t.cta.note;
+    }
+
+    // FOOTER
+    setText('.footer-brand p', t.footer.blurb);
+    const colHeads = $$('.footer-column h4');
+    t.footer.cols.forEach((c,i)=>{ if(colHeads[i]) colHeads[i].textContent = c; });
+    // Footer link lists
+    setManyText('.footer-column:nth-of-type(1) ul li a', t.footer.product);
+    setManyText('.footer-column:nth-of-type(2) ul li a', t.footer.resources);
+    setManyText('.footer-column:nth-of-type(3) ul li a', t.footer.company);
+    setManyText('.footer-column:nth-of-type(4) ul li a', t.footer.legal);
+    // Bottom row
+    const bottomP = document.querySelector('.footer-bottom > p');
+    if(bottomP) bottomP.textContent = t.footer.bottom;
+    const statusLink = document.querySelector('.footer-links-bottom a');
+    if(statusLink) statusLink.textContent = t.footer.status;
+
+    // Toggle label
+    const toggle = $('#lang-toggle');
+    if(toggle) toggle.textContent = t.toggleLabel;
+
+    // Patch CTA alert language (replace handler)
+    const form = document.querySelector('.cta-form');
+    if(form){
+      form.onsubmit = (e)=>{
+        e.preventDefault();
+        const email = form.querySelector('input[type="email"]').value;
+        alert(t.cta.alert(email));
+        form.reset();
+      };
+    }
+
+    // Patch placeholder typing texts (used by existing script)
+    window.__ELARA_PLACEHOLDER_TEXTS__ = t.cta.placeholder_texts;
+
+    // Patch AI demo responses language if present
+    if(window.__ELARA_SET_CHAT_LANG__) window.__ELARA_SET_CHAT_LANG__(lang);
+  }
+
+  function init(){
+    const saved = localStorage.getItem(LANG_KEY) || "it";
+    setLang(saved);
+
+    const toggle = $('#lang-toggle');
+    if(toggle){
+      toggle.addEventListener('click', ()=>{
+        const next = (localStorage.getItem(LANG_KEY) || "it") === "it" ? "en" : "it";
+        localStorage.setItem(LANG_KEY, next);
+        setLang(next);
+      });
+    }
+  }
+
+  // Run after DOM is ready
+  if(document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
+</script>
+
 </body>
 </html>
