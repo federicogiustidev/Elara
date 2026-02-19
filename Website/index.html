@@ -2766,7 +2766,7 @@
         </div>
     </section>
 
-    <section class="cta-final">
+    <section class="cta-final" id="waitlist">
         <div class="cta-content">
             <h2>Pronto a ottimizzare<br>il tuo patrimonio?</h2>
             <p>Unisciti a migliaia di investitori che stanno già usando Elara per gestire il loro patrimonio in modo intelligente e data-driven</p>
@@ -3779,19 +3779,41 @@ Want me to set up a DCA plan?`
     if(window.__ELARA_SET_CHAT_LANG__) window.__ELARA_SET_CHAT_LANG__(lang);
   }
 
-  function init(){
-    const saved = localStorage.getItem(LANG_KEY) || "it";
-    setLang(saved);
+  function init() {
+  const saved = localStorage.getItem(LANG_KEY) || "it";
+  setLang(saved);
 
-    const toggle = $('#lang-toggle');
-    if(toggle){
-      toggle.addEventListener('click', ()=>{
-        const next = (localStorage.getItem(LANG_KEY) || "it") === "it" ? "en" : "it";
-        localStorage.setItem(LANG_KEY, next);
-        setLang(next);
+  const toggle = $('#lang-toggle');
+
+  if (toggle) {
+    toggle.addEventListener('click', () => {
+
+      // 🔥 Salviamo posizione relativa della pagina
+      const scrollRatio =
+        window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
+
+      const next =
+        (localStorage.getItem(LANG_KEY) || "it") === "it"
+          ? "en"
+          : "it";
+
+      localStorage.setItem(LANG_KEY, next);
+
+      setLang(next);
+
+      // 🔥 Ripristiniamo posizione proporzionale
+      const newScroll =
+        scrollRatio * (document.documentElement.scrollHeight - window.innerHeight);
+
+      window.scrollTo({
+        top: newScroll,
+        left: 0,
+        behavior: "auto"
       });
-    }
+
+    });
   }
+}
 
   // Run after DOM is ready
   if(document.readyState === "loading"){
@@ -3800,6 +3822,20 @@ Want me to set up a DCA plan?`
     init();
   }
 })();
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+    const heroBtn = document.querySelector(".hero-buttons .primary-btn");
+    const waitlist = document.getElementById("waitlist");
+
+    if (!heroBtn || !waitlist) return;
+
+    heroBtn.addEventListener("click", function(e) {
+        e.preventDefault();
+        waitlist.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+    });
 </script>
 
 </body>
