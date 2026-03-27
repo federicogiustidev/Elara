@@ -2136,6 +2136,17 @@
         .lang-toggle:hover{
             color: #8b5cf6;
         }
+
+        /* MOBILE ONLY */
+        @media (max-width: 768px) {
+            .neural-network canvas {
+                opacity: 0.15;      /* meno visibili */
+                transform: scale(0.8);  /* leggermente più piccole */
+            }
+        }
+
+
+
 </style>
 </head>
 <body>
@@ -3863,6 +3874,18 @@ Want me to set up a DCA plan?`
 
 <script>
 // ============ NEURAL NETWORK ANIMATION ============
+
+const isMobile = window.innerWidth < 768;
+
+if (isMobile) {
+    // Su mobile la rete resta fissa
+    // Non aggiungere eventi di mouse o scroll
+} else {
+    // Qui dentro tutto il codice che muove le reti
+}
+
+
+
 (function() {
     const canvas = document.getElementById('neuralCanvas');
     if (!canvas) {
