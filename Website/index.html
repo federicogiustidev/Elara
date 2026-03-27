@@ -3875,14 +3875,14 @@ Want me to set up a DCA plan?`
 <script>
 // ============ NEURAL NETWORK ANIMATION ============
 
-const isMobile = window.innerWidth < 768;
+const isMobile = window.innerWidth <= 768;
 
-if (isMobile) {
-    // Su mobile la rete resta fissa
-    // Non aggiungere eventi di mouse o scroll
-} else {
-    // Qui dentro tutto il codice che muove le reti
-}
+if (!isMobile) {
+    // SOLO desktop
+    document.addEventListener("mousemove", moveNetwork);
+    document.addEventListener("scroll", moveNetwork);
+} 
+// Su mobile NON aggiungiamo eventi → rete fissa
 
 
 
