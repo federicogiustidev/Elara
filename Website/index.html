@@ -90,11 +90,10 @@ p{line-height:1.7;color:var(--gray-600);}
    NAV
 ================================================ */
 .nav{
-  position:fixed;top:0;left:0;right:0;z-index:1000;
+  position:absolute;top:0;left:0;right:0;z-index:1000;
   background:rgba(255,255,255,.94);backdrop-filter:blur(18px);
-  border-bottom:1px solid var(--gray-200);transition:box-shadow .3s;
+  border-bottom:1px solid var(--gray-200);
 }
-.nav.scrolled{box-shadow:0 4px 32px rgba(0,0,0,.07);}
 .nav-inner{
   display:flex;justify-content:space-between;align-items:center;
   max-width:1320px;margin:0 auto;padding:0 5%;height:70px;
@@ -166,7 +165,7 @@ p{line-height:1.7;color:var(--gray-600);}
 
 /* Giant headline — word-by-word reveal, no clipping */
 .hero-headline{
-  font-size:clamp(3.8rem,9vw,9.5rem);
+  font-size:clamp(2.8rem,7vw,7.5rem);
   font-weight:900;line-height:1.08;letter-spacing:-.055em;
   margin-bottom:2rem;position:relative;z-index:1;
   color:var(--black);
@@ -212,7 +211,6 @@ p{line-height:1.7;color:var(--gray-600);}
 /* ── MORPHING BUTTON (pill → circle + arrow) ── */
 .btn-morph{
   position:relative;overflow:hidden;
-  /* Fixed height so circle = height */
   height:52px;
   min-width:52px;
   display:inline-flex;align-items:center;justify-content:center;
@@ -232,6 +230,42 @@ p{line-height:1.7;color:var(--gray-600);}
 .btn-morph .btn-arrow svg{
   width:22px;height:22px;stroke:currentColor;fill:none;
   stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;
+}
+
+/* ── btn-primary: slide-arrow hover (same as btn-secondary) ── */
+.btn-primary.btn-morph{
+  gap:0;
+  transition:
+    padding-right .42s cubic-bezier(.22,.61,.36,1),
+    box-shadow .3s ease,
+    transform .28s ease;
+}
+.btn-primary.btn-morph .btn-label{
+  transition:transform .42s cubic-bezier(.22,.61,.36,1);
+  display:inline-block;
+}
+.btn-primary.btn-morph .btn-arrow{
+  /* Reset absolute positioning — inline slide instead */
+  position:static;
+  max-width:0;overflow:hidden;opacity:0;
+  transform:translateX(-10px);
+  transition:
+    max-width .48s cubic-bezier(.34,1.15,.64,1),
+    opacity .28s ease .08s,
+    transform .48s cubic-bezier(.34,1.15,.64,1);
+}
+.btn-primary.btn-morph .btn-arrow svg{
+  width:17px;height:17px;stroke:#fff;fill:none;
+  stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;
+}
+.btn-primary.btn-morph:hover{
+  padding-right:2rem;
+  transform:translateY(-3px);
+  box-shadow:0 18px 48px rgba(139,92,246,.5);
+}
+.btn-primary.btn-morph:hover .btn-label{transform:translateX(-3px);}
+.btn-primary.btn-morph:hover .btn-arrow{
+  max-width:28px;opacity:1;transform:translateX(4px);
 }
 
 /* Triggered state */
@@ -1284,19 +1318,13 @@ footer{background:var(--black);border-top:none;padding:5rem 0 2.8rem;}
   "></canvas>
   <div class="hero-center">
 
-    <!-- Badge -->
-    <div class="hero-badge a-up" style="transition-delay:.05s">
-      <span class="badge-dot"></span>
-      <span id="hero-badge-txt">Ora in Beta Privata — Posti limitati</span>
-    </div>
-
     <!-- Giant headline — word-by-word reveal -->
     <h1 class="hero-headline" id="hero-h1" style="transition-delay:.15s">
       <span class="hw"><span class="hw-inner">Il</span></span>
       <span class="hw"><span class="hw-inner">tuo</span></span>
-      <span class="hw"><span class="hw-inner">copilota</span></span><br>
-      <span class="hw"><span class="hw-inner">AI</span></span>
-      <span class="hw hw-accent"><span class="hw-inner">finanziario</span></span>
+      <span class="hw"><span class="hw-inner">CFO</span></span>
+      <span class="hw"><span class="hw-inner">personale</span></span><br>
+      <span class="hw hw-accent"><span class="hw-inner">quantitativo</span></span>
     </h1>
 
     <!-- Subtitle -->
@@ -2201,8 +2229,7 @@ function runHeroEntrance(){
   },700);
 }
 
-/* ── NAV SCROLL ── */
-window.addEventListener('scroll',()=>document.getElementById('nav').classList.toggle('scrolled',scrollY>60));
+/* ── NAV — static, no scroll needed ── */
 
 /* ── SCROLL REVEAL ── */
 (()=>{
@@ -2406,22 +2433,12 @@ document.querySelectorAll('.qpill').forEach(pill=>{
     }, 650);
   }
 
-  // Hero "Accedi alla beta privata"
+  // Hero "Accedi alla beta privata" — just scroll, no circle morph
   const heroBtn = document.getElementById('hero-btn1');
   if(heroBtn){
     heroBtn.addEventListener('click', e=>{
       e.preventDefault();
-      morphBtn(heroBtn, ()=>{
-        // After 800ms more, navigate to #cta
-        setTimeout(()=>{
-          document.getElementById('cta')?.scrollIntoView({behavior:'smooth'});
-          // Reset button after scroll
-          setTimeout(()=>{
-            heroBtn.classList.remove('success');
-            heroBtn.style.width = '';
-          }, 1200);
-        }, 700);
-      });
+      document.getElementById('cta')?.scrollIntoView({behavior:'smooth'});
     });
   }
 
@@ -2505,7 +2522,7 @@ const i18n={
     navLinks:['Funzionalità','Tecnologia','Sicurezza','Pricing'],navCta:'Inizia ora',
     heroBadge:'Ora in Beta Privata — Posti limitati',
     heroH1:'Il tuo copilota AI <em>finanziario</em>',
-    heroSub:'Unifica il tuo patrimonio e ottimizzalo con Modelli Quantitativi, Machine Learning e AI.',
+    heroSub:'Unifica il tuo patrimonio e ottimizzalo con modelli quantitativi, Machine Learning e AI — come un CFO istituzionale.',
     heroBtn1:'Accedi alla beta privata',heroBtn2:'Guarda la demo →',
     ctaH2:"Dalla passione<br>all'impatto",
     ctaP:'Unisciti a migliaia di investitori che stanno già usando Elara per gestire il loro patrimonio in modo intelligente e data-driven.',
@@ -2547,16 +2564,16 @@ function setLang(l){
       // simpler: just rebuild
       heroEl.innerHTML=`
         <span class="hw"><span class="hw-inner">Your</span></span>
-        <span class="hw"><span class="hw-inner">AI</span></span>
-        <span class="hw"><span class="hw-inner">financial</span></span><br>
-        <span class="hw hw-accent"><span class="hw-inner">copilot</span></span>`;
+        <span class="hw"><span class="hw-inner">personal</span></span>
+        <span class="hw"><span class="hw-inner">quant</span></span><br>
+        <span class="hw hw-accent"><span class="hw-inner">CFO</span></span>`;
     } else {
       heroEl.innerHTML=`
         <span class="hw"><span class="hw-inner">Il</span></span>
         <span class="hw"><span class="hw-inner">tuo</span></span>
-        <span class="hw"><span class="hw-inner">copilota</span></span><br>
-        <span class="hw"><span class="hw-inner">AI</span></span>
-        <span class="hw hw-accent"><span class="hw-inner">finanziario</span></span>`;
+        <span class="hw"><span class="hw-inner">CFO</span></span>
+        <span class="hw"><span class="hw-inner">personale</span></span><br>
+        <span class="hw hw-accent"><span class="hw-inner">quantitativo</span></span>`;
     }
     requestAnimationFrame(()=>heroEl.classList.add('in'));
   }
