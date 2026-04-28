@@ -1315,6 +1315,47 @@ footer{background:var(--black);border-top:none;padding:5rem 0 2.8rem;}
   <canvas id="neuralCanvas" style="
     position:absolute;inset:0;width:100%;height:100%;
     pointer-events:none;z-index:0;opacity:1;
+   <div class="neural-bg" aria-hidden="true">
+  <svg viewBox="0 0 1200 620" preserveAspectRatio="none">
+    <defs>
+      <linearGradient id="neuralLine" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#8b5cf6"/>
+        <stop offset="50%" stop-color="#6366f1"/>
+        <stop offset="100%" stop-color="#a78bfa"/>
+      </linearGradient>
+      <filter id="neuralGlow">
+        <feGaussianBlur stdDeviation="4" result="blur"/>
+        <feMerge>
+          <feMergeNode in="blur"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+    </defs>
+
+    <path class="neural-link l1" d="M70 160 C210 60 330 260 470 150 S760 80 930 210 S1090 320 1160 160"/>
+    <path class="neural-link l2" d="M20 410 C180 300 320 490 510 360 S780 260 980 420 S1110 520 1190 390"/>
+    <path class="neural-link l3" d="M140 290 C310 180 410 410 610 300 S880 130 1060 280"/>
+    <path class="neural-link l4" d="M210 520 C390 430 510 570 690 455 S890 365 1070 520"/>
+
+    <circle class="neural-node n1" cx="70" cy="160" r="5"/>
+    <circle class="neural-node n2" cx="250" cy="110" r="7"/>
+    <circle class="neural-node n3" cx="470" cy="150" r="5"/>
+    <circle class="neural-node n4" cx="710" cy="95" r="8"/>
+    <circle class="neural-node n5" cx="930" cy="210" r="5"/>
+    <circle class="neural-node n6" cx="1160" cy="160" r="7"/>
+
+    <circle class="neural-node n7" cx="140" cy="290" r="6"/>
+    <circle class="neural-node n8" cx="410" cy="410" r="5"/>
+    <circle class="neural-node n9" cx="610" cy="300" r="8"/>
+    <circle class="neural-node n10" cx="880" cy="130" r="5"/>
+    <circle class="neural-node n11" cx="1060" cy="280" r="7"/>
+
+    <circle class="neural-node n12" cx="20" cy="410" r="5"/>
+    <circle class="neural-node n13" cx="510" cy="360" r="6"/>
+    <circle class="neural-node n14" cx="980" cy="420" r="8"/>
+    <circle class="neural-node n15" cx="1190" cy="390" r="5"/>
+  </svg>
+</div>
   "></canvas>
   <div class="hero-center">
 
