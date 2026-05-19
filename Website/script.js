@@ -13,7 +13,7 @@
   if(!canvas) return;
   const ctx = canvas.getContext('2d');
 
-  const DPR = (window.matchMedia && window.matchMedia('(max-width: 768px)').matches) ? Math.min(devicePixelRatio, 1.25) : Math.min(devicePixelRatio, 2);
+  const DPR = Math.min(devicePixelRatio, 2);
   const PURPLE   = [139, 92, 246];
   const INDIGO   = [99, 102, 241];
   const LAVENDER = [167, 139, 250];
@@ -49,8 +49,7 @@
   function build(){
     particles = []; anchors = []; bursts = [];
 
-    const isMobileCanvas = window.matchMedia && window.matchMedia('(max-width: 768px)').matches;
-    const count = isMobileCanvas ? 26 : (W < 900 ? 55 : 90);
+    const count = W < 900 ? 55 : 90;
     const dpr = DPR;
 
     for(let i = 0; i < count; i++){
@@ -128,8 +127,7 @@
     });
 
     /* ── Draw dynamic connections (proximity-based correlation) ── */
-    const isMobileCanvas = window.matchMedia && window.matchMedia('(max-width: 768px)').matches;
-    const CONNECT_DIST = (isMobileCanvas ? 78 : (W < 900 ? 110 : 150)) * DPR;
+    const CONNECT_DIST = (W < 900 ? 110 : 150) * DPR;
     const all = [...particles, ...anchors];
 
     for(let i = 0; i < all.length; i++){
@@ -233,7 +231,7 @@
     });
 
     /* ── Steady stream of micro bursts ── */
-    if(bursts.length < (window.matchMedia && window.matchMedia('(max-width: 768px)').matches ? 2 : 5) && tick % ((window.matchMedia && window.matchMedia('(max-width: 768px)').matches) ? 140 : 80) === 0){
+    if(bursts.length < 5 && tick % 80 === 0){
       const p = particles[Math.floor(Math.random() * particles.length)];
       if(p) spawnBurst(p.x, p.y, p.color);
     }
@@ -260,18 +258,13 @@ document.head.appendChild(ds);
 ══════════════════════════════════════════ */
 function counter(el,target,prefix,suffix,dec,dur){
   const isFloat=dec>0;
-  const isMobile=window.matchMedia&&window.matchMedia('(max-width: 768px)').matches;
-  const minFrameGap=isMobile?32:0; // throttle text updates on mobile to reduce layout work
-  let s=null,last=0;
+  let s=null;
   (function step(ts){
     if(!s)s=ts;
     const p=Math.min((ts-s)/dur,1);
-    if(!isMobile || ts-last>=minFrameGap || p===1){
-      const ease=p===1?1:1-Math.pow(2,-10*p);
-      const v=target*ease;
-      el.textContent=(prefix||'')+(isFloat?v.toFixed(dec):Math.round(v))+(suffix||'');
-      last=ts;
-    }
+    const ease=p===1?1:1-Math.pow(2,-10*p);
+    const v=target*ease;
+    el.textContent=(prefix||'')+(isFloat?v.toFixed(dec):Math.round(v))+(suffix||'');
     if(p<1)requestAnimationFrame(step);
   })(performance.now());
 }
@@ -316,8 +309,7 @@ function runHeroEntrance(){
   /* Animate sparkline path */
   const spk=document.getElementById('spkPath');
   if(spk){
-    const isMobileHero=window.matchMedia&&window.matchMedia('(max-width: 768px)').matches;
-    spk.style.transition=isMobileHero?'stroke-dashoffset 1.05s cubic-bezier(.22,.61,.36,1) .55s':'stroke-dashoffset 1.8s cubic-bezier(.4,0,.2,1) 1s';
+    spk.style.transition='stroke-dashoffset 1.8s cubic-bezier(.4,0,.2,1) 1s';
     spk.style.strokeDashoffset='0';
   }
 
@@ -332,15 +324,10 @@ function runHeroEntrance(){
     const c2=document.getElementById('hc2');
     const c3=document.getElementById('hc3');
     const c4=document.getElementById('hc4');
-    const isMobileHero=window.matchMedia&&window.matchMedia('(max-width: 768px)').matches;
-    const d1=isMobileHero?850:1400;
-    const d2=isMobileHero?760:1100;
-    const d3=isMobileHero?760:1100;
-    const d4=isMobileHero?650:900;
-    if(c1)counter(c1,487.4,'€','K',1,d1);
-    setTimeout(()=>{if(c2)counter(c2,24.3,'','%',1,d2);},isMobileHero?80:120);
-    setTimeout(()=>{if(c3)counter(c3,1.87,'','',2,d3);},isMobileHero?160:240);
-    setTimeout(()=>{if(c4)counter(c4,23,'','',0,d4);},isMobileHero?240:360);
+    if(c1)counter(c1,487.4,'€','K',1,1400);
+    setTimeout(()=>{if(c2)counter(c2,24.3,'','%',1,1100);},120);
+    setTimeout(()=>{if(c3)counter(c3,1.87,'','',2,1100);},240);
+    setTimeout(()=>{if(c4)counter(c4,23,'','',0,900);},360);
   },700);
 }
 
