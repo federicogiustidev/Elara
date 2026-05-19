@@ -113,7 +113,7 @@
       methodP:'Pragmatism and results orientation. We combine advanced research and practical application to support our users in their wealth growth journey.',
       stepH:['Data aggregation','Quantitative analysis','Portfolio optimisation','Continuous monitoring'],
       stepP:['We securely connect (read-only, PSD2) all your bank accounts, brokers, deposit accounts and physical assets. A single source of truth for your entire wealth.','Our models calculate risk exposure, asset correlation, Sharpe ratio and standard deviation across all your investments in real time.','Mean-Variance, Black-Litterman, Risk Parity: the AI chooses the most suitable algorithm for your profile and generates concrete rebalancing recommendations.','Custom alerts, automatic monthly reports, what-if simulations. The system works 24/7 to keep you updated on every relevant change.'],
-      teamLabel:'Entrepreneurial Team',teamH2:'About us',teamNote:'Founder-led fintech',
+      teamLabel:'Team',teamH2:'About us',teamNote:'Founder-led fintech',
       teamP:'A multidisciplinary team combining economics, computer science, mathematics and theoretical physics to make advanced quantitative tools accessible to retail investors.',
       teamNames:['Gianluca Giusti','Federico Giusti','Lorenzo Baroni','Andrea Nicoletti'],
       teamRoles:['Co-Founder & CEO','Co-Founder & CTO','Co-Founder & Head of Quant Research','Co-Founder & Head of Quant Development'],
