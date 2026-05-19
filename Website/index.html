@@ -10,6 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
 
 <link rel="stylesheet" href="style.css"/>
+
 </head>
 <body>
 
@@ -258,7 +259,7 @@
   </div>
 </section>
 
-<!-- ═══════════════ ALGORITHMS — white bg ═══════════════ -->
+<!-- ═══════════════ ALGORITHMS — dark institutional bg ═══════════════ -->
 <section class="algo-section" id="technology">
   <div class="algo-inner">
     <!-- Left: copy + step cards -->
@@ -427,100 +428,54 @@
 
 
 <!-- ═══════════════ CHI SIAMO ═══════════════ -->
-<section class="team-section" id="chi-siamo" style="padding:9rem 0;background:#fff;">
-  <div class="wrap">
-    <!-- Header -->
-    <div style="margin-bottom:4.5rem;" class="reveal">
-      <span class="label">Team</span>
-      <h2 class="section-title-lg" style="margin-top:.8rem;">Chi siamo</h2>
-      <p style="font-size:1.05rem;color:var(--gray-600);max-width:52ch;margin-top:.9rem;line-height:1.8;">
-        Un team multidisciplinare che unisce economia, matematica, fisica teorica e ingegneria informatica per portare strumenti istituzionali nelle mani di ogni investitore.
-      </p>
+<section class="team-section" id="chi-siamo">
+  <div class="wrap team-layout">
+    <div class="team-head reveal">
+      <span class="label team-label">Team imprenditoriale</span>
+      <h2 class="section-title-lg team-title">Chi siamo</h2>
+      <p class="team-intro">Un team multidisciplinare che unisce economia, informatica, matematica e fisica teorica per rendere accessibili strumenti quantitativi avanzati agli investitori retail.</p>
+      <div class="team-head-note team-note">Fintech guidata dai founder</div>
     </div>
 
-    <!-- Team grid -->
-    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:1.6rem;">
+    <div class="team-list">
+      <article class="team-card reveal">
+        <div class="team-avatar" aria-label="Gianluca Giusti"><img src="team_photos/gianluca-giusti.jpg" alt="Gianluca Giusti"/></div>
+        <div class="team-content">
+          <div class="team-mainline"><div><h3 class="team-name">Gianluca Giusti</h3><div class="team-role">Co-Founder & CEO</div></div><div class="team-index">01</div></div>
+          <div class="team-degrees"><span class="team-degree">Laurea in Economia · Università di Bologna</span><span class="team-degree">Matematica per l’Ingegneria · Politecnico di Torino</span></div>
+          <p class="team-bio">Guida la visione economica e strategica di Elara, collegando finanza, mercati, sostenibilità del modello di business e sviluppo imprenditoriale.</p>
+        </div>
+      </article>
 
-      <!-- Gianluca Giusti -->
-      <div class="reveal" style="background:#fff;border:1.5px solid var(--gray-200);border-radius:22px;padding:2.6rem;transition:all .38s;position:relative;overflow:hidden;">
-        <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--purple),var(--purple-dark));"></div>
-        <div style="display:flex;align-items:flex-start;gap:1.4rem;margin-bottom:1.6rem;">
-          <div style="width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,var(--purple),var(--purple-dark));display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:800;color:#fff;flex-shrink:0;">GG</div>
-          <div>
-            <div style="font-size:1.18rem;font-weight:800;letter-spacing:-.02em;color:var(--black);">Gianluca Giusti</div>
-            <div style="font-size:.78rem;font-weight:700;color:var(--purple);letter-spacing:.08em;text-transform:uppercase;margin-top:.2rem;">Co-Founder & CEO</div>
-          </div>
+      <article class="team-card reveal">
+        <div class="team-avatar" aria-label="Federico Giusti"><img src="team_photos/federico-giusti.jpg" alt="Federico Giusti"/></div>
+        <div class="team-content">
+          <div class="team-mainline"><div><h3 class="team-name">Federico Giusti</h3><div class="team-role">Co-Founder & CTO</div></div><div class="team-index">02</div></div>
+          <div class="team-degrees"><span class="team-degree">Laurea in Informatica · Università di Pisa</span><span class="team-degree">Laurea magistrale in Artificial Intelligence · Università di Pisa</span></div>
+          <p class="team-bio">Guida architettura, backend e AI del prodotto, unendo sviluppo software, visione imprenditoriale e conoscenza diretta della gestione patrimoniale.</p>
         </div>
-        <!-- Degrees highlight -->
-        <div style="display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1.2rem;">
-          <span style="display:inline-flex;align-items:center;gap:.35rem;background:rgba(139,92,246,.07);border:1px solid rgba(139,92,246,.18);border-radius:50px;padding:.3rem .85rem;font-size:.72rem;font-weight:700;color:var(--purple);">🎓 Economia · Unibo <em style="font-style:normal;opacity:.7;margin-left:.2rem;">cum laude</em></span>
-          <span style="display:inline-flex;align-items:center;gap:.35rem;background:rgba(139,92,246,.07);border:1px solid rgba(139,92,246,.18);border-radius:50px;padding:.3rem .85rem;font-size:.72rem;font-weight:700;color:var(--purple);">📐 Matematica per l'Ingegneria · PoliTO</span>
-        </div>
-        <p style="font-size:.9rem;color:var(--gray-600);line-height:1.75;margin:0;">
-          Formazione in economia, statistica e matematica finanziaria integrata con un percorso quantitativo al Politecnico di Torino. Ha sviluppato progetti su forecasting dell'S&P500, debito sovrano e modelli di risk pooling. Porta al team visione strategica, resilienza e capacità di analizzare il progetto da angolazioni complementari — economica, finanziaria, organizzativa e giuridica.
-        </p>
-      </div>
+      </article>
 
-      <!-- Federico Giusti -->
-      <div class="reveal d1" style="background:#fff;border:1.5px solid var(--gray-200);border-radius:22px;padding:2.6rem;transition:all .38s;position:relative;overflow:hidden;">
-        <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--purple),var(--purple-dark));"></div>
-        <div style="display:flex;align-items:flex-start;gap:1.4rem;margin-bottom:1.6rem;">
-          <div style="width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,var(--purple),var(--purple-dark));display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:800;color:#fff;flex-shrink:0;">FG</div>
-          <div>
-            <div style="font-size:1.18rem;font-weight:800;letter-spacing:-.02em;color:var(--black);">Federico Giusti</div>
-            <div style="font-size:.78rem;font-weight:700;color:var(--purple);letter-spacing:.08em;text-transform:uppercase;margin-top:.2rem;">Co-Founder & CTO</div>
-          </div>
+      <article class="team-card reveal">
+        <div class="team-avatar" aria-label="Lorenzo Baroni"><img src="team_photos/lorenzo-baroni.jpg" alt="Lorenzo Baroni"/></div>
+        <div class="team-content">
+          <div class="team-mainline"><div><h3 class="team-name">Lorenzo Baroni</h3><div class="team-role">Co-Founder & Head of Quant Research</div></div><div class="team-index">03</div></div>
+          <div class="team-degrees"><span class="team-degree">Laurea in Matematica · Università di Bologna</span></div>
+          <p class="team-bio">Sviluppa la visione quantitativa del prodotto, trasformando modelli matematici, dati finanziari e ricerca in strumenti di rischio e ottimizzazione.</p>
         </div>
-        <div style="display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1.2rem;">
-          <span style="display:inline-flex;align-items:center;gap:.35rem;background:rgba(139,92,246,.07);border:1px solid rgba(139,92,246,.18);border-radius:50px;padding:.3rem .85rem;font-size:.72rem;font-weight:700;color:var(--purple);">🎓 Informatica · Unipi</span>
-          <span style="display:inline-flex;align-items:center;gap:.35rem;background:rgba(139,92,246,.07);border:1px solid rgba(139,92,246,.18);border-radius:50px;padding:.3rem .85rem;font-size:.72rem;font-weight:700;color:var(--purple);">🤖 Artificial Intelligence · Unipi <em style="font-style:normal;opacity:.7;margin-left:.2rem;">in corso</em></span>
-        </div>
-        <p style="font-size:.9rem;color:var(--gray-600);line-height:1.75;margin:0;">
-          Laurea in Informatica e magistrale in AI all'Università di Pisa. Esperienza come Software Engineer e Freelance Web Developer, con quattro anni di attività imprenditoriale individuale economicamente autonoma. Investitore privato con gestione attiva del portafoglio personale. Unisce AI, sviluppo software e visione di prodotto per costruire sistemi fintech scalabili e accessibili.
-        </p>
-      </div>
+      </article>
 
-      <!-- Lorenzo Baroni -->
-      <div class="reveal d1" style="background:#fff;border:1.5px solid var(--gray-200);border-radius:22px;padding:2.6rem;transition:all .38s;position:relative;overflow:hidden;">
-        <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--purple),var(--purple-dark));"></div>
-        <div style="display:flex;align-items:flex-start;gap:1.4rem;margin-bottom:1.6rem;">
-          <div style="width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,var(--purple),var(--purple-dark));display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:800;color:#fff;flex-shrink:0;">LB</div>
-          <div>
-            <div style="font-size:1.18rem;font-weight:800;letter-spacing:-.02em;color:var(--black);">Lorenzo Baroni</div>
-            <div style="font-size:.78rem;font-weight:700;color:var(--purple);letter-spacing:.08em;text-transform:uppercase;margin-top:.2rem;">Co-Founder & Head of Quant Research</div>
-          </div>
+      <article class="team-card reveal">
+        <div class="team-avatar" aria-label="Andrea Nicoletti"><img src="team_photos/andrea-nicoletti.jpg" alt="Andrea Nicoletti"/></div>
+        <div class="team-content">
+          <div class="team-mainline"><div><h3 class="team-name">Andrea Nicoletti</h3><div class="team-role">Co-Founder & Head of Quant Development</div></div><div class="team-index">04</div></div>
+          <div class="team-degrees"><span class="team-degree">Laurea in Fisica · Università di Bologna</span><span class="team-degree">Laurea magistrale in Fisica Teorica · Università di Bologna</span></div>
+          <p class="team-bio">Porta rigore scientifico e capacità di sviluppo, lavorando su implementazione, validazione e integrazione dei modelli quantitativi nel prodotto.</p>
         </div>
-        <div style="display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1.2rem;">
-          <span style="display:inline-flex;align-items:center;gap:.35rem;background:rgba(139,92,246,.07);border:1px solid rgba(139,92,246,.18);border-radius:50px;padding:.3rem .85rem;font-size:.72rem;font-weight:700;color:var(--purple);">🎓 Matematica · Unibo</span>
-        </div>
-        <p style="font-size:.9rem;color:var(--gray-600);line-height:1.75;margin:0;">
-          Percorso in Matematica con specializzazione in Processi Stocastici, Derivati Finanziari, Machine Learning e Analisi Numerica. Ha implementato modelli di option pricing (Binomiale, Black-Scholes), condotto analisi PCA su portafogli reali S&P500 e costruito modelli autoregressivi. Esperienza operativa in JEBO — Junior Enterprise Unibo. Colma il divario tra finanza quantitativa istituzionale e strumenti retail.
-        </p>
-      </div>
-
-      <!-- Andrea Nicoletti -->
-      <div class="reveal d2" style="background:#fff;border:1.5px solid var(--gray-200);border-radius:22px;padding:2.6rem;transition:all .38s;position:relative;overflow:hidden;">
-        <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--purple),var(--purple-dark));"></div>
-        <div style="display:flex;align-items:flex-start;gap:1.4rem;margin-bottom:1.6rem;">
-          <div style="width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,var(--purple),var(--purple-dark));display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:800;color:#fff;flex-shrink:0;">AN</div>
-          <div>
-            <div style="font-size:1.18rem;font-weight:800;letter-spacing:-.02em;color:var(--black);">Andrea Nicoletti</div>
-            <div style="font-size:.78rem;font-weight:700;color:var(--purple);letter-spacing:.08em;text-transform:uppercase;margin-top:.2rem;">Co-Founder & Head of Quant Development</div>
-          </div>
-        </div>
-        <div style="display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1.2rem;">
-          <span style="display:inline-flex;align-items:center;gap:.35rem;background:rgba(139,92,246,.07);border:1px solid rgba(139,92,246,.18);border-radius:50px;padding:.3rem .85rem;font-size:.72rem;font-weight:700;color:var(--purple);">🎓 Fisica Teorica · Unibo <em style="font-style:normal;opacity:.7;margin-left:.2rem;">magistrale</em></span>
-          <span style="display:inline-flex;align-items:center;gap:.35rem;background:rgba(139,92,246,.07);border:1px solid rgba(139,92,246,.18);border-radius:50px;padding:.3rem .85rem;font-size:.72rem;font-weight:700;color:var(--purple);">🔬 Ricerca · UCM Madrid</span>
-        </div>
-        <p style="font-size:.9rem;color:var(--gray-600);line-height:1.75;margin:0;">
-          Background in probabilità, analisi numerica e dinamiche non lineari. Un anno di esperienza come sviluppatore software. Ricerca in fisica delle particelle (tesi triennale) e attualmente su Restricted Boltzmann Machines e modelli generativi energetici presso la Universidad Complutense di Madrid. Garantisce rigore metodologico, validazione dei modelli e integrazione tra ricerca quantitativa e sviluppo pratico.
-        </p>
-      </div>
-
+      </article>
     </div>
   </div>
 </section>
-
 
 <!-- ═══════════════ SECURITY ═══════════════ -->
 <section class="security" id="security">
@@ -712,12 +667,14 @@
 </footer>
 
 <!-- ═══════════════ SCRIPTS ═══════════════ -->
+<script src="script.js"></script>
 
 <!-- =====================================================================
   ELARA — FIX TRADUZIONE LINGUA
   ===================================================================== -->
+<script src="language.js"></script>
 
 
-<script src="script.js"></script>
+
 </body>
 </html>
